@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Profile</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/profile.css') }}">
+</head>
+<body>
+    <div class="navbar">
+        <nav>
+            <ul>
+                <li><a href="/home">Home</a></li>
+                <li><a href="/logout">Logout</a></li>   
+            </ul>
+        </nav>
+    </div>
+
+    <div class="spotlight left"></div>
+    <div class="spotlight right"></div>
+
+    
+    
+
+    <div class="profile-wrapper">
+        <div class="background-lastname">{{ user.last_name }}</div>
+        {% if user.number != 0 %}
+            <div class="background-number">{{ user.number }}</div>
+        {% endif %}
+
+
+        <div class="profile-user-section">
+            <form id="image-upload-form" action="/update-profile-picture" method="POST" enctype="multipart/form-data">
+                <label for="profile-picture-upload" class="profile-image-label">
+                    <img src="{{ url_for('static', filename='images/' + user.profile_picture) }}"
+                         alt="Profile Picture" class="player-img">
+                </label>
+                <input type="file" id="profile-picture-upload" name="profile_picture" accept="image/*" style="display: none;" onchange="this.form.submit();">
+            </form>
+            <div class="player-name">{{ user.first_name }} {{ user.last_name }}</div>
+            <div class="player-id">ID: {{ user.id }}</div>
+
+            <div class="stats-bar">
+                <div class="stat-box">
+                    <div class="stat-value">{{ user.max_goals }}</div>
+                    <div class="stat-label">GOALS</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-value">{{ user.max_assists }}</div>
+                    <div class="stat-label">ASSISTS</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-value">{{ user.played_matches }}</div>
+                    <div class="stat-label">MATCHES</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Loader overlay -->
+    <div id="page-loader">
+        <lottie-player
+            src="{{ url_for('static', filename='lottie/go_to_profile_anim.json') }}"
+            background="transparent"
+            speed="1"
+            style="width: 200px; height: 200px;"
+            loop
+            autoplay>
+        </lottie-player>
+    </div>
+    <script src="https://unpkg.com/@lottiefiles/lottie-player@latest/dist/lottie-player.js"></script>
+    <script src="{{ url_for('static', filename='js/profile.js') }}"></script>
+
+</body>
+</html>

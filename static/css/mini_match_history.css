@@ -1,0 +1,225 @@
+.mini-match-history {
+    margin-top: -20px;
+    padding: 20px 25px;
+    background: linear-gradient(135deg, #102a33, #0e1d24);
+    border-radius: 14px;
+    box-shadow:
+        0 0 12px rgba(0, 255, 183, 0.08),
+        0 0 25px rgba(0, 255, 183, 0.04);
+    max-width: 420px; /* беше 500+ */
+    margin-left: auto;
+    margin-right: auto;
+    border: 1px solid rgba(0, 255, 183, 0.15);
+}
+
+
+.mini-history-title {
+    font-size: 1.4rem;
+    font-weight: 600;
+    color: #00ffb7;
+    text-shadow: 0 0 5px #00ffb7;
+    margin-bottom: 14px;    
+    letter-spacing: 0.8px;
+    text-transform: uppercase;
+}
+
+
+.mini-matches {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.mini-match {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: rgba(255, 255, 255, 0.02);
+    border-left: 4px solid transparent;
+    border-radius: 8px;
+    padding: 6px 12px;
+    transition: background 0.2s ease, transform 0.2s ease;
+    height: 38px;
+    font-size: 0.9rem;
+}
+
+.mini-match:hover {
+    background: rgba(0, 255, 183, 0.04);
+    transform: translateY(-1px);
+}   
+
+/* Победа */
+.mini-match.win {
+    border-left: 4px solid #00ff88;
+    box-shadow: 0 0 6px rgba(0, 255, 136, 0.2);
+}
+
+/* Загуба */
+.mini-match.loss {
+    border-left: 4px solid #ff4e4e;
+    box-shadow: 0 0 6px rgba(255, 77, 77, 0.2);
+}
+
+/* Равенство */
+.mini-match.draw {
+    border-left: 4px solid #4eafff;
+    box-shadow: 0 0 6px rgba(78, 175, 255, 0.2);
+}
+
+.mini-team-name {
+    width: 35%;
+    text-align: center;
+    color: #e5fff9;
+    text-shadow: 0 0 2px #00ffc8;
+    font-weight: 500;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.mini-score {
+    width: 30%;
+    text-align: center;
+    font-weight: bold;
+    font-size: 1.1rem;
+    color: #ffffff;
+    text-shadow: 0 0 5px #00ffc8;
+}
+
+.mini-history-link {
+    text-decoration: none;
+    display: block;
+}
+
+.mini-history-link:hover {
+    cursor: pointer;
+}
+
+
+.mini-profile-link {
+    text-decoration: none;
+    display: block;
+}
+
+.mini-profile-link:hover {
+    cursor: pointer;
+}
+
+
+.mini-player-stats {
+    display: flex;
+    justify-content: center;
+    gap: 16px;
+    flex-wrap: wrap;
+    margin-top: 10px;
+}
+
+.stat-box {
+    background: #0f2a30; /* твърд фон за контраст */
+    padding: 24px 18px;
+    border-radius: 16px;
+    width: 8.6%;
+    text-align: center;
+    box-shadow:
+        0 0 12px rgba(0, 255, 183, 0.12),
+        0 0 24px rgba(0, 255, 183, 0.05);
+    border: 1px solid rgba(0, 255, 183, 0.2); /* подсилена рамка */
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+
+.stat-box:hover {
+    transform: scale(1.06);
+    box-shadow:
+        0 0 20px rgba(0, 255, 183, 0.3),
+        0 0 40px rgba(0, 255, 183, 0.15);
+}
+
+
+.stat-value {
+    font-size: 1.8rem;
+    font-weight: 900;
+    color: #00ffb7;
+    text-shadow: 0 0 6px rgba(0, 255, 183, 0.3);
+}
+
+.stat-label {
+    font-size: 0.9rem;
+    color: #a0f0ff;
+    margin-top: 8px;
+    letter-spacing: 0.6px;
+    text-transform: uppercase;
+    text-shadow: 0 0 4px rgba(0, 255, 183, 0.2);
+}
+
+
+.mini-penalty-score {
+    display: block;
+    font-size: 0.6rem;
+    color: #ffd700;
+    font-weight: bold;
+    margin-top: 2px;
+    text-shadow:
+        0 0 4px rgba(255, 215, 0, 0.5),
+        0 0 6px rgba(255, 215, 0, 0.3);
+}
+
+
+
+@media (max-width: 600px) {
+    .mini-match-history {
+        padding: 16px 18px;
+        max-width: 90vw; /* автоматично спрямо ширината на екрана */
+        border-radius: 12px;
+    }
+
+    .mini-history-title {
+        font-size: 1.2rem;
+        margin-bottom: 12px;
+    }
+
+    .mini-match {
+        padding: 5px 10px;
+        height: 36px;
+        font-size: 0.85rem;
+    }
+
+    .mini-score {
+        font-size: 1rem;
+    }
+
+    .mini-team-name {
+        font-size: 0.85rem;
+    }
+
+    .stats-bar {
+        flex-wrap: wrap; /* Премахваме nowrap */
+        overflow-x: hidden; /* Предотвратява хоризонтален скрол */
+        max-width: 100%;
+        padding: 0 10px; /* Добавя отстъп от двете страни */
+        box-sizing: border-box;
+        justify-content: center; /* Центрира */
+        margin-top: 10px;
+        margin-bottom: 0;
+       }
+
+    .stat-box {
+        width: 27.5%; /* Прави ги достатъчно тесни, за да се съберат */
+        min-width: 90px; /* Гарантира четимост */
+
+        text-align: center;         /* Центрира текста хоризонтално */
+        box-sizing: border-box;     /* Заедно с padding да не раздува ширината */
+        display: flex;
+        flex-direction: column;
+        align-items: center;        /* Центрира съдържанието по хоризонтала */
+        justify-content: center;    /* Центрира съдържанието по вертикала, ако е нужно */
+    }
+
+    .stat-value {
+        font-size: 20px;
+    }
+
+    .stat-label {
+        font-size: 12px;
+    }
+}

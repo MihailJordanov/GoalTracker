@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="bg">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/home.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/mini_match_history.css') }}">
+</head>
+<body>
+    <!-- Покажи флаш съобщения тук -->
+    <div class="flash-messages">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                <ul>
+                    {% for category, message in messages %}
+                        <li class="flash-message {{ category }}">{{ message }}</li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+        {% endwith %}
+    </div>
+
+    <div class="navbar">
+        <nav>
+            <ul>
+                {% if user_team %}
+                    <!-- Показване на менюто за отбор, ако има отбор -->
+                    <li class="dropdown">
+                        <a href="#" class="dropdown-toggle">Team</a>
+                        <ul class="dropdown-menu">
+                            <li><a href="#" onclick="openInviteModal()">Invite Player</a></li>
+                            <li><a href="{{ url_for('team_bp.edit', team_id=user_team[0]) }}">Edit Team</a></li>
+                            <li><a href="/match-history">Match History</a></li>
+                        </ul>
+                    </li>
+                {% endif %}
+    
+                <!-- Показване на менюто за профил, независимо дали има отбор или не -->
+                <li class="dropdown">
+                    <a href="#" class="dropdown-toggle" id="profile-link">
+                        Profile
+                        <span id="profile-notification-indicator" class="notification-indicator" style="display: none;"></span>
+                    </a>
+                    
+                    
+                    <ul class="dropdown-menu">
+                        <li><a href="/profile">My Profile</a></li>
+                        <li>
+                            <a href="#" id="notifications-link" style="position: relative;">
+                                Notifications
+                                <span id="notification-indicator" class="notification-indicator-not" style="display: none;">!</span>
+                            </a>
+                        </li>
+                        
+                        <li><a href="/logout">Logout</a></li>
+                    </ul>
+                </li>
+            </ul>
+        </nav>
+    </div>
+    
+    <div class="main-container"
+        {% if user_team and (user_team[3] or user_team[4]) %}
+            style="
+                {% if user_team[3] %}--team-color: {{ user_team[3] }};{% endif %}
+                {% if user_team[4] %}--team-text-color: {{ user_team[4] }};{% endif %}
+            "
+        {% endif %}>
+
+
+        {% if user_team is none %}
+            <!-- Бутони за добавяне на отбор, ако потребителят няма отбор -->
+            <div class="button-container">
+                <a href="{{ url_for('team_bp.create') }}" class="team-button create-team-button">Create Team</a>
+            </div>
+        {% else %}
+
+            <!-- Показване на информация за отбора, ако потребителят има отбор -->
+            <div class="team-container">    
+                <div class="team-header-container">
+                    <div class="team-logo-container">
+                        {% if user_team[2] %}
+                            <a href="{{ url_for('team_bp.edit', team_id=user_team[0]) }}" class="edit-logo-button">
+                                <img src="{{ url_for('static', filename='uploads/' + user_team[2]) }}" alt="Team Logo" class="team-logo">
+                            </a>
+                        {% else %}
+                            <p>There is no logo for this team.</p>
+                        {% endif %}
+                    </div>
+                    <div class="team-text">
+                        <!-- <h3 class="team-title">Your Team</h3> -->  
+                        <h2 class="team-name" id="team-name-preview" style="color: {{ user_team[4] if user_team is not none else 'black' }}">
+                            {{ user_team[1] if user_team is not none else 'No team' }}
+                        </h2>
+                    </div>
+                </div>
+            
+                {% include 'partials/mini_match_history.html' %}
+
+                <div class="add-match-button-container">
+                    <a href="/add_match" class="add-match-button">Add Match</a>
+                </div>
+            </div>
+                  
+        {% endif %}
+    </div>
+    
+    <div id="invite-modal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal()">&times;</span>
+            <h2>Invite Player</h2>
+            <form id="invite-form" method="POST" action="/invite-player">
+                <label for="player-id">Player ID:</label>
+                <div class="input-group">
+                    <!-- Полета за въвеждане на ID -->
+                    <input type="text" id="player-id-1" class="player-id-field" maxlength="1" oninput="moveToNextField(event, 'player-id-2')" required>
+                    <input type="text" id="player-id-2" class="player-id-field" maxlength="1" oninput="moveToNextField(event, 'player-id-3')" required>
+                    <input type="text" id="player-id-3" class="player-id-field" maxlength="1" oninput="moveToNextField(event, 'player-id-4')" required>
+                    <input type="text" id="player-id-4" class="player-id-field" maxlength="1" oninput="moveToNextField(event, 'player-id-5')" required>
+                    <input type="text" id="player-id-5" class="player-id-field" maxlength="1" oninput="moveToNextField(event, 'player-id-6')" required>
+                    <input type="text" id="player-id-6" class="player-id-field" maxlength="1" required>
+                </div>
+                
+                <!-- Скрито поле за комбинирания Player ID -->
+                <input type="hidden" id="combined-player-id" name="player_id">
+    
+                <label for="description">Description:</label>
+                <textarea id="description" name="description" rows="3">Hello champ! Would you like to join our team?</textarea>
+                
+    
+                <label for="team-id">Select Team:</label>
+                <select id="team-id" name="team_id" required>
+                    {% for team in teams %}
+                        <option value="{{ team[0] }}">{{ team[1] }}</option>
+                    {% endfor %}
+                </select>
+    
+                <button class="modal-button" type="submit">Invite to Our Team</button>
+            </form>
+        </div>
+    </div>
+    
+    <div id="notifications-container" class="notifications-box" style="display: none;">
+        <h3>Notifications</h3>
+        <ul id="notifications-list"></ul>
+    </div>
+
+
+    <!-- Включи външен JavaScript файл -->
+    <script src="{{ url_for('static', filename='js/flash_messages.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/home.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/home_notificatioons.js') }}"></script>
+</body>
+</html>
+ 

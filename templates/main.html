@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Our Team Stats</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
+</head>
+<body>
+    <div class="navbar">
+        <nav>
+            <ul>
+                <li><a href="/login">Login</a></li>
+                <li><a href="/register">Register</a></li>
+            </ul>
+        </nav>
+    </div>
+
+    <!-- Покажи флаш съобщения тук -->
+    <div class="flash-messages">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                <ul>
+                    {% for category, message in messages %}
+                        <li class="flash-message {{ category }}">{{ message }}</li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+        {% endwith %}
+    </div>
+
+    <div class="main-container">
+        <div class="main-content">
+        <section class="hero">
+            <div class="hero-content">
+                <h1 class="hero-title">Welcome to Your Team</h1>
+                <div class="hero-subtitles">
+                    <!--<p>Create your team, track your stats!</p>-->
+                    <p>Build your dream team and track every victory!</p>
+                    <p>Your journey to football greatness starts here!</p>
+                    <a href="/start" class="start-btn">Get Started</a> 
+                </div>
+            </div>
+        </section>
+        </div>
+    </div>    
+    <footer>
+        <p>&copy; 2025 Our Team Stats</p>
+    </footer>
+
+     <!-- Включи външен JavaScript файл -->
+     <script src="{{ url_for('static', filename='js/flash_messages.js') }}"></script>
+</body>
+</html>

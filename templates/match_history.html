@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Match History</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/match_history.css') }}">
+    <!-- Font Awesome CDN -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+</head>
+<body>
+    <!-- Покажи флаш съобщения тук -->
+    <div class="flash-messages">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                <ul>
+                    {% for category, message in messages %}
+                        <li class="flash-message {{ category }}">{{ message }}</li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+        {% endwith %}
+    </div>
+
+    <div class="navbar">
+        <nav>
+            <ul>
+                <li><a href="/home">Home</a></li>
+                <li><a href="/logout">Logout</a></li>
+            </ul>
+        </nav>
+    </div>
+
+    <div class="container">
+        <div class="top-section">
+            <h1 class="reveal-title">
+                {% for char in "Match History" %}
+                    <span>{{ (char == " " and "&nbsp;" or char) | safe }}</span>
+                {% endfor %}
+            </h1>
+            
+                 
+            
+            <div class="match-cards" id="matchCards">
+                {% for match in matches %}
+                <div class="match-card clickable {{ match.outcome }}" data-match-id="{{ match.id }}">
+                    <div class="stripe"></div>
+
+                    <!-- Лого на домакин -->
+                    <div class="home-logo" style="background-image: url('{{ match.home_team_logo }}');"></div>
+
+                    <!-- Лого на гост – извън match-header, но вътре в match-card -->
+                    {% if match.away_team_logo %}
+                        <div class="away-logo" style="background-image: url('{{ match.away_team_logo }}');"></div>
+                    {% endif %}
+
+                    <div class="match-header">
+                        <div class="team-name home">{{ match.home_team }}</div>
+                        <div class="score">
+                            <div class="main-score">
+                                {{ match.home_team_result }} : {{ match.away_team_result }}
+                            </div>
+                            {% if match.home_team_result == match.away_team_result 
+                                and match.home_team_penalty is not none 
+                                and match.away_team_penalty is not none 
+                                and match.home_team_penalty != match.away_team_penalty %}
+                                <div class="penalty-score">({{ match.home_team_penalty }} : {{ match.away_team_penalty }})</div>
+                            {% endif %}
+                        </div>
+                        <div class="team-name away">{{ match.away_team }}</div>
+                    </div>
+                    <div class="match-details">
+                        <span>{{ match.location }}</span>
+                        <span><strong>Format:</strong> {{ match.format }} v {{ match.format }}</span>
+                        <span><strong>Schema:</strong> {{ match.schema }}</span>
+                        <span>
+                            {{ match.date_str }}
+                            <div class="match-time">{{ match.time_str }}</div>
+                        </span>
+                    </div>
+                </div>
+                     
+                {% endfor %}
+            </div>
+
+            <!-- Пагинация стрелка -->
+            <div id="loadMoreWrapper">
+                <button id="loadMoreBtn">
+                    <i class="fa-solid fa-arrow-down"></i> Show More
+                </button>
+            </div>
+            
+        </div>
+
+        <div class="toggle-button" id="toggleStatsBtn" style="display: none;">▼ Show Player Statistics</div>
+
+        <div class="bottom-section" id="player-stats-container"></div>
+    </div>
+
+    <!-- Loader overlay -->
+    <div id="page-loader">
+        <lottie-player
+            src="{{ url_for('static', filename='lottie/match_history_anim.json') }}"
+            background="transparent"
+            speed="1"
+            style="width: 200px; height: 200px;"
+            loop
+            autoplay>
+        </lottie-player>
+    </div>
+    <script src="https://unpkg.com/@lottiefiles/lottie-player@latest/dist/lottie-player.js"></script>
+    <script src="{{ url_for('static', filename='js/match_history.js') }}"></script>
+</body>
+</html>

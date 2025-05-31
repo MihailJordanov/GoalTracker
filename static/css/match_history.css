@@ -1,0 +1,721 @@
+/* Orbitron font and body style already assumed present */
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600&display=swap');
+
+body {
+    margin: 0;
+    font-family: 'Orbitron', sans-serif;
+    background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+    color: #ffffff;
+}
+
+
+
+/* Neon Navbar */
+.navbar {
+    position: fixed;
+    top: 0;
+    width: 100%;
+    background: rgba(0, 0, 0, 0.7);
+    padding: 15px 0;
+    z-index: 1000;
+    box-shadow: 0 0 10px rgba(0, 255, 183, 0.3);
+    text-align: center;
+}
+
+.navbar nav ul {
+    display: flex;
+    justify-content: center;
+    list-style: none;
+    gap: 30px;
+    padding: 0;
+    margin: 0;
+}
+
+.navbar nav ul li a {
+    color: #00ffb7;
+    text-decoration: none;
+    font-weight: bold;
+    font-size: 20px;
+    padding: 8px 15px;
+    border-radius: 8px;
+    transition: all 0.2s ease-in-out;
+}
+
+.navbar nav ul li a:hover {
+    color: #00ffc8;
+    background-color: rgba(0, 255, 183, 0.1);
+    text-shadow: 0 0 8px #00ffc8;
+}
+
+.match-cards {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    margin-top: 120px;
+    padding: 0 20px;
+}
+
+.match-card {
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 20px;
+    padding: 20px 30px;
+    box-shadow: 0 0 15px rgba(0, 255, 183, 0.15);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    backdrop-filter: blur(8px);
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+    padding-left: 25px; /* оставя място за лентата */
+}
+
+.match-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 0 25px rgba(0, 255, 183, 0.3);
+}
+
+.stripe {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 10px;
+    height: 100%;
+    transform: skewY(-15deg);
+    border-radius: 4px;
+    box-shadow: 0 0 8px rgba(0, 255, 183, 0.3);
+}
+
+/* Цветове според резултата */
+.match-card.win .stripe {
+    background: linear-gradient(to bottom, #00ff88, #00cc66);
+    box-shadow: 0 0 10px #00ff88;
+}
+
+.match-card.loss .stripe {
+    background: linear-gradient(to bottom, #ff4e4e, #cc0000);
+    box-shadow: 0 0 10px #ff4e4e;
+}
+
+.match-card.draw .stripe {
+    background: linear-gradient(to bottom, #4eafff, #0077cc);
+    box-shadow: 0 0 10px #4eafff;
+}
+
+
+.home-logo {
+    position: absolute;
+    top: 0;
+    left: 15%; /* вместо right */
+    height: 100%;
+    width: 120px;
+    background-size: cover;
+    background-position: center left;
+    opacity: 0.5;
+
+    /* Fade out effect – от ляво към дясно */
+    mask-image: linear-gradient(to right, rgba(0, 0, 0, 1) 40%, rgba(0, 0, 0, 0) 100%);
+    -webkit-mask-image: linear-gradient(to right, rgba(0, 0, 0, 1) 40%, rgba(0, 0, 0, 0) 100%);
+
+    pointer-events: none;
+    z-index: 1;
+}
+
+
+.away-logo {
+    position: absolute;
+    top: 0;
+    right: 15%;
+    height: 100%;
+    width: 120px;
+    background-size: cover;
+    background-position: center right;
+    opacity: 0.5;
+
+    /* Fade out effect – отдясно наляво */
+    mask-image: linear-gradient(to left, rgba(0, 0, 0, 1) 40%, rgba(0, 0, 0, 0) 100%);
+    -webkit-mask-image: linear-gradient(to left, rgba(0, 0, 0, 1) 40%, rgba(0, 0, 0, 0) 100%);
+
+    pointer-events: none;
+    z-index: 1;
+}
+
+
+
+
+.match-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-family: 'Orbitron', sans-serif;
+    margin-bottom: 10px;
+}
+
+.team-name {
+    font-size: 1.4rem;
+    color: #00ffb7;
+    width: 30%;
+    text-align: center;
+    text-shadow: 0 0 5px #00ffc8;
+}
+
+.team-name.home {
+    text-align: left;
+}
+
+.team-name.away {
+    text-align: right;
+}
+
+.score {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    font-size: 2.6rem;
+    font-weight: 600;
+    color: #ffffff;
+    text-shadow: 0 0 10px #00ffc8;
+    width: 40%;
+    text-align: center;
+    line-height: 1.2;
+}
+
+.main-score {
+    line-height: 1.1;
+}
+
+.penalty-score {
+    font-size: 1.3rem;
+    color: #ffd700; /* златисто жълто */
+    opacity: 1;
+    margin-top: 6px;
+    font-weight: bold;
+    text-shadow:
+        0 0 6px rgba(255, 215, 0, 0.6),
+        0 0 12px rgba(255, 215, 0, 0.4);
+    background: rgba(255, 215, 0, 0.1);
+    padding: 2px 8px;
+    border-radius: 8px;
+    display: inline-block;
+}
+
+
+
+
+.match-details {
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    margin-top: 10px;
+    font-size: 0.95rem;
+    color: #d0d0d0;
+    text-shadow: 0 0 2px #00ffb7;
+    gap: 10px;
+}
+
+.match-time {
+    font-size: 0.75rem;
+    color: #bbbbbb;
+    margin-top: 2px;
+    font-weight: 300;
+    text-shadow: none;
+}
+
+
+thead {
+    background-color: rgba(0, 255, 183, 0.1);
+}
+
+thead th {
+    padding: 14px;
+    text-align: left;
+    color: #00ffb7;
+    font-size: 16px;
+    text-transform: uppercase;
+    border-bottom: 2px solid rgba(0, 255, 183, 0.3);
+}
+
+tbody td {
+    padding: 12px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    color: #e0e0e0;
+    font-size: 15px;
+}
+
+tr.clickable:hover {
+    background-color: rgba(0, 255, 183, 0.05);
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+/* Smooth toggle section */
+.toggle-button {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    text-align: center;
+    background: linear-gradient(to right, #00ffb7, #00a97f);
+    padding: 14px 0;
+    color: #0f2027;
+    font-weight: bold;
+    font-size: 1.1rem;
+    cursor: pointer;
+    border-top: 3px solid rgba(0, 255, 183, 0.3);
+    box-shadow: 0 0 10px rgba(0, 255, 183, 0.4);
+    transition: background 0.3s ease, box-shadow 0.3s ease;
+    z-index: 999;
+    letter-spacing: 1px;
+    font-family: 'Orbitron', sans-serif;
+}
+
+.toggle-button:hover {
+    background: linear-gradient(to right, #00ffc8, #00cc99);
+    box-shadow: 0 0 15px rgba(0, 255, 200, 0.6);
+}
+
+
+.bottom-section {
+    position: fixed;
+    bottom: 42px;
+    left: 0;
+    width: 100%;
+    max-height: calc(100vh - 100px); /* адаптивно - изважда място за навигация/бутон */
+    overflow-y: auto;
+    overflow-x: hidden;
+    background-color: rgba(255, 255, 255, 0.03);
+    backdrop-filter: blur(10px);
+    border-top: 2px solid rgba(0, 255, 183, 0.2);
+    box-shadow: inset 0 5px 20px rgba(0, 255, 183, 0.1);
+    padding: 20px;
+    z-index: 10;
+    display: none;
+    transition: max-height 0.3s ease, padding 0.3s ease;
+}
+
+
+
+.reveal-title {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    font-size: 4.8rem;
+    font-weight: 600;
+    color: #00ffb7;
+    margin-top: 160px;
+    margin-bottom: 30px;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+}
+
+.reveal-title span {
+    display: inline-block;
+    opacity: 0;
+    transform: scale(2);
+    animation: letterPop 0.6s forwards;
+    animation-timing-function: ease-out;
+}
+
+
+#page-loader {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: #0f2027;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+    transition: opacity 0.5s ease;
+}
+
+
+/* 2. Таблица за Player Stats */
+#player-stats-container table {
+    width: 95%;
+    table-layout: fixed;
+    margin: 0 auto 0 0.5%; /* горе, дясно, долу, ляво */
+    border-collapse: collapse;
+    background-color: rgba(0, 0, 0, 0.3);
+    box-shadow: 0 0 12px rgba(0, 255, 183, 0.2);
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+/* Заглавен ред */
+#player-stats-container thead {
+    background-color: rgba(0, 255, 183, 0.15);
+}
+
+#player-stats-container thead th {
+    padding: 14px;
+    text-align: center;
+    color: #00ffb7;
+    font-size: 1rem;
+    text-transform: uppercase;
+    border-bottom: 2px solid rgba(0, 255, 183, 0.4);
+
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* 3. Клетки с данни */
+#player-stats-container tbody td {
+    padding: 12px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    color: #e0e0e0;
+    font-size: 1rem;
+    text-align: center;
+    font-family: 'Orbitron', sans-serif;
+
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* 4. Голове – по-голям и плътен шрифт */
+#player-stats-container td:nth-child(2) {
+    font-size: 1.3rem;
+    font-weight: bold;
+    color: #ffffff;
+    text-shadow: 0 0 4px #00ffb7;
+}
+
+/* Редуване на редове */
+#player-stats-container tbody tr:nth-child(even) {
+    background-color: rgba(255, 255, 255, 0.02);
+}
+
+@keyframes letterPop {
+    0% {
+        opacity: 0;
+        transform: scale(2);
+        text-shadow: none;
+    }
+    100% {
+        opacity: 1;
+        transform: scale(1);
+        text-shadow:
+            0 0 5px #00ffb7,
+            0 0 10px #00ffb7,
+            0 0 20px #00ffb7;
+    }
+}
+
+@keyframes letterFadeOut {
+    0% {
+        opacity: 1;
+        transform: scale(1);
+    }
+    100% {
+        opacity: 0;
+        transform: scale(0.5);
+    }
+}
+
+/* Анимация на блясък */
+@keyframes glowPulse {
+    0%, 100% {
+        text-shadow:
+            0 0 5px #00ffb7,
+            0 0 10px #00ffb7,
+            0 0 20px #00ffb7,
+            0 0 40px rgba(0, 255, 183, 0.5);
+    }
+    50% {
+        text-shadow:
+            0 0 2px #00ffb7,
+            0 0 6px #00ffb7,
+            0 0 12px #00ffb7,
+            0 0 24px rgba(0, 255, 183, 0.3);
+    }
+}
+
+
+#player-stats-container thead th .label-text {
+    display: inline;
+}
+
+#player-stats-container thead th i {
+    display: none;
+}
+
+/* По подразбиране – показваме името, скриваме номера */
+.player-name {
+    display: inline;
+}
+
+.player-number {
+    display: none;
+}
+
+#loadMoreWrapper {
+    text-align: center;
+    margin: 30px 0 80px; /* top: 30px, right/left: 0, bottom: 80px */
+}
+
+#loadMoreBtn {
+    background: none;
+    border: 2px solid #00ffb7;
+    color: #00ffb7;
+    font-family: 'Orbitron', sans-serif;
+    padding: 10px 20px;
+    font-size: 1rem;
+    cursor: pointer;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+}
+
+#loadMoreBtn:hover {
+    background: rgba(0, 255, 183, 0.1);
+    box-shadow: 0 0 8px #00ffb7;
+}
+
+
+.edit-match-button {
+    display: inline-block;
+    background-color: #00ffb7;
+    color: #000;
+    padding: 10px 20px;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: bold;
+    transition: background-color 0.3s ease;
+}
+
+.edit-match-button:hover {
+    background-color: #00d9a3;
+}
+
+
+.flash-messages {
+    position: fixed;
+    pointer-events: none;
+    top: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 80%;
+    z-index: 9999;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    animation: fadeIn 0.5s ease-in-out;
+}
+
+.flash-message {
+    color: white;
+    pointer-events: none;
+    padding: 12px 20px;
+    border-radius: 8px;
+    font-weight: bold;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+    margin-bottom: 10px;
+    transition: transform 0.3s ease-in-out, opacity 0.3s ease-in-out;
+    opacity: 1;
+    animation: fadeIn 0.5s ease-in-out;
+}
+
+/* Стилове за различните категории съобщения */
+.flash-message.error {
+    background-color: #ff4d4d;
+}
+
+.flash-message.info {
+    background-color: #4d90fe;
+}
+
+.flash-message.success {
+    background-color: #28a745;
+}
+
+.flash-message:hover {
+    transform: scale(1.05);
+    opacity: 0.9;
+}
+
+
+@media (max-width: 600px) {
+    
+    .navbar nav ul {
+        gap: 15px;
+    }
+
+    .navbar nav ul li a {
+        font-size:16px;
+    }
+
+    .match-cards {
+        margin-top: 100px;
+        padding: 0 10px;
+        gap: 15px;
+    }
+
+    .match-card {
+        padding: 15px 20px 15px 25px;
+        border-radius: 14px;
+    }
+
+    .home-logo {
+        width: 80px;
+        left: 5%;
+    }
+
+     .away-logo {
+        width: 80px;
+        right: -5%;
+    }
+
+    .match-header {
+        flex-direction: row;           /* Възстановява подредбата на един ред */
+        justify-content: space-between;
+        align-items: center;
+        gap: 0;
+    }
+
+    .team-name {
+        font-size: 1rem;
+        width: 30%;
+        text-align: center;
+        padding: 0 2px;
+    }
+
+    .team-name.home {
+        text-align: left;
+    }
+
+    .team-name.away {
+        text-align: right;
+    }
+
+    .score {
+        font-size: 1.8rem;
+        width: 40%;
+        text-align: center;
+    }
+    
+
+    .match-details {
+        flex-direction: row;
+        flex-wrap: wrap;
+        justify-content: center;
+        align-items: center;
+        text-align: center;
+        gap: 10px;
+        font-size: 0.75rem;
+        margin-top: 8px;
+    }
+
+    .match-details span {
+        flex-shrink: 1;
+        white-space: nowrap;
+    }
+
+    .toggle-button {
+        font-size: 0.9rem;
+        padding: 10px 0;
+    }
+
+    .bottom-section {
+        padding: 15px 10px;
+    }
+
+    .reveal-title {
+        font-size: 2.2rem;
+        margin-top: 100px;
+        padding: 0 10px;
+    }
+
+    .reveal-title {
+        font-size: 1.8rem;
+        margin-top: 100px;
+        text-align: center;
+        padding: 0 10px;
+        flex-wrap: wrap;
+        line-height: 1.2;
+    }
+
+    .reveal-title span {
+        transform: scale(1.2); /* по-малък начален ефект */
+    }
+
+    .player-name {
+        display: none;
+    }
+
+    .player-number {
+        display: inline;
+        font-weight: bold;
+        color: #00ffb7;
+    }
+
+    #player-stats-container table {
+        margin: 0 auto 0 0%; /* горе, дясно, долу, ляво */
+
+    }
+
+    #player-stats-container thead th {
+        color: transparent;
+        text-shadow: none;
+        font-size: 0.8rem;
+        text-align: center; /* центрира иконите */
+        padding: 8px 4px;   /* намалява празното пространство */
+    }
+
+    #player-stats-container thead th .label-text {
+        display: none;
+    }
+
+    #player-stats-container thead th i {
+        display: inline;
+        font-size: 1rem;
+        color: #00ffb7;
+        display: block;
+        margin: 0 auto;
+    }
+
+    #player-stats-container tbody td {
+        font-size: 0.7rem;            /* ясен и четим */
+        padding: 3px 2px;             /* компактно, но не прекалено */
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    #player-stats-container thead th i {
+        display: inline;
+        font-size: 1rem;
+        color: #00ffb7;
+        display: inline !important;
+    }
+
+    #player-stats-container thead th::before {
+        display: none; /* скрива текста, ако има */
+    }
+
+    #player-stats-container td:nth-child(2) {
+        font-size: 0.75rem;           /* Goals – по-голям */
+        font-weight: bold;
+        color: #ffffff;
+        text-shadow: 0 0 4px #00ffb7;
+    }
+
+    .toggle-button {
+        font-size: 0.85rem;
+        padding: 10px;
+    }
+
+     .penalty-score {
+        font-size: 1rem;
+        padding: 1px 6px;
+    }
+
+}
+
+
+
+
+
+

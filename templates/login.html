@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="bg">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/login.css') }}">
+</head>
+<body>
+    <!-- Навигация -->
+    <div class="navbar">
+        <nav>
+            <ul>
+                <li><a href="{{ url_for('auth.index') }}">Home</a></li>
+                <li><a href="{{ url_for('auth.register') }}">Register</a></li>
+            </ul>
+        </nav>
+    </div>
+
+    <!-- Основен контейнер -->
+    <div class="main-container">
+        <div class="main-content">
+        <!-- Hero секция -->
+        <div class="hero">
+            <h1 class="hero-title">Login to Your Account</h1>
+            <div class="hero-subtitles">
+                <p>Access your football stats and journey!</p>
+            </div>
+
+            <!-- Покажи флаш съобщения тук -->
+            <div class="flash-messages">
+                {% with messages = get_flashed_messages(with_categories=true) %}
+                    {% if messages %}
+                        <ul>
+                            {% for category, message in messages %}
+                                <li class="flash-message {{ category }}">{{ message }}</li>
+                            {% endfor %}
+                        </ul>
+                    {% endif %}
+                {% endwith %}
+            </div>
+            
+            <!-- Логин формуляр -->
+            <form action="{{ url_for('auth.login') }}" method="POST" class="login-form">
+                <div class="input-group">
+                    <label for="email">Email</label>
+                    <input type="email" id="email" name="email" required>
+                </div>
+                <div class="input-group">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" name="password" required>
+                </div>
+                <button type="submit" class="start-btn">Login</button>
+            </form>
+        </div>
+        </div>
+    </div>
+
+    <!-- Футер -->
+    <footer>
+        <p>&copy; 2025 Football Stats. All rights reserved.</p>
+    </footer>
+</body>
+</html>

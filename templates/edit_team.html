@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="bg">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Team</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/edit_team.css') }}">
+</head>
+<body>
+
+    <div class="navbar">
+        <nav>
+            <ul>
+                <li><a href="/home">Home</a></li>
+                <li><a href="/logout">Logout</a></li>
+            </ul>
+        </nav>
+    </div>
+
+    <div class="container">
+        <h2>Edit Team</h2>
+
+        <div class="flash-messages">
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    <ul>
+                        {% for category, message in messages %}
+                            <li class="flash-message {{ category }}">{{ message }}</li>
+                        {% endfor %}
+                    </ul>
+                {% endif %}
+            {% endwith %}
+        </div>
+
+        {% if team[6] %}
+            <div class="team-code" onclick="copyTeamCode()" style="cursor: pointer;">
+                <span class="team-code-label">Team Code:</span>
+                <div class="team-code-wrapper">
+                    <span class="team-code-value" id="team-code">{{ team[6] }}</span>
+                    <span class="copied-msg" id="copied-msg">Copied!</span>
+                </div>
+            </div>
+        {% endif %}
+
+
+
+
+        <form action="{{ url_for('team_bp.edit', team_id=team[0]) }}" method="POST" enctype="multipart/form-data">
+            <!-- Edit Team Name -->
+            <label for="name">Edit Name:</label>
+            <input type="text" id="team_name_input" name="name" value="{{ team[1] }}" required maxlength="12">
+
+        
+            <!-- Logo Upload -->
+            <div class="logo-wrapper">
+                <span class="edit-logo-text">Edit Logo</span>
+                <input type="file" id="logo" name="logo" accept="image/*" onchange="previewImage(event)" style="display: none;">
+                <div id="current-logo" onclick="document.getElementById('logo').click();">
+                    {% if team[2] %}
+                        <img src="{{ url_for('static', filename='uploads/' + team[2]) }}" alt="Current Logo" id="preview" />
+                    {% else %}
+                        <img src="{{ url_for('static', filename='images/buttons/plus-icon.png') }}" alt="Default Logo" id="preview" />
+                    {% endif %}
+                </div>
+            </div>
+
+            <!--
+             ✅ Checkbox: Enable background image 
+            <div class="color-picker-container">
+                <label>
+                    <input type="checkbox" id="enable_bg_image" name="enable_bg_image" checked onchange="toggleBgImageUpload(this.checked)">
+                    Use background image
+                </label>
+            </div>
+
+             ✅ REVISED: Background Image Upload to match logo styling 
+            <div id="bg-image-section">
+                <div class="logo-wrapper">
+                    <span class="edit-logo-text">Edit Background Image</span>
+                    <input type="file" id="team_image_bg" name="team_image_bg" accept="image/*" onchange="previewBgImage(event)" style="display: none;">
+                    <div id="current-bg" onclick="document.getElementById('team_image_bg').click();">
+                        {% if team[5] %}
+                            <img src="{{ url_for('static', filename='uploads/' + team[5]) }}" alt="Current Background" id="bg-preview" />
+                        {% else %}
+                            <img src="{{ url_for('static', filename='images/buttons/plus-icon.png') }}" alt="Default Background" id="bg-preview" />
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            -->
+            
+
+
+            <!-- 🎨 Текстов цвят -->
+            <div class="color-picker-container">
+                <span class="edit-color-text">Edit Team Text Color</span>
+                <div class="color-picker-wrapper">
+                    <input type="color" id="team_color_letters" name="team_color_letters"
+                        value="{{ team[4] if team[4] else '#ffffff' }}"
+                        onchange="updateTeamTextColor(this.value)">
+                </div>
+            </div>
+
+            <!-- 🌈 Фонов цвят -->
+            <div class="color-picker-container">
+                <span class="edit-color-text">Edit Team Background Color</span>
+                <div class="color-picker-wrapper">
+                    <input type="color" id="team_color" name="team_color"
+                        value="{{ team[3] if team[3] else '#b4fff3' }}"
+                        onchange="updateTeamNameBgColor(this.value)">
+                </div>
+            </div>
+
+            <!-- Team Name Preview -->
+            <div class="color-picker-wrapper">
+                <span id="team-name-preview" class="team-name"
+                    style="
+                        color: {{ team[4] if team[4] else '#b4fff3' }};
+                        background-color: {{ team[3] if team[3] else '#0f2027' }};
+                    ">
+                    {{ team[1] }}
+                </span>
+            </div>
+            
+
+        
+            <!-- Submit -->
+            <button type="submit" class="edit-btn">Save Changes</button>
+        </form>
+        
+    </div>
+
+    <script src="{{ url_for('static', filename='js/edit_team.js') }}"></script> <!-- Добавяме линк към външния JavaScript файл -->
+</body>
+</html>

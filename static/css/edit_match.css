@@ -1,0 +1,446 @@
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600&display=swap');
+
+.navbar {
+    position: fixed;
+    top: 0;
+    width: 100%;
+    background-color: rgba(0, 0, 0, 0.544);
+    padding: 15px 0;
+    z-index: 1000;
+    box-shadow: 0 0 10px rgba(0,0,0,0.3);
+}
+
+.navbar nav ul {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    list-style: none;
+    gap: 30px;
+}
+
+.navbar nav ul li a {
+    color: #00ffb7;
+    text-decoration: none;
+    font-weight: bold;
+    font-size: 24px;
+    padding: 8px 15px;
+    border-radius: 5px;
+    transition: 0.2s ease-in-out;
+}
+
+.navbar nav ul li a:hover {
+    color: #00ffc8;
+    text-shadow: 0 0 5px #00ffc8;
+}
+
+
+
+body {
+    font-family: 'Rajdhani', sans-serif;
+    background: linear-gradient(-45deg, #0f2027, #005558, #004e66, #2c5364);
+    background-size: 500% 500%;
+    animation: gradientBG 5s ease-in-out infinite;
+    color: #eee;
+    padding: 0;
+    padding-top: 90px;
+    margin: 0;
+    overflow-x: hidden;
+    min-height: 100vh;
+}
+
+
+
+
+/* Анимация на фона */
+@keyframes gradientBG {
+    0% {
+        background-position: 0% 50%;
+    }
+    25% {
+        background-position: 50% 50%;
+    }
+    50% {
+        background-position: 100% 50%;
+    }
+    75% {
+        background-position: 50% 50%;
+    }
+    100% {
+        background-position: 0% 50%;
+    }
+}
+
+.input-with-lock {
+  position: relative;
+  display: inline-block;
+}
+
+.readonly-input {
+  background-color: #282828;
+  color: #ffffff;
+  border: 1px solid #ccc;
+  padding-right: 30px; /* пространство за иконата */
+  cursor: not-allowed;
+}
+
+.readonly-input:focus {
+  outline: none;
+  box-shadow: none;
+  border-color: #ccc;
+}
+
+.lock-icon {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #888;
+  pointer-events: none;
+}
+
+
+
+h1 {
+    color: #00ffb7;
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.main-content {
+    padding-left: 20px;
+    padding-right: 20px;
+}
+
+
+form {
+    background: #1e1e1e;
+    padding: 20px;
+    border-radius: 10px;
+    max-width: 1600px;
+    margin: 0 auto; /* Центрира хоризонтално */
+    align-items: center; /* Центрира съдържанието вътре по хоризонтала */
+}
+
+
+input, select {
+    padding: 5px;
+    margin: 5px;
+    border-radius: 5px;
+    border: 1px solid #555;
+    background-color: #2b2b2b;
+    color: #eee;
+}
+
+.edit-match-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+
+.edit-match-table th, .edit-match-table td {
+    padding: 8px;
+    border: 1px solid #444;
+    text-align: center;
+}
+
+.edit-match-table th {
+    background-color: #222;
+}
+
+        /* Responsive styles */
+.edit-match-table thead th .label-text {
+    display: inline;
+}
+
+.edit-match-table thead th i {
+    display: none;
+}
+
+.player-name {
+    display: inline;
+}
+
+.player-number {
+    display: none;
+}
+
+.save-button,
+.delete-button {
+    padding: 12px 24px;
+    margin-top: 20px;
+    font-weight: bold;
+    font-size: 1rem;
+    text-align: center;
+    border-radius: 8px;
+    border: none;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 0 10px rgba(0, 255, 183, 0.2);
+    display: block;
+    margin: 20px auto 0 auto;
+    text-align: center;
+}
+
+.delete-button {
+    padding: 8px 16px; 
+}
+
+/* Save (неонено зелено) */
+.save-button {
+    background: linear-gradient(145deg, #00ffb7, #00cc93);
+    color: #000;
+    box-shadow: 0 0 15px #00ffb7;
+}
+
+.save-button:hover {
+    background: linear-gradient(145deg, #00cc93, #00ffb7);
+    transform: scale(1.05);
+    box-shadow: 0 0 25px #00ffb7;
+}
+
+/* Delete (неонено червено) */
+.delete-button {
+    background: linear-gradient(145deg, #ff4c4c, #cc0000);
+    color: #fff;
+    box-shadow: 0 0 15px #ff4c4c;
+}
+
+.delete-button:hover {
+    background: linear-gradient(145deg, #cc0000, #ff4c4c);
+    transform: scale(1.05);
+    box-shadow: 0 0 25px #ff4c4c;
+}
+
+
+
+input[type="number"],
+input[type="text"] {
+    width: 50px;
+    max-width: 100%;
+}
+.cell-label {
+    display: none;
+    font-size: 1.2rem;
+    margin-bottom: 5px;
+    color: #00ffb7;
+    text-transform: uppercase;
+    font-weight: bold;
+    letter-spacing: 0.5px;
+    position: relative;
+    cursor: pointer;
+}
+
+/* Tooltip стил */
+.cell-label::after {
+    content: attr(data-label);
+    position: absolute;
+    bottom: 120%;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #00ffb7;
+    color: #000;
+    padding: 4px 8px;
+    border-radius: 6px;
+    white-space: nowrap;
+    font-size: 0.75rem;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s;
+    z-index: 10;
+}
+
+/* Активен tooltip клас */
+.cell-label.active::after {
+    opacity: 1;
+}
+
+
+/* Скрие оригиналния checkbox */
+.checkbox-container {
+    vertical-align: middle; /* или: top, ако искаш още по-нагоре */
+    display: inline-block;
+    position: relative;
+    padding-left: 28px;
+    margin-top: -24px;  /* повдига леко чекбокса */
+    cursor: pointer;
+    user-select: none;
+}
+
+.checkbox-container input {
+    position: absolute;
+    opacity: 0;
+    cursor: pointer;
+}
+
+/* Квадратна визуализация */
+.checkmark {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 18px;
+    width: 18px;
+    background-color: #2a2a2a;
+    border: 2px solid #00ffb7;
+    border-radius: 4px;
+    transition: all 0.3s ease;
+}
+
+/* При отметка – сменя цвят */
+.checkbox-container input:checked ~ .checkmark {
+    background-color: #00ffb7;
+    box-shadow: 0 0 8px #00ffb7;
+}
+
+/* Вътрешна иконка (тикче) */
+.checkmark::after {
+    content: "";
+    position: absolute;
+    display: none;
+    left: 5px;
+    top: 1px;
+    width: 4px;
+    height: 9px;
+    border: solid #121212;
+    border-width: 0 2px 2px 0;
+    transform: rotate(45deg);
+}
+
+/* Покажи тикче при чекнато */
+.checkbox-container input:checked ~ .checkmark::after {
+    display: block;
+}
+
+
+
+@media (max-width: 600px) {
+
+    .navbar nav ul {
+        gap: 10px;
+    }
+
+    .navbar nav ul {
+        justify-content: center;
+        padding: 0;
+        margin: 0 auto;
+    }
+
+
+    .navbar nav ul li a {
+        font-size:16px;
+    }
+
+    body {
+        padding-top: 60px;
+    }
+
+    form {
+        margin: 0 auto; /* Центрира хоризонтално */
+        flex-direction: column;
+        align-items: center; /* Центрира съдържанието вътре по хоризонтала */
+        gap: 10px; /* Разстояние между елементите */
+    }
+
+    form label {
+        display: block;
+        width: 100%;
+        margin-bottom: 15px;
+        font-size: 0.95rem;
+        color: #ccc;
+        align-items: center;
+        text-align: center;
+    }
+
+    form label input {
+        display: block;
+        width: 100%;
+        margin-top: 6px;
+        font-size: 1rem;
+        padding: 6px 12px; /* top/bottom: 6px, left/right: 12px */
+        box-sizing: border-box; /* гарантира, че padding не нарушава ширината */
+    }
+
+    .cell-label {
+        display: block;
+    }
+
+    .edit-match-table thead {
+        display: none;
+    }
+
+    .edit-match-table tbody {
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+    }
+
+    .edit-match-table tr {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        background-color: #1e1e1e;
+        padding: 10px;
+        border-radius: 10px;
+        border: 1px solid #333;
+    }
+
+    .edit-match-table td {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        font-size: 0.8rem;
+        padding: 6px;
+        border: none;
+    }
+
+    .edit-match-table td:nth-child(1),
+    .edit-match-table td:nth-child(2) {
+        grid-column: span 3;
+        flex-direction: row;
+        justify-content: space-between;
+        width: 100%;
+    }
+
+    .player-name {
+        display: inline;
+        font-weight: bold;
+        color: #00ffb7;
+        font-size: 1.5rem; /* или 1.2rem, или 18px */
+    }
+
+    .player-number {
+        display: none;
+    }
+
+    input[type="number"] {
+        min-width: 2.5em;
+        text-align: center;
+        width: 100%;
+    }
+    input[type="text"] {
+        text-align: center;
+        width: 100%;
+        max-width: 300px;
+    }
+
+    .save-button,
+    .delete-button {
+        width: 100%;
+        max-width: 300px;
+        margin: 10 auto;
+        text-align: center;
+    }
+
+
+    .inline-label {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        color: #00ffb7;
+        font-weight: bold;
+        font-size: 0.9rem;
+    }
+
+    .checkbox-container {
+         margin-top: 0px;  /* повдига леко чекбокса */
+    }
+
+}

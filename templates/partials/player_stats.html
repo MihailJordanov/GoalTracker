@@ -1,0 +1,46 @@
+<table border="1">
+    <thead>
+        <tr>
+            <th class="col-player"><span class="label-text">Player</span> <i class="fa-solid fa-user"></i></th>
+            <th class="col-goals"><span class="label-text">Goals</span> <i class="fa-solid fa-futbol"></i></th>
+            <th class="col-assists"><span class="label-text">Assists</span> <i class="fa-solid fa-hands-helping"></i></th>
+            <th class="col-shoots"><span class="label-text">Shoots</span> <i class="fa-solid fa-bullseye"></i></th>
+            <th class="col-sot"><span class="label-text">SOT</span> <i class="fa-solid fa-crosshairs"></i></th>
+            <th class="col-blocked"><span class="label-text">Blocked</span> <i class="fa-solid fa-shield-halved"></i></th>
+            <th class="col-saves"><span class="label-text">Saves</span> <i class="fa-solid fa-hand-paper"></i></th>
+            <th class="col-passes"><span class="label-text">Passes</span> <i class="fa-solid fa-arrow-right-arrow-left"></i></th>
+            <th class="col-fouls"><span class="label-text">Fouls</span> <i class="fa-solid fa-exclamation-triangle"></i></th>
+            <th class="col-yellow"><span class="label-text">YC</span> <i class="fa-solid fa-square"></i></th>
+            <th class="col-red"><span class="label-text">RC</span> <i class="fa-solid fa-square-full"></i></th>
+        </tr>
+    </thead>       
+    <tbody> 
+        {% for p in players %}
+        <tr>
+            <td>
+                <span class="player-name">{{ p.last_name }}</span>
+                <span class="player-number">#{{ p.number }}</span>  
+            </td>            
+            <td>{{ p.goals }}</td>
+            <td>{{ p.assists }}</td>
+            <td>{{ p.shoots }}</td>
+            <td>{{ p.shoots_on_target }}</td>
+            <td>{{ p.blocked_shoots }}</td>
+            <td>{{ p.saved_goals }}</td>
+            <td>{{ p.passes }}</td>
+            <td>{{ p.falls }}</td>
+            <td>{{ p.yellow_cards }}</td>
+            <td>{{ p.red_cards }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+{% if player_type >= 2 %}
+<div style="text-align: center; margin: 20px 0;">
+    <a href="/edit-match/{{ match_id }}" class="edit-match-button">
+        <i class="fa-solid fa-pen-to-square"></i> Edit Match
+    </a>
+</div>
+{% endif %}
+

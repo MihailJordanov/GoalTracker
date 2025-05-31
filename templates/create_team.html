@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="bg">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Team</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/create_team.css') }}">
+</head>
+<body>
+
+    <div class="navbar">
+        <nav>
+            <ul>
+                <li><a href="/home">Home</a></li>
+                <li><a href="/logout">Logout</a></li>
+            </ul>
+        </nav>
+    </div>
+
+    <div class="container">
+        <h2>Create a New Team</h2>
+
+        <div class="flash-messages">
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    <ul>
+                        {% for category, message in messages %}
+                            <li class="flash-message {{ category }}">{{ message }}</li>
+                        {% endfor %}
+                    </ul>
+                {% endif %}
+            {% endwith %}
+        </div>
+
+        <form action="{{ url_for('team_bp.create') }}" method="POST" enctype="multipart/form-data">
+            <label for="name">Team Name:</label>
+            <input type="text" id="name" name="name" required>
+
+            <label for="country">Country:</label>
+            <input type="text" id="country" name="country" required>
+
+            <label for="city">City:</label>
+            <input type="text" id="city" name="city" required>
+
+            <label for="year">Year Founded:</label>
+            <input type="number" id="year" name="year" min="1800" max="2025" required>
+
+            <label for="logo" class="file-upload-wrapper">
+                <span>Select Team Logo</span> <!-- Текстът над бутона -->
+                <label for="logo" class="custom-file-upload">
+                    <input type="file" id="logo" name="logo" accept="image/*" onchange="previewImage(event)">
+                </label>
+            </label>
+
+            <!-- Тук ще показваме избраното изображение -->
+            <div id="imagePreview" style="display: none;">
+                <h4>Selected Logo:</h4>
+                <img id="preview" src="" alt="Logo Preview">
+            </div>
+
+            <button type="submit" class="create-btn">Create Now</button>
+        </form>
+    </div>
+
+    <!-- Свързване на външния JavaScript файл -->
+    <script src="{{ url_for('static', filename='js/create_team.js') }}"></script>
+</body>
+</html>

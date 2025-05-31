@@ -1,0 +1,243 @@
+/* Обновен стил за login.css със стил от add_match.css и Orbitron */
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600&display=swap');
+
+html, body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    font-family: 'Orbitron', sans-serif;
+    background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+    color: #fff;
+    overflow-x: hidden;
+}
+
+.main-content {
+    transform: scale(1);
+    transform-origin: center;
+}
+
+.main-container {
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding-top: 80px;
+    background-image: url('../images/bg/main_bg7.jpg'); 
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    position: relative;
+    z-index: 1;
+}
+
+.navbar {
+    position: fixed;
+    top: 0;
+    width: 100%;
+    background-color: rgba(0, 0, 0, 0.544);
+    padding: 15px 0;
+    z-index: 1000;
+    box-shadow: 0 0 10px rgba(0,0,0,0.3);
+}
+
+.navbar nav ul {
+    display: flex;
+    justify-content: center;
+    list-style: none;
+    gap: 30px;
+}
+
+.navbar nav ul li a {
+    color: #00ffb7;
+    text-decoration: none;
+    font-weight: bold;
+    font-size: 24px;
+    padding: 8px 15px;
+    border-radius: 5px;
+    transition: 0.2s ease-in-out;
+}
+
+.navbar nav ul li a:hover {
+    color: #00ffc8;
+    text-shadow: 0 0 5px #00ffc8;
+}
+
+.hero {
+    background: linear-gradient(135deg, #0f2027, #1a1f2b, #2c5364); /* тъмен градиент */
+    padding: 40px;
+    border-radius: 20px;
+    box-shadow: 0 0 30px rgba(0, 0, 0, 0.5);
+    text-align: center;
+    max-width: 500px;
+    width: 100%;
+    position: relative;
+    z-index: 2;
+}
+
+.hero-title {
+    font-size: 2.5rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    color: #00ffb7;
+    margin-bottom: 20px;
+    animation: fadeIn 1.5s ease-in-out;
+}
+
+.hero-subtitles p {
+    font-size: 1.2rem;
+    font-weight: 500;
+    color: #ffffff;
+    margin-bottom: 20px;
+    animation: fadeInUp 1s ease-in-out forwards;
+}
+
+.login-form {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 15px;
+}
+
+.input-group {
+    display: flex;
+    flex-direction: column;
+    text-align: left;
+}
+
+.input-group label {
+    font-size: 1rem;
+    color: #e0e0e0;
+    margin-bottom: 5px;
+}
+
+.input-group input {
+    padding: 10px;
+    font-size: 1rem;
+    border: none;
+    border-radius: 10px;
+    background-color: rgba(255, 255, 255, 0.9);
+    color: #000;
+    transition: 0.3s ease-in-out;
+}
+
+.input-group input:focus {
+    outline: none;
+    box-shadow: 0 0 0 2px #00ffb7;
+}
+
+.start-btn {
+    font-size: 1.2rem;
+    font-weight: bold;
+    padding: 12px 25px;
+    margin-top: 10px;
+    background: linear-gradient(135deg, #00ffb7, #005656);
+    color: #0f2027;
+    border: none;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.25s ease-in-out;
+    animation: pulse 1.5s infinite;
+}
+
+.start-btn:hover {
+    background: linear-gradient(135deg, #00ffc8, #00a79d);
+    transform: scale(1.05);
+}
+
+.flash-messages {
+    display: flex;
+    justify-content: center;
+    margin-top: 20px;
+    text-align: center;
+}
+
+.flash-message {
+    padding: 12px 20px;
+    border-radius: 8px;
+    font-weight: bold;
+    color: white;
+    margin: 5px 0;
+    animation: fadeIn 0.5s ease-in-out;
+}
+
+.flash-message.error {
+    background-color: #ff4d4d;
+}
+
+.flash-message.success {
+    background-color: #28a745;
+}
+
+.flash-message.info {
+    background-color: #4d90fe;
+}
+
+footer {
+    text-align: center;
+    margin-top: 30px;
+    padding: 10px 0;
+    background-color: #203a43;
+    color: white;
+    position: relative;
+    width: 100%;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+    100% { transform: scale(1); }
+}
+
+@media (max-width: 600px) {
+    .hero-title {
+        font-size: 2rem;
+    }
+
+    .hero-subtitles p {
+        font-size: 1rem;
+    }
+
+    .hero {
+        padding: 25px;
+        max-width: 90%;
+    }
+
+    .start-btn {
+        font-size: 1rem;
+        padding: 10px 20px;
+    }
+
+    .navbar nav ul {
+        gap: 15px;
+    }
+
+    .navbar nav ul li a {
+        font-size:16px;
+    }
+
+    .main-content {
+        transform: scale(1);
+    }
+}
+
+
+@keyframes fadeOut {
+    from {
+        opacity: 1;
+        transform: translateY(0);
+    }
+    to {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+}

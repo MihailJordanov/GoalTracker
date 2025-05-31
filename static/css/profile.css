@@ -1,0 +1,431 @@
+body {
+    margin: 0;
+    padding: 0;
+    background: linear-gradient(to bottom, #0f2027, #203a43, #2c5364);
+    color: #fff;
+    font-family: 'Orbitron', sans-serif;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+
+}
+
+
+.spotlight {
+    position: fixed;
+    bottom: 0;
+    width: 160px;
+    height: 200vh; /* или дори 200vh */
+
+    background: linear-gradient(
+        to top,
+        rgba(255, 255, 200, 0.6) 0%,  /* по-плътен старт */
+        rgba(255, 255, 200, 0.1) 50%,
+        rgba(255, 255, 200, 0) 80%
+    );
+
+    
+    pointer-events: none;
+    z-index: 0;
+    filter: blur(20px);
+    opacity: 0.9;
+    transform-origin: bottom center;
+}
+
+/* Ляв прожектор */
+.spotlight.left {
+    left: -120px;
+    transform: rotate(-25deg);
+    animation: swayLeft 3s ease-in-out infinite alternate;
+}
+
+/* Десен прожектор */
+.spotlight.right {
+    right: -120px;
+    transform: rotate(25deg);
+    animation: swayRight 3s ease-in-out infinite alternate;
+}
+
+@keyframes swayLeft {
+    0% { transform: rotate(55deg); }
+    100% { transform: rotate(0deg); }
+}
+
+@keyframes swayRight {
+    0% { transform: rotate(-55deg); }
+    100% { transform: rotate(0deg); }
+}
+
+
+
+.navbar {
+    position: fixed;
+    top: 0;
+    width: 100%;
+    background-color: rgba(0, 0, 0, 0.544);
+    padding: 15px 0;
+    z-index: 1000;
+    box-shadow: 0 0 10px rgba(0,0,0,0.3);
+}
+
+.navbar nav ul {
+    display: flex;
+    justify-content: center;
+    list-style: none;
+    gap: 30px;
+}
+
+.navbar nav ul li a {
+    color: #00ffb7;
+    text-decoration: none;
+    font-weight: bold;
+    font-size: 16px;
+    padding: 8px 15px;
+    border-radius: 5px;
+    transition: 0.2s ease-in-out;
+}
+
+.navbar nav ul li a:hover {
+    color: #00ffc8;
+    text-shadow: 0 0 5px #00ffc8;
+}
+
+
+.profile-wrapper {
+    width: 90%;
+    max-width: 1200px;
+    text-align: center;
+    position: relative;
+    padding: 40px 20px;
+}
+
+.stats-bar {
+    display: flex;
+    justify-content: space-around;
+    margin-bottom: 40px;
+    gap: 20px;
+    flex-wrap: wrap;
+    margin-top: 10px;
+}
+
+.stat-box {
+    background: rgba(255, 255, 255, 0.05);
+    padding: 30px;
+    border-radius: 16px;
+    width: 180px;
+    box-shadow: 0 0 20px rgba(0, 255, 183, 0.1);
+    backdrop-filter: blur(10px);
+    transition: transform 0.3s;
+
+    text-align: center;         /* Центрира текста хоризонтално */
+    box-sizing: border-box;     /* Заедно с padding да не раздува ширината */
+    display: flex;
+    flex-direction: column;
+    align-items: center;        /* Центрира съдържанието по хоризонтала */
+    justify-content: center;    /* Центрира съдържанието по вертикала, ако е нужно */
+}
+
+.stat-box:hover {
+    transform: scale(1.05);
+}
+
+.stat-value {
+    font-size: 48px;
+    font-weight: 900;
+    color: #00ffb7;
+}
+
+.stat-label {
+    font-size: 16px;
+    color: #a0f0ff;
+    margin-top: 10px;
+    letter-spacing: 1px;
+}
+
+.profile-user-section {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.profile-image {
+    width: 200px;
+    height: 200px;
+    object-fit: cover;
+    border-radius: 50%;
+    border: 3px solid #00ffb7;
+    transition: 0.3s ease-in-out;
+}
+
+.profile-image:hover,
+.player-img:hover {
+    transform: scale(1.05);
+    box-shadow: 0 0 40px rgba(0, 255, 183, 0.6);
+    border-color: #00ffc8;
+    transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+}
+
+
+
+
+.background-lastname {
+    position: absolute;
+    top: 30%;
+    left: 50%;
+    transform: translate(-50%, -50%) scaleY(2.2);
+    font-size: 12vw;
+    font-weight: 900;
+    text-transform: uppercase;
+    white-space: nowrap;
+    pointer-events: none;
+    user-select: none;
+    z-index: -1;
+    font-family: 'Orbitron', sans-serif;
+    letter-spacing: 1px;
+    line-height: 1;
+    max-width: 100%;
+    text-align: center;
+    overflow: hidden;
+    
+    /* Shine ефект */
+    background: linear-gradient(
+        120deg,
+        #008c74 0%,
+        #aaaaaa 20%,
+        #008c74 40%,
+        #008c74 100%
+    );
+
+    background-size: 300% auto;
+    background-clip: text;
+    -webkit-background-clip: text;
+    color: transparent;
+    text-overflow: ellipsis;
+
+
+    animation: shine 16s linear infinite;
+}
+
+@keyframes shine {
+    0% {
+        background-position: 200% center;
+    }
+    100% {
+        background-position: -200% center;
+    }
+}
+
+
+
+
+.background-number {
+    position: absolute;
+    top: 55%;
+    left: 50%;
+    transform: translate(-50%, -50%) scale(2.2);
+    font-size: 22vw;
+    font-weight: 900;
+    pointer-events: none;
+    user-select: none;
+    z-index: -2;
+    font-family: 'Orbitron', sans-serif;
+    letter-spacing: 2px;
+    line-height: 1;
+    white-space: nowrap;
+    text-align: center;
+
+    /* Първоначален прост цвят */
+    color: rgba(255, 255, 255, 0.04);
+    text-shadow: 0 0 10px rgba(0, 255, 183, 0.1);
+
+    /* За презастраховане */
+    background: none;
+    background-clip: initial;
+    -webkit-background-clip: initial;
+}
+
+
+
+.player-img {
+    width: 220px;
+    height: 220px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 4px solid #00ffb7;
+    box-shadow: 0 0 30px rgba(0, 255, 183, 0.3);
+    margin-bottom: 20px;
+}
+
+.player-name {
+    font-size: 28px;
+    font-weight: 700;
+    color: #ffffff;
+    margin-bottom: 10px;
+    letter-spacing: 1px;
+}
+
+.player-id {
+    font-size: 18px;
+    font-weight: bold;
+    color: #00ffc8;
+    background: linear-gradient(135deg, rgba(0, 255, 200, 0.1), rgba(0, 255, 200, 0.03));
+    padding: 12px 20px;
+    border: 1px solid rgba(0, 255, 200, 0.4);
+    border-radius: 15px;
+    text-align: center;
+    box-shadow: 0 0 10px rgba(0, 255, 200, 0.2);
+    transition: all 0.3s ease-in-out;
+    backdrop-filter: blur(6px);
+    width: fit-content;
+    margin: 20px auto 0 auto;
+    letter-spacing: 1px;
+}
+
+.player-id:hover {
+    box-shadow: 0 0 20px rgba(0, 255, 200, 0.6);
+    transform: scale(1.05);
+    cursor: default;
+}
+
+#page-loader {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: #0f2027;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+    transition: opacity 0.5s ease;
+}
+
+
+@keyframes swayLeftMobile {
+    0% { transform: rotate(25deg); }
+    100% { transform: rotate(-10deg); }
+}
+
+@keyframes swayRightMobile {
+    0% { transform: rotate(-25deg); }
+    100% { transform: rotate(10deg); }
+}
+
+@media (max-width: 600px) {
+    .profile-wrapper {
+        padding: 20px 10px;
+    }
+
+    .player-img {
+        width: 140px;
+        height: 140px;
+        margin-bottom: 15px;
+    }
+
+    .player-name {
+        font-size: 20px;
+    }
+
+    .player-id {
+        font-size: 14px;
+        padding: 8px 12px;
+        margin-top: 10px;
+    }
+
+    .stats-bar {
+        flex-wrap: wrap; /* Премахваме nowrap */
+        overflow-x: hidden; /* Предотвратява хоризонтален скрол */
+        max-width: 100%;
+        padding: 0 10px; /* Добавя отстъп от двете страни */
+        box-sizing: border-box;
+        justify-content: center; /* Центрира */
+        margin-top: 10px;
+        margin-bottom: 0;
+       }
+
+    .stat-box {
+        width: 20%; /* Прави ги достатъчно тесни, за да се съберат */
+        min-width: 90px; /* Гарантира четимост */
+
+        text-align: center;         /* Центрира текста хоризонтално */
+        box-sizing: border-box;     /* Заедно с padding да не раздува ширината */
+        display: flex;
+        flex-direction: column;
+        align-items: center;        /* Центрира съдържанието по хоризонтала */
+        justify-content: center;    /* Центрира съдържанието по вертикала, ако е нужно */
+    }
+
+    body {
+        overflow-x: hidden; /* Последна защита за цялата страница */
+    }
+
+    .stat-value {
+        font-size: 20px;
+    }
+
+    .stat-label {
+        font-size: 12px;
+    }
+
+    .background-lastname {
+        display: inline-block;
+        font-size: clamp(24px, 15vw, 60px);
+        max-width: 90vw;
+        position: absolute;
+        top: -25%;
+        left: 50%;
+        transform: translateX(-50%) scaleY(2.2);
+    
+        background: linear-gradient(
+            120deg,
+            #00ffb7 0%,
+            #ffffff 20%,
+            #00ffb7 40%,
+            #00ffb7 100%
+        );
+        background-size: 300% auto;
+        background-clip: text;
+        -webkit-background-clip: text;
+        color: transparent;
+    
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+    
+
+
+    .spotlight.left {
+        transform: rotate(-20deg); /* по-малък ъгъл за мобилно */
+        animation: swayLeftMobile 3s ease-in-out infinite alternate;
+      }
+    
+      .spotlight.right {
+        transform: rotate(20deg);
+        animation: swayRightMobile 3s ease-in-out infinite alternate;
+      }
+
+
+      .background-number {
+        font-size: 28vw;
+        transform: translate(-50%, -50%) scaleY(1.5) scale(5) scaleX(0.5); /* свива ширината */
+
+        background: linear-gradient(
+            120deg,
+            rgba(0, 255, 183, 0.2),
+            rgba(255, 255, 255, 0.3),
+            rgba(0, 255, 183, 0.2)
+         );
+        
+        background-size: 200% auto;
+        background-clip: text;
+        -webkit-background-clip: text;
+        color: transparent;
+    }
+    
+
+}

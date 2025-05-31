@@ -1,0 +1,229 @@
+/* Google Font: sporty and modern */
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600&display=swap');
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: 'Orbitron', sans-serif;
+}
+
+body {
+    background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+    color: #fff;
+    padding: 40px 0;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.container {
+    background-color: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(12px);
+    border-radius: 20px;
+    padding: 30px 40px;
+    width: 90%;
+    max-width: 800px;
+    box-shadow: 0 0 30px rgba(0, 0, 0, 0.3);
+    transition: all 0.3s ease-in-out;
+}
+
+h2 {
+    text-align: center;
+    font-size: 28px;
+    margin-bottom: 25px;
+    color: #00ffb7;
+    letter-spacing: 1px;
+}
+
+label {
+    display: block;
+    margin-top: 15px;
+    margin-bottom: 5px;
+    font-size: 14px;
+    color: #e0e0e0;
+}
+
+input[type="text"],
+input[type="number"],
+input[type="datetime-local"],
+select {
+    width: 100%;
+    padding: 10px 12px;
+    border: none;
+    border-radius: 12px;
+    background-color: rgba(255, 255, 255, 0.1);
+    color: #fff;
+    transition: 0.2s ease-in-out;
+    outline: none;
+}
+
+select option {
+    color: #000;
+    background-color: #fff;
+    font-family: 'Orbitron', sans-serif;
+}
+
+input[type="text"]:focus,
+input[type="number"]:focus,
+input[type="datetime-local"]:focus,
+select:focus {
+    background-color: rgba(255, 255, 255, 0.2);
+    box-shadow: 0 0 0 2px #00ffb7;
+}
+
+.short {
+    max-width: 100px;
+}
+
+.user-stats {
+    margin-top: 30px;
+    background-color: rgba(255, 255, 255, 0.05);
+    padding: 15px;
+    border-radius: 16px;
+}
+
+.user-section {
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    padding-bottom: 15px;
+    margin-bottom: 15px;
+}
+
+.user-section h3 {
+    font-size: 16px;
+    margin-bottom: 10px;
+    color: #a0f0ff;
+}
+
+.stats-fields {
+    transition: max-height 0.4s ease, opacity 0.4s ease;
+    max-height: 1000px;
+    opacity: 1;
+}
+
+button.styled-button {
+    width: 100%;
+    padding: 12px;
+    font-size: 16px;
+    background: linear-gradient(135deg, #00ffb7, #005656);
+    color: #0f2027;
+    border: none;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.25s ease-in-out;
+    margin-top: 20px;
+    font-weight: bold;
+}
+
+button.styled-button:hover {
+    background: linear-gradient(135deg, #00ffc8, #00a79d);
+    transform: scale(1.02);
+}
+
+.flash-messages {
+    margin-bottom: 20px;
+    background-color: #ff4d4d;
+    color: white;
+    padding: 12px;
+    border-radius: 10px;
+    font-weight: bold;
+    text-align: center;
+}
+
+.back-button {
+    display: inline-block;
+    text-align: center;
+    margin-top: 10px;
+    padding: 10px 12px;
+    background-color: rgba(255, 255, 255, 0.1);
+    color: #00ffb7;
+    text-decoration: none;
+    border-radius: 10px;
+    font-size: 14px;
+    transition: all 0.2s ease-in-out;
+    font-weight: bold;
+}
+
+.back-button:hover {
+    background-color: rgba(255, 255, 255, 0.2);
+    color: #00ffc8;
+    transform: scale(1.02);
+}
+.user-section.inactive {
+    opacity: 0.5;
+}
+
+.user-section.inactive .stats-fields {
+    max-height: 0;
+    opacity: 0;
+    pointer-events: none;       /* 👈 блокира кликове */
+    position: absolute;         /* 👈 маха го от потока на layout-а */
+}
+
+.user-section h3 {
+    pointer-events: auto;
+    opacity: 1;
+}
+
+.field-error-message {
+    color: #ff4d4d;
+    font-size: 0.9em;
+    margin-top: 4px;
+    font-weight: 600; /* 👈 това го прави по-дебел */
+}
+
+@media (max-width: 600px) {
+    body {
+        padding: 20px;
+        flex-direction: column;
+    }
+
+    .container {
+        width: 100%;
+        padding: 20px;
+        margin: 0 auto;
+        border-radius: 16px;
+    }
+
+    h2 {
+        font-size: 22px;
+    }
+
+    button.styled-button,
+    .back-button {
+        font-size: 14px;
+        padding: 10px;
+    }
+
+    .user-stats {
+        padding: 10px;
+    }
+
+    .stats-field {
+        width: 100%;
+        margin-right: 0;
+        margin-bottom: 10px;
+    }
+
+    .user-section h3 {
+        font-size: 14px;
+    }
+}
+
+
+@keyframes fadeOut {
+    from {
+        opacity: 1;
+        transform: translateY(0);
+    }
+    to {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+}
+
+
+
+
+

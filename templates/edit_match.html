@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Match</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/edit_match.css') }}">
+</head>
+<body>
+    <div class="navbar">
+        <nav>
+            <ul>
+                <li><a href="/home">Home</a></li>
+                <li><a href="/match-history">History</a></li>
+            </ul>
+        </nav>
+    </div>
+
+
+    <h1>Edit Match</h1>
+    <div class="main-content">
+        <form method="post" autocomplete="off" id="editMatchForm">
+        <div class="readonly-wrapper">
+        <label>
+            Home Team: 
+            <div class="input-with-lock">
+            <input class="readonly-input" name="home_team" value="{{ match.home_team }}" readonly>
+            <i class="fa-solid fa-lock lock-icon"></i>
+            </div>
+        </label>
+        <label>
+            Away Team: 
+            <div class="input-with-lock">
+            <input class="readonly-input" name="away_team" value="{{ match.away_team }}" readonly>
+            <i class="fa-solid fa-lock lock-icon"></i>
+            </div>
+        </label>
+        </div>
+
+
+            <label>Home Result: <input name="home_team_result" type="number" value="{{ match.home_team_result }}" min="0"></label>
+            <label>Away Result: <input name="away_team_result" type="number" value="{{ match.away_team_result }}" min="0"></label>
+            <label>
+                <input type="checkbox" id="penalty_checkbox" name="penalty_checkbox"
+                    {% if match.home_team_penalty != 0 or match.away_team_penalty != 0 %}checked{% endif %}>
+                Penalty Shootout
+            </label>
+
+            <div id="penalty_fields" style="display: {% if match.home_team_penalty != 0 or match.away_team_penalty != 0 %}block{% else %}none{% endif %};">
+                <label>Home Penalty Goals:
+                    <input name="home_team_penalty" type="number" min="0" value="{{ match.home_team_penalty or 0 }}">
+                </label>
+                <label>Away Penalty Goals:
+                    <input name="away_team_penalty" type="number" min="0" value="{{ match.away_team_penalty or 0 }}">
+                </label>
+            </div>
+
+            <label>Location: <input name="location" value="{{ match.location }}"></label>
+
+            <table class="edit-match-table">
+                <thead>
+                    <tr>
+                        <th><span class="label-text">Played</span> <i class="fa-solid fa-play"></i></th>
+                        <th class="col-player"><span class="label-text">Player</span> <i class="fa-solid fa-user"></i></th>
+                        <th class="col-goals"><span class="label-text">Goals</span> <i class="fa-solid fa-futbol"></i></th>
+                        <th class="col-assists"><span class="label-text">Assists</span> <i class="fa-solid fa-hands-helping"></i></th>
+                        <th class="col-shoots"><span class="label-text">Shoots</span> <i class="fa-solid fa-bullseye"></i></th>
+                        <th class="col-sot"><span class="label-text">SOT</span> <i class="fa-solid fa-crosshairs"></i></th>
+                        <th class="col-blocked"><span class="label-text">Blocked</span> <i class="fa-solid fa-shield-halved"></i></th>
+                        <th class="col-saves"><span class="label-text">Saves</span> <i class="fa-solid fa-hand-paper"></i></th>
+                        <th class="col-passes"><span class="label-text">Passes</span> <i class="fa-solid fa-arrow-right-arrow-left"></i></th>
+                        <th class="col-fouls"><span class="label-text">Fouls</span> <i class="fa-solid fa-exclamation-triangle"></i></th>
+                        <th class="col-yellow"><span class="label-text">YC</span> <i class="fa-solid fa-square"></i></th>
+                        <th class="col-red"><span class="label-text">RC</span> <i class="fa-solid fa-square-full"></i></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for p in players %}
+                    <tr>
+                        <td>
+                            <label class="checkbox-container">
+                                <input type="checkbox" name="played[]" value="{{ p.id }}" {% if p.played %}checked{% endif %}>
+                                <span class="checkmark"></span>
+                            </label>
+                        </td>
+
+                        <td>
+                            <div class="inline-label">
+                                <i class="fa-solid fa-user"></i>
+                                <span class="player-name">{{ p.first_name[0] }}. {{ p.last_name }}</span>
+                            </div>
+                        </td>
+
+                        <td>
+                            <div class="cell-label" data-label="Goals"><i class="fa-solid fa-futbol"></i></div>
+                            <input type="number" name="player_goals_{{ p.id }}" value="{{ p.goals }}" min="0">
+                        </td>
+                        <td>
+                            <div class="cell-label" data-label="Assists"><i class="fa-solid fa-hands-helping"></i></div>
+                            <input type="number" name="player_assists_{{ p.id }}" value="{{ p.assists }}" min="0">
+                        </td>
+                        <td>
+                            <div class="cell-label" data-label="Shoots"><i class="fa-solid fa-bullseye"></i></div>
+                            <input type="number" name="player_shoots_{{ p.id }}" value="{{ p.shoots }}" min="0">
+                        </td>
+                        <td>
+                            <div class="cell-label" data-label="Shoots on target"><i class="fa-solid fa-crosshairs"></i></div>
+                            <input type="number" name="player_shoots_on_target_{{ p.id }}" value="{{ p.shoots_on_target }}" min="0">
+                        </td>
+                        <td>
+                            <div class="cell-label" data-label="Blocked shoots"><i class="fa-solid fa-shield-halved"></i></div>
+                            <input type="number" name="player_blocked_shoots_{{ p.id }}" value="{{ p.blocked_shoots }}" min="0">
+                        </td>
+                        <td>
+                            <div class="cell-label" data-label="Saved goals"><i class="fa-solid fa-hand-paper"></i></div>
+                            <input type="number" name="player_saved_goals_{{ p.id }}" value="{{ p.saved_goals }}" min="0">
+                        </td>
+                        <td>
+                            <div class="cell-label" data-label="Passes"><i class="fa-solid fa-arrow-right-arrow-left"></i></div>
+                            <input type="number" name="player_passes_{{ p.id }}" value="{{ p.passes }}" min="0">
+                        </td>
+                        <td>
+                            <div class="cell-label" data-label="Falls"><i class="fa-solid fa-exclamation-triangle"></i></div>
+                            <input type="number" name="player_falls_{{ p.id }}" value="{{ p.falls }}" min="0">
+                        </td>
+                        <td>
+                            <div class="cell-label" data-label="Yellow cards"><i class="fa-solid fa-square"></i></div>
+                            <input type="number" name="player_yellow_cards_{{ p.id }}" value="{{ p.yellow_cards }}" min="0" max="2">
+                        </td>
+                        <td>
+                            <div class="cell-label" data-label="Red cards"><i class="fa-solid fa-square-full"></i></div>
+                            <input type="number" name="player_red_cards_{{ p.id }}" value="{{ p.red_cards }}" min="0" max="1">
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+
+            <button type="submit" class="save-button">Save Changes</button>
+        </form>
+    </div>
+    <!-- Delete Button (без форма) -->
+    <button type="button" class="delete-button" id="deleteMatchBtn">Delete Match</button>
+
+    <script>
+        const deleteMatchUrl = "{{ url_for('edit_match.delete_match', match_id=match.id) }}";
+    </script>
+
+    <script src="{{ url_for('static', filename='js/edit_match.js') }}"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+</body>
+</html>

@@ -1,0 +1,286 @@
+/* Orbitron font for sporty/tech vibe */
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600&display=swap');
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Orbitron', sans-serif;
+}
+
+body {
+    background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+    color: #fff;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    font-size: 16px;
+}
+
+
+.navbar {
+    position: fixed;
+    top: 0;
+    width: 100%;
+    background-color: rgba(0, 0, 0, 0.544);
+    padding: 15px 0;
+    z-index: 1000;
+    box-shadow: 0 0 10px rgba(0,0,0,0.3);
+}
+
+.navbar nav ul {
+    display: flex;
+    justify-content: center;
+    list-style: none;
+    gap: 30px;
+}
+
+.navbar nav ul li a {
+    color: #00ffb7;
+    text-decoration: none;
+    font-weight: bold;
+    font-size: 24px;
+    padding: 8px 15px;
+    border-radius: 5px;
+    transition: 0.2s ease-in-out;
+}
+
+.navbar nav ul li a:hover {
+    color: #00ffc8;
+    text-shadow: 0 0 5px #00ffc8;
+}
+
+.container {
+    background-color: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(10px);
+    padding: 30px;
+    border-radius: 20px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    width: 100%;
+    max-width: 600px;
+    margin-top: 100px;
+    transition: box-shadow 0.3s ease;
+}
+
+.container:hover {
+    box-shadow: 0 10px 40px rgba(0, 255, 183, 0.2);
+}
+
+h2 {
+    text-align: center;
+    color: #00ffb7;
+    margin-bottom: 30px;
+    font-size: 30px;
+    font-weight: 600;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    animation: fadeIn 1.5s ease-in-out;
+}
+
+@keyframes fadeIn {
+    0% {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.flash-messages ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.flash-message {
+    padding: 12px;
+    margin: 10px 0;
+    border-radius: 10px;
+    text-align: center;
+    animation: slideIn 0.5s ease-out;
+    font-weight: bold;
+}
+
+.flash-message.success {
+    background-color: #4CAF50;
+    color: white;
+}
+
+.flash-message.error {
+    background-color: #f44336;
+    color: white;
+}
+
+.flash-message.info {
+    background-color: #2196F3;
+    color: white;
+}
+
+@keyframes slideIn {
+    0% { transform: translateY(20px); opacity: 0; }
+    100% { transform: translateY(0); opacity: 1; }
+}
+
+form {
+    display: flex;
+    flex-direction: column;
+}
+
+label {
+    margin-bottom: 10px;
+    font-size: 14px;
+    color: #e0e0e0;
+    font-weight: 500;
+}
+
+input[type="text"],
+input[type="number"],
+input[type="file"] {
+    padding: 12px;
+    margin-bottom: 20px;
+    border: none;
+    border-radius: 12px;
+    font-size: 14px;
+    background-color: rgba(255, 255, 255, 0.9);
+    color: #000;
+    transition: all 0.3s ease;
+}
+
+input[type="text"]:focus,
+input[type="number"]:focus {
+    outline: none;
+    box-shadow: 0 0 0 2px #00ffb7;
+}
+
+.create-btn {
+    font-size: 1.2rem;
+    font-weight: bold;
+    padding: 15px;
+    margin-top: 20px;
+    background: linear-gradient(135deg, #00ffb7, #005656);
+    color: #0f2027;
+    border: none;
+    border-radius: 50px;
+    text-align: center;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 12px rgba(0, 255, 183, 0.3);
+    animation: pulse 1.5s infinite;
+}
+
+.create-btn:hover {
+    background: linear-gradient(135deg, #00ffc8, #00a79d);
+    transform: scale(1.05);
+    box-shadow: 0 6px 16px rgba(0, 255, 183, 0.4);
+}
+
+@keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+    100% { transform: scale(1); }
+}
+
+input[type="file"] {
+    font-size: 14px;
+    display: none;
+}
+
+input[type="file"]:hover {
+    background-color: #f0f0f0;
+}
+
+#imagePreview {
+    text-align: center;
+    margin-top: 30px;
+}
+
+#preview {
+    width: 150px;
+    height: 150px;
+    object-fit: contain;
+    border-radius: 10px;
+    border: 3px solid #00ffb7;
+    box-shadow: 0 4px 10px rgba(0, 255, 183, 0.2);
+    transition: transform 0.3s ease;
+}
+
+#preview:hover {
+    transform: scale(1.05);
+}
+
+.file-upload-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+}
+
+.file-upload-wrapper span {
+    font-size: 16px;
+    color: #e0e0e0;
+    font-weight: bold;
+}
+
+.custom-file-upload {
+    display: inline-block;
+    position: relative;
+    width: 200px;
+    height: 200px;
+    cursor: pointer;
+    background-image: url('../images/buttons/plus-icon.png');
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+}
+
+.custom-file-upload:hover {
+    opacity: 0.85;
+}
+
+.custom-file-upload:active {
+    transform: scale(0.98);
+}
+
+.custom-file-upload:after {
+    color: white;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 16px;
+    font-weight: bold;
+}
+
+@media (max-width: 600px) {
+    .container {
+        width: 90%;
+        padding: 20px;
+    }
+
+    h2 {
+        font-size: 22px;
+    }
+
+    button.create-btn {
+        font-size: 16px;
+        padding: 12px;
+    }
+
+    .navbar nav ul li a {
+        font-size:16px;
+    }
+}
+
+@keyframes fadeOut {
+    from {
+        opacity: 1;
+        transform: translateY(0);
+    }
+    to {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+}
+

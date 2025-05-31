@@ -1,0 +1,288 @@
+/* === Обновен основен стил за main.css в съответствие със стила на останалите страници === */
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600&display=swap');
+
+body {
+    font-family: 'Orbitron', sans-serif;
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+    color: #fff;
+    overflow-x: hidden;
+}
+
+body::before,
+body::after {
+    content: '';
+    position: fixed;
+    bottom: 0;
+    width: 300px;
+    height: 300px;
+    background: radial-gradient(ellipse at center, rgba(0, 255, 183, 0.2) 0%, rgba(0, 255, 183, 0) 80%);
+    pointer-events: none;
+    z-index: 0;
+    animation: spotlight-move 6s ease-in-out infinite alternate;
+    filter: blur(40px);
+}
+
+body::before {
+    left: -150px;
+    animation-delay: 0s;
+}
+
+body::after {
+    right: -150px;
+    animation-delay: 3s;
+}
+
+@keyframes spotlight-move {
+    0% {
+        transform: translateX(0) translateY(0);
+    }
+    100% {
+        transform: translateX(100px) translateY(-30px);
+    }
+}
+
+
+.navbar {
+    position: fixed;
+    top: 0;
+    width: 100%;
+    background-color: rgba(0, 0, 0, 0.544);
+    padding: 15px 0;
+    z-index: 1000;
+    box-shadow: 0 0 10px rgba(0,0,0,0.3);
+}
+
+.navbar nav ul {
+    display: flex;
+    justify-content: center;
+    list-style: none;
+    gap: 30px;
+}
+
+.navbar nav ul li a {
+    color: #00ffb7;
+    text-decoration: none;
+    font-weight: bold;
+    font-size: 24px;
+    padding: 8px 15px;
+    border-radius: 5px;
+    transition: 0.2s ease-in-out;
+}
+
+.navbar nav ul li a:hover {
+    color: #00ffc8;
+    text-shadow: 0 0 5px #00ffc8;
+}
+
+.main-content {
+    transform: scale(1);
+    transform-origin: center;
+}
+
+.main-container {
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding-top: 80px;
+    background-image: url('../images/bg/main_bg7.jpg'); 
+    background-size: cover;
+    background-position: center;
+    position: relative;
+}
+
+
+
+.hero {
+    position: relative;
+    z-index: 2;
+    background: linear-gradient(135deg, #0f2027, #1a1f2b, #2c5364);
+    padding: 40px;
+    border-radius: 20px;
+    box-shadow: 0 0 30px rgba(0, 0, 0, 0.5);
+    text-align: center;
+    max-width: 600px;
+    width: 100%;
+}
+
+.hero-title {
+    font-size: 3rem;
+    font-weight: 900;
+    text-transform: uppercase;
+    margin-bottom: 20px;
+    position: relative;
+    z-index: 1;
+    overflow: hidden;
+
+    /* Shine ефект */
+    background: linear-gradient(
+        120deg,
+        #00ffb7 0%,
+        #ffffff 20%,
+        #00ffb7 40%,
+        #00ffb7 100%
+    );
+    background-size: 300% auto;
+    background-clip: text;
+    -webkit-background-clip: text;
+    color: transparent;
+
+    animation: shine 6s linear infinite, fadeIn 1.5s ease-in-out;
+
+}
+
+@keyframes shine {
+    0% {
+        background-position: -200% center;
+    }
+    100% {
+        background-position: 200% center;
+    }
+}
+
+
+
+
+
+.hero-subtitles p {
+    font-size: 1.3rem;
+    font-weight: 500;
+    color: #ffffff;
+    margin: 10px 0;
+    animation: fadeInUp 1s ease-in-out forwards;
+}
+
+.hero-subtitles {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    margin-top: 20px;
+}
+
+.start-btn {
+    display: inline-block;
+    font-size: 1.2rem;
+    font-weight: bold;
+    padding: 12px 25px;
+    margin-top: 20px;
+    background: linear-gradient(135deg, #00ffb7, #005656);
+    color: #0f2027;
+    border: none;
+    border-radius: 12px;
+    text-align: center;
+    transition: all 0.3s ease-in-out;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    animation: pulse 1.5s infinite;
+    text-decoration: none;
+}
+
+.start-btn:hover {
+    background: linear-gradient(135deg, #00ffc8, #00a79d);
+    transform: scale(1.05);
+}
+
+footer {
+    text-align: center;
+    padding: 10px;
+    background-color: #203a43;
+    color: white;
+    position: relative;
+    width: 100%;
+    z-index: 2;
+}
+
+.flash-messages {
+    position: fixed;
+    top: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 80%;
+    z-index: 9999;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    animation: fadeIn 0.5s ease-in-out;
+}
+
+.flash-message {
+    color: white;
+    padding: 12px 20px;
+    border-radius: 8px;
+    font-weight: bold;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+    margin-bottom: 10px;
+    transition: transform 0.3s ease-in-out, opacity 0.3s ease-in-out;
+    opacity: 1;
+}
+
+.flash-message.error { background-color: #ff4d4d; }
+.flash-message.info { background-color: #4d90fe; }
+.flash-message.success { background-color: #28a745; }
+.flash-message:hover { transform: scale(1.05); opacity: 0.9; }
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+    100% { transform: scale(1); }
+}
+
+@media (max-width: 600px) {
+    .hero-title {
+        font-size: 2rem;
+    }
+
+    .hero-subtitles p {
+        font-size: 1rem;
+    }
+
+    .start-btn {
+        font-size: 1rem;
+        padding: 10px 20px;
+    }
+
+    .navbar nav ul {
+        gap: 15px;
+    }
+
+    
+    .navbar nav ul li a {
+        font-size:16px;
+    }
+
+    .hero {
+        padding: 25px;
+        max-width: 90%;
+    }
+
+    .main-content {
+        transform: scale(1);
+    }
+    
+}
+
+@keyframes fadeOut {
+    from {
+        opacity: 1;
+        transform: translateY(0);
+    }
+    to {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+}

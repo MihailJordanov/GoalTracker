@@ -1,0 +1,43 @@
+<a href="/match-history" class="mini-history-link">
+    {% if matches %}
+    <div class="mini-match-history">
+        <h3 class="mini-history-title">Recent games</h3>
+        <div class="mini-matches">
+            {% for match in matches %}
+            <div class="mini-match {{ match.outcome }}">
+                <div class="mini-stripe"></div>
+                <span class="mini-team-name">{{ match.home_team }}</span>
+                <span class="mini-score">
+                    {{ match.home_team_result }} : {{ match.away_team_result }}
+                    {% if match.home_team_result == match.away_team_result 
+                        and match.home_team_penalty is not none 
+                        and match.away_team_penalty is not none 
+                        and match.home_team_penalty != match.away_team_penalty %}
+                        <div class="mini-penalty-score">({{ match.home_team_penalty }} : {{ match.away_team_penalty }})</div>
+                    {% endif %}
+                </span>
+
+                <span class="mini-team-name">{{ match.away_team }}</span>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+</a>
+<a href="/profile" class="mini-profile-link">
+    <div class="mini-player-stats">
+        <div class="stat-box">
+            <div class="stat-value">{{ user.max_goals }}</div>
+            <div class="stat-label">GOALS</div>
+        </div>
+        <div class="stat-box">
+            <div class="stat-value">{{ user.max_assists }}</div>
+            <div class="stat-label">ASSISTS</div>
+        </div>
+        <div class="stat-box">
+            <div class="stat-value">{{ user.played_matches }}</div>
+            <div class="stat-label">MATCHES</div>
+        </div>
+    </div>
+</a>
+

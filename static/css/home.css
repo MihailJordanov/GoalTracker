@@ -1,0 +1,1071 @@
+/* Orbitron font for sporty/tech vibe */
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600&display=swap');
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Orbitron', sans-serif;
+}
+
+/* Основни стилове за страницата */
+body {
+    font-family: 'Orbitron', sans-serif;
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+    color: #fff;
+    overflow-x: hidden;
+}
+
+
+/* Навигация */
+.navbar {
+    position: fixed;
+    top: 0;
+    width: 100%;
+    background-color: rgba(0, 0, 0, 0.544);
+    padding: 15px 0;
+    z-index: 1000;
+    box-shadow: 0 0 10px rgba(0,0,0,0.3);
+}
+
+.navbar nav ul {
+    display: flex;
+    justify-content: center;
+    list-style: none;
+    gap: 30px;
+}
+
+.navbar nav ul li a {
+    color: #00ffb7;
+    text-decoration: none;
+    font-weight: bold;
+    font-size: 24px;
+    padding: 8px 15px;
+    border-radius: 5px;
+    transition: 0.2s ease-in-out;
+}
+
+.navbar nav ul li a:hover {
+    color: #00ffc8;
+    text-shadow: 0 0 5px #00ffc8;
+}
+
+/* Основен стил за dropdown */
+.dropdown {
+    position: relative;
+}
+
+.dropdown-menu {
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: -100%;
+    background-color: rgba(0, 0, 0, 0.8);
+    list-style: none;
+    padding: 10px 0;
+    min-width: 150px;
+    border-radius: 5px;
+    z-index: 200;
+}
+
+.dropdown-menu li {
+    padding: 10px 15px;
+}
+
+.dropdown-menu li a {
+    color: white;
+    text-decoration: none;
+    display: block;
+    font-size: 16px;
+    transition: 0.3s;
+}
+
+.dropdown-menu li a:hover {
+    background-color: rgba(255, 255, 255, 0.2);
+    color: #FFD700;
+}
+
+
+
+
+/* Основен контейнер */
+.main-container {
+    --team-color: #00ffb7; /* по подразбиране, ако не е зададен */
+
+    background: linear-gradient(
+        135deg,
+        #1e1e1e 0%,
+        var(--team-color) 25%,
+        #ffffff 50%,
+        var(--team-color) 75%,
+        #1e1e1e 100%
+    );
+
+    background-size: 400% 400%;
+    animation: neonBackground 20s ease-in-out infinite;
+
+    position: relative;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding-top: 80px;
+    z-index: 0;
+}
+
+/* Анимация, която мести градиента плавно и задържа около светлите цветове */
+@keyframes neonBackground {
+    0% {
+        background-position: 0% 50%;   /* начало: тъмен фон */
+    }
+    20% {
+        background-position: 40% 50%; /* наближава светлата част */
+    }
+    50% {
+        background-position: 60% 50%; /* пик – най-светлата част на градиента (#ffffff) */
+    }
+    80% {
+        background-position: 40% 50%; /* задържане в светлата зона */
+    }
+    100% {
+        background-position: 0% 50%;  /* връщане към началната позиция – тъмен фон */
+    }
+}
+
+
+.flash-messages {
+    position: fixed;
+    pointer-events: none;
+    top: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 80%;
+    z-index: 9999;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    animation: fadeIn 0.5s ease-in-out;
+}
+
+.flash-message {
+    color: white;
+    pointer-events: none;
+    padding: 12px 20px;
+    border-radius: 8px;
+    font-weight: bold;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+    margin-bottom: 10px;
+    transition: transform 0.3s ease-in-out, opacity 0.3s ease-in-out;
+    opacity: 1;
+    animation: fadeIn 0.5s ease-in-out;
+}
+
+/* Стилове за различните категории съобщения */
+.flash-message.error {
+    background-color: #ff4d4d;
+}
+
+.flash-message.info {
+    background-color: #4d90fe;
+}
+
+.flash-message.success {
+    background-color: #28a745;
+}
+
+.flash-message:hover {
+    transform: scale(1.05);
+    opacity: 0.9;
+}
+
+/* Контейнерът за бутоните, разположен в горната част */
+.button-container {
+    display: flex;
+    justify-content: center; /* Центрира бутоните хоризонтално */
+    gap: 30px; /* Разстояние между бутоните */
+    margin-top: 100px; /* Отстояние отгоре */
+    position: fixed; /* Фиксираме ги в горната част */
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%); /* Центрира контейнера по хоризонтала */
+    z-index: 10; /* Уверяваме се, че бутоните ще са на върха */
+}
+
+/* Основен стил за бутоните в новия неонов стил */
+.team-button {
+    display: inline-block;
+    font-size: 2rem;  
+    font-weight: bold;
+    padding: 30px 55px;
+    background: linear-gradient(135deg, #00ffb7, #005656);
+    color: #0f2027;
+    border: none;
+    border-radius: 12px;
+    text-align: center;
+    transition: all 0.3s ease-in-out;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    animation: pulse 2.5s cubic-bezier(0.66, 0, 0, 1) infinite;
+    text-decoration: none;
+}
+
+/* Ефект при ховър */
+.team-button:hover {
+    background: linear-gradient(135deg, #00ffc8, #00a79d);
+    transform: scale(1.05);
+    box-shadow: 0 8px 20px rgba(0, 255, 183, 0.4);
+}
+
+/* Анимация за пулсация */
+@keyframes pulse {
+    0% {
+        transform: scale(1);
+        box-shadow: 0 0 0 0 color-mix(in srgb, var(--team-color), transparent 60%);
+        opacity: 0.9;
+    }
+    50% {
+        transform: scale(1.06);
+        box-shadow: 0 0 20px 10px color-mix(in srgb, var(--team-color), transparent 20%);
+        opacity: 1;
+    }
+    100% {
+        transform: scale(1);
+        box-shadow: 0 0 0 0 color-mix(in srgb, var(--team-color), transparent 60%);
+        opacity: 0.9;
+    }
+}
+
+
+
+.create-team-button {
+    background: linear-gradient(135deg, #00ffb7, #007a55);
+}
+
+.create-team-button:hover {
+    background: linear-gradient(135deg, #00ffc8, #00a079);
+}
+
+.join-team-button {
+    background: linear-gradient(135deg, #ffe57f, #ff9900);
+}
+
+.join-team-button:hover {
+    background: linear-gradient(135deg, #fff2b0, #ffb84d);
+}
+
+
+/* Стилове за "Your Team" заглавието */
+.team-container {
+    text-align: center;
+    position: absolute; /* Позиционира елемента спрямо родителя */
+    top: 10%; /* Разстояние от горната част на екрана */
+    left: 50%; /* Центрира хоризонтално */
+    transform: translateX(-50%); /* Коригира центрирането */
+    animation: fadeIn 1.2s ease-in-out;
+    width: 100%;
+}
+
+
+.team-title {
+    font-size: 2.5rem;
+    font-weight: 800;
+    color: rgb(0, 0, 0);
+    font-family: 'Poppins', sans-serif;
+    text-transform: capitalize;
+    opacity: 0;
+    margin-bottom: 5px;
+    transform: translateY(-10px);
+    animation: fadeInUp 1s ease-in-out forwards 0.3s;
+}
+
+.team-name {
+    font-size: 4.3rem;
+    font-weight: 900;
+    color: #ffffff;
+    font-family: 'Poppins', sans-serif;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    margin-top: 0px;
+    opacity: 0;
+    transform: translateY(-10px);
+    animation: fadeInUp 1s ease-in-out forwards;
+
+    /* 3D ефект чрез текстова сянка */
+    text-shadow: 
+        2px 2px 0px #000000, 
+        4px 4px 0px rgba(0, 0, 0, 0.3),
+        6px 6px 10px rgba(0, 0, 0, 0.4);
+
+    /* Очертание около текста */
+    -webkit-text-stroke: 1px #6d6d6d;
+}
+
+
+
+/* Основен стил за модала */
+.modal {
+    display: none;  /* Няма да е видим по подразбиране */
+    position: fixed;
+    z-index: 1;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(10, 10, 10, 0.75); /* Полупрозрачен фон */
+    backdrop-filter: blur(6px);
+    overflow: auto; 
+    padding-top: 50px;
+    transition: opacity 0.3s ease-in-out;
+}
+
+.modal.active {
+    display: block;
+    visibility: visible;
+    opacity: 1; /* Модалът става видим */
+}
+
+
+/* Съдържание на модала */
+.modal-content {
+    position: relative;
+    background-color: #f9f7f1; /* Светло бежово, по-нежно */
+    background: linear-gradient(135deg, #00ffb7, #005656);
+    margin: 5% auto;
+    padding: 20px;
+    border-radius: 10px;
+    width: 80%;
+    max-width: 500px;
+    box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.1);
+    animation: fadeIn 0.5s ease-in-out;
+}
+
+.modal-button {
+    display: inline-block;
+    margin-top: 20px;
+    padding: 12px 24px;
+    font-size: 1rem;
+    font-weight: bold;
+    border: none;
+    border-radius: 10px;
+    background: linear-gradient(135deg, #00ffc8, #007a7a);
+    color: #0f2027;
+    text-transform: uppercase;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 12px rgba(0, 255, 183, 0.3);
+    cursor: pointer;
+}
+
+.modal-button:hover {
+    background: linear-gradient(135deg, #00ffe3, #00bfbf);
+    transform: scale(1.05);
+    box-shadow: 0 6px 20px rgba(0, 255, 183, 0.5);
+}
+
+.modal-content label {
+    display: block;
+    margin: 15px 0 5px;
+    font-size: 1rem;
+    font-weight: 600;
+    color: #000000; /* неоново зелено-синьо */
+    text-shadow: 0 0 5px rgba(0, 255, 183, 0.4);
+    font-family: 'Orbitron', sans-serif;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+
+/* Кнопка за затваряне */
+.close {
+    position: absolute;
+    top: 10px; /* Разстояние от горния ръб */
+    right: 20px; /* Разстояние от десния ръб */
+    font-size: 50px; /* Увеличаваме размера на X */
+    font-weight: bold;
+    color: #f13939; /* Златист цвят */
+    cursor: pointer; /* Показваме курсор за клик */
+    transition: color 0.3s ease; /* Плавно преминаване на цвета */
+}
+
+
+
+/* При ховър върху бутона X */
+.close:hover {
+    color: #ff0000; /* Променяме цвета на червено при ховър */
+}
+
+/* Заглавие на модала */
+h2 {
+    color: #333;
+    font-family: 'Arial', sans-serif;
+    text-align: center;
+    font-size: 24px;
+    margin-bottom: 20px;
+}
+
+/* Стил за полетата за въвеждане на Player ID */
+.input-group {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 20px;
+}
+
+.player-id-field {
+    width: 40px;
+    height: 40px;
+    font-size: 20px;
+    text-align: center;
+    border-radius: 8px;
+    border: 2px solid #8cf0e6;
+    background-color: #fff;
+    transition: border-color 0.3s ease;
+    text-transform: uppercase;  /* Преобразува текстът в главни букви */
+    
+}
+
+.player-id-field:focus {
+    outline: none;
+    border-color: #ff6347; /* Плавна промяна на цвета при фокус */
+}
+
+.player-id-field::placeholder {
+    color: #888;
+}
+
+/* За textarea */
+textarea {
+    width: 95%;
+    padding: 10px;
+    border-radius: 8px;
+    border: 2px solid #8cf0e6;
+    resize: vertical;
+    transition: border-color 0.3s ease;
+}
+
+textarea:focus {
+    border-color: #ff6347;
+    outline: none;
+}
+
+/* Стил за dropdown селектора */
+select {
+    width: 100%;
+    padding: 10px;
+    border-radius: 8px;
+    border: 2px solid #8cf0e6   ;
+    background-color: #fff;
+    transition: border-color 0.3s ease;
+}
+
+select:focus {
+    border-color: #ff6347;
+    outline: none;
+}
+
+button {
+    width: 100%;
+    padding: 14px 20px;
+    background: linear-gradient(135deg, #00ffb7, #005656);
+    border: none;
+    color: #0f2027;
+    font-size: 1.1rem;
+    font-weight: bold;
+    font-family: 'Orbitron', sans-serif;
+    text-transform: uppercase;
+    border-radius: 12px;
+    cursor: pointer;
+
+    /* Неонова сянка */
+    box-shadow:
+        0 0 10px rgba(0, 255, 183, 0.5),
+        0 0 20px rgba(0, 255, 183, 0.3),
+        0 0 30px rgba(0, 255, 183, 0.2);
+
+    transition: all 0.3s ease;
+    outline: none;
+}
+
+button:hover {
+    background: linear-gradient(135deg, #00ffc8, #00a79d);
+    transform: scale(1.05);
+    box-shadow:
+        0 0 15px rgba(0, 255, 183, 0.6),
+        0 0 25px rgba(0, 255, 183, 0.4),
+        0 0 40px rgba(0, 255, 183, 0.3);
+}
+
+
+/* Плавно очертание при фокус върху бутона */
+button:focus {
+    border: 3px solid #ff6347; /* Червено очертание при фокус */
+    box-shadow: 0 0 10px rgba(255, 99, 71, 0.5); /* Лека сянка, която подсилва фокуса */
+    animation: focusGlow 1s ease-out infinite alternate; /* Анимация на мигаща светлина при фокус */
+}
+
+/* Стил при натискане */
+button:active {
+    transform: scale(0.98); /* Леко намаляване на размера при клик */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Лека сянка при натискане */
+}
+
+/* Модал при отворен */
+.modal.show {
+    display: block;
+    opacity: 1;
+}
+
+/* Леко разстояние между елементите */
+form > label, form > select, form > textarea, form > button {
+    margin-bottom: 15px;
+}
+
+.add-match-button {
+    display: inline-block;
+    font-size: 2rem; /* увеличен шрифт */
+    font-weight: bold;
+    padding: 22px 50px; /* по-висок и по-широк */
+    margin-top: -10px;
+    background: linear-gradient(
+        135deg,
+        var(--team-color),
+        color-mix(in srgb, var(--team-color), black 40%)
+    );
+    color: var(--team-text-color, #0f2027);
+    text-decoration: none;
+    border: 2px solid color-mix(in srgb, var(--team-color), white 40%);
+    border-radius: 50px;
+    text-align: center;
+    transition: all 0.3s ease-in-out;
+    font-family: 'Orbitron', sans-serif;
+
+    /* Неонов glow ефект с нюанси на team-color */
+    box-shadow:
+        0 0 10px color-mix(in srgb, var(--team-color), white 30%),
+        0 0 20px color-mix(in srgb, var(--team-color), black 10%),
+        0 0 30px color-mix(in srgb, var(--team-color), transparent 80%);
+
+    animation: fadeInSlideUp 0.8s ease-out forwards, pulse 2s infinite;
+}
+
+.add-match-button:hover {
+    background: linear-gradient(
+        135deg,
+        color-mix(in srgb, var(--team-color), white 20%),
+        color-mix(in srgb, var(--team-color), black 20%)
+    );
+    transform: scale(1.08);
+    box-shadow:
+        0 0 15px color-mix(in srgb, var(--team-color), white 40%),
+        0 0 30px color-mix(in srgb, var(--team-color), black 20%),
+        0 0 45px color-mix(in srgb, var(--team-color), transparent 60%);
+}
+
+.add-match-button-container {
+    display: flex;
+    justify-content: center;
+    margin-top: 30px;
+}
+
+
+
+@keyframes focusGlow {
+    0% {
+        box-shadow: 0 0 10px rgba(255, 99, 71, 0.5);
+    }
+    50% {
+        box-shadow: 0 0 15px rgba(255, 99, 71, 0.7);
+    }
+    100% {
+        box-shadow: 0 0 10px rgba(255, 99, 71, 0.5);
+    }
+}
+
+
+/* Стилове за логото на отбора */
+.team-logo {
+    width: 300px;
+    height: 300px;
+    object-fit: contain;
+
+    /* Премахваме закръглените ъгли и сянката */
+    border-radius: 0;
+    box-shadow: none;
+
+    opacity: 0;
+    transform: scale(0.8);
+    animation: fadeInScale 1s ease-in-out forwards 0.5s;
+}
+
+.team-header-container {
+    display: flex;
+    justify-content: center;
+    align-items: flex-start; /* променено от center */
+    gap: 20px;
+    flex-wrap: wrap;
+    margin-bottom: 20px;
+}
+
+.team-text {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.team-logo-container {
+    max-width: 50px;
+    max-height: 50px;
+    flex-shrink: 0;
+    margin-top: 27px; /* пробвай с 5-10px */
+}
+
+
+.team-logo-container img.team-logo {
+    width: 100%;
+    height: auto;
+    object-fit: contain;
+}
+
+
+.notifications-box {
+    position: absolute;
+    top: 50px;
+    right: 20px;
+    width: 320px;
+    background: #0f2027;
+    border: 1px solid rgba(0, 255, 183, 0.3);
+    border-radius: 10px;
+    box-shadow:
+        0 0 10px rgba(0, 255, 183, 0.1),
+        0 0 25px rgba(0, 255, 183, 0.05);
+    padding: 15px;
+    z-index: 1000;
+    font-family: 'Orbitron', sans-serif;
+    color: #ffffff;
+}
+
+.notifications-box ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    max-height: 200px; /* около 4 нотификации * ~80px */
+    overflow-y: auto;  /* активира вертикален скрол при нужда */
+    scrollbar-width: thin; /* по-фин скролбар (за Firefox) */
+}
+
+
+
+.notifications-box ul::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.05);
+}   
+
+.notifications-box ul li {
+    padding: 10px;
+    border-bottom: 1px solid rgba(0, 255, 183, 0.1);
+}
+
+.notifications-box ul li:last-child {
+    border-bottom: none;
+}
+
+.notification-item {
+    cursor: pointer;
+    padding: 10px;
+    margin: 5px 0;
+    border-radius: 8px;
+    transition: background-color 0.3s, box-shadow 0.3s;
+    font-family: 'Orbitron', sans-serif;
+}
+
+.notification-item:hover {
+    background-color: rgba(0, 255, 183, 0.1);
+    box-shadow: 0 0 10px rgba(0, 255, 183, 0.3);
+}
+
+.notification-item.unread {
+    background-color: rgba(0, 255, 183, 0.12);
+    font-weight: bold;
+    box-shadow: 0 0 8px rgba(0, 255, 183, 0.25);
+}
+
+/* Прочетена нотификация */
+.notification-item.read {
+    background-color: rgba(255, 255, 255, 0.03);
+    color: #aaa;
+}
+
+.notification-item.with-details {
+    background-color: rgba(0, 255, 183, 0.07);
+    box-shadow: 0 0 10px rgba(0, 255, 183, 0.2);
+}
+
+.notification-details {
+    margin-top: 8px;
+    padding-top: 8px;
+    border-top: 1px solid rgba(0, 255, 183, 0.1);
+    font-size: 0.9rem;
+    color: #bfffea;
+}
+
+/* Допълнителна структура за покани */
+.invite-notification-details {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-top: 5px;
+}
+
+/* Бутони */
+.invite-button-container {
+    display: flex;
+    gap: 10px;
+    margin-top: 10px;
+}
+
+.accept-btn, .deny-btn {
+    padding: 6px 14px;
+    font-weight: bold;
+    font-size: 0.9rem;
+    border: none;
+    border-radius: 6px;
+    color: #0f2027;
+    cursor: pointer;
+    font-family: 'Orbitron', sans-serif;
+    transition: all 0.3s ease;
+}
+
+/* Приемане – неоново зелено */
+.accept-btn {
+    background: linear-gradient(135deg, #00ffb7, #00a86b);
+    box-shadow: 0 0 8px rgba(0, 255, 183, 0.4);
+}
+
+.accept-btn:hover {
+    background: linear-gradient(135deg, #00ffc8, #00d49d);
+    transform: scale(1.05);
+}
+
+/* Отказване – неоново червено */
+.deny-btn {
+    background: linear-gradient(135deg, #ff4d4d, #b30000);
+    box-shadow: 0 0 8px rgba(255, 77, 77, 0.4);
+}
+
+.deny-btn:hover {
+    background: linear-gradient(135deg, #ff6666, #cc0000);
+    transform: scale(1.05);
+}
+
+/* Червена точка с неонов ефект */
+.notification-indicator {
+    position: absolute;
+    top: -5px;
+    right: -10px;
+    background-color: red;
+    color: white;
+    font-size: 12px;
+    font-weight: bold;
+    width: 18px;
+    height: 18px;
+    line-height: 18px;
+    border-radius: 50%;
+    text-align: center;
+    box-shadow:
+        0 0 6px rgba(255, 0, 0, 0.6),
+        0 0 12px rgba(255, 0, 0, 0.3);
+    z-index: 10;
+}
+
+.notification-indicator-not {
+    position: absolute;
+    top: -5px;
+    right: -10px;
+    background-color: red;
+    color: white;
+    font-size: 12px;
+    font-weight: bold;
+    width: 18px;
+    height: 18px;
+    line-height: 18px;
+    border-radius: 50%;
+    text-align: center;
+    box-shadow:
+        0 0 6px rgba(255, 0, 0, 0.6),
+        0 0 12px rgba(255, 0, 0, 0.3);
+    z-index: 10;
+}
+
+/* Анимации */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes fadeInScale {
+    from {
+        opacity: 0;
+        transform: scale(0.8);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+@keyframes fadeIn {
+    0% {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Анимация за изчезване */
+@keyframes fadeOut {
+    0% {
+        opacity: 1;
+    }
+    100% {
+        opacity: 0;
+    }
+}
+
+
+/* Анимации */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fadeInSlideUp {
+    0% {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Предотвратяване на хоризонтален скрол */
+html, body {
+    margin: 0;
+    padding: 0;
+    overflow-x: hidden;
+}
+
+.team-background {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-size: cover;
+    background-position: center;
+    z-index: -1;  /* Зад останалото съдържание */
+    opacity: 0.2; /* Или нещо между 0.1 и 0.3 */
+}
+
+
+
+
+
+/* Адаптивни стилове за навигационната лента (до 600px ширина) */
+@media (max-width: 600px) {
+    /* Navbar контейнер – подравняване на бутоните хоризонтално с flexbox */
+    .navbar {
+        position: relative;   /* За позициониране на dropdown в рамките на navbar */
+        display: flex;
+        flex-direction: row;
+        flex-wrap: wrap;      /* Позволява прехвърляне на нов ред само при крайна нужда */
+        justify-content: center;
+        align-items: center;
+        width: 100%;
+        padding: 0 10px;      /* Намалени отстъпи, за да няма излизане извън екрана */
+        box-sizing: border-box;
+    }
+
+    /* Списък с навигационните бутони (ако има <ul>) */
+    .navbar ul {
+        display: flex;
+        flex-direction: row;
+        flex-wrap: wrap;      /* Държи бутоните на един ред, при нужда ги прехвърля */
+        justify-content: center;
+        align-items: center;
+        margin: 0;
+        padding: 0;
+        list-style: none;
+        width: 100%;
+        box-sizing: border-box;
+    }
+
+    /* Елементи на навигацията (бутоните в менюто) */
+    .navbar li {
+        margin: 0;
+        padding: 0;
+    }
+
+    .navbar a {
+        display: block;
+        font-size: 0.9em;     /* Малко по-малък шрифт, за да се съберат бутоните */
+        padding: 6px 10px;    /* Намален вътрешен отстъп за по-малки бутони */
+        margin: 0;
+        text-decoration: none;
+    }
+
+    /* Dropdown меню – по-големи и по-широки елементи за мобилен изглед */
+    .navbar .dropdown {
+        position: static;     /* Премахва относителното позициониране на родителя */
+    }
+
+    .navbar .dropdown-content {
+        position: absolute;
+        top: 100%;
+        left: 0;
+        right: 0;
+        /* Разтяга падащото меню по цялата ширина на navbar */
+        width: 100%;
+        box-sizing: border-box;
+    }
+
+    .navbar .dropdown-content a {
+        display: block;
+        width: 100%;
+        font-size: 1.1em;     /* По-голям шрифт за елементите в падащото меню */
+        padding: 10px 15px;   /* По-широки бутони за по-добра четимост и лесно натискане */
+        box-sizing: border-box;
+        text-decoration: none;
+    }
+
+    .dropdown-menu {
+        display: none;
+        position: absolute; /* Точно това решава проблема! */
+        top: 100%; /* Показва се под бутона */
+        left: 50%;
+        transform: translateX(-50%); /* Центриране спрямо бутона */
+        background-color: rgba(0, 0, 0, 0.8);
+        list-style: none;
+        padding: 10px 0;
+        min-width: 150px;
+        border-radius: 5px;
+        z-index: 200;
+        text-align: center;
+    }
+
+    .dropdown-menu li a {
+        font-size: 18px;
+        padding: 10px;
+        display: block;
+    }
+
+    #notifications-container {
+        width: 90%;
+        left: 50%;
+        transform: translateX(-50%);
+        top: 80px;
+        right: auto;
+        box-sizing: border-box;
+    }
+
+    #profile-link {
+        position: relative; /* за да позиционираме иконката относително спрямо бутона */
+        display: inline-block;
+    }
+    
+    .notification-indicator {
+        position: absolute;
+        top: 5px; /* малко над бутона */
+        right: -5px; /* малко вдясно */
+        background-color: red;
+        color: white;
+        font-size: 12px;
+        font-weight: bold;
+        width: 18px;
+        height: 18px;
+        line-height: 18px;
+        border-radius: 50%;
+        text-align: center;
+        box-shadow: 0 0 6px rgba(255, 0, 0, 0.6), 0 0 12px rgba(255, 0, 0, 0.3);
+        z-index: 10;
+    }
+
+    .notification-indicator-not {
+        position: absolute;
+        top: 5px; /* малко над бутона */
+        right: 20%; /* малко вдясно */
+        background-color: red;
+        color: white;
+        font-size: 12px;
+        font-weight: bold; 
+        width: 18px;
+        height: 18px;
+        line-height: 18px;
+        border-radius: 50%;
+        text-align: center;
+        box-shadow: 0 0 6px rgba(255, 0, 0, 0.6), 0 0 12px rgba(255, 0, 0, 0.3);
+        z-index: 10;
+    }
+    
+    .team-title {
+        font-size: 1.5rem;        /* по-малък шрифт */
+        text-align: center;       /* центриране, ако не е вече */
+        margin-bottom: 10px;      /* малко повече разстояние отдолу */
+    }
+
+    .team-name {
+        font-size: clamp(2.2rem, 5vw, 3.5rem); /* малко по-малък шрифт за името */
+        letter-spacing: 1px;
+        text-align: center;
+        max-width: 90vw;
+        display: inline-block;
+        word-break: break-word;
+        -webkit-text-stroke: 0.5px #6d6d6d;
+        text-shadow: 
+            1px 1px 0px #000000, 
+            2px 2px 0px rgba(0, 0, 0, 0.3),
+            3px 3px 6px rgba(0, 0, 0, 0.4);
+    }   
+
+    .team-logo-container {
+        max-width: 45px;
+        max-height: 45px;
+        margin-top: -30px; /* лека корекция за вертикално изравняване */
+    }
+
+    .team-logo-container img.team-logo {
+        width: 100%;
+        height: auto;
+    }
+
+    .team-header-container {
+        gap: 30px; /* по-малко разстояние между текст и лого */
+        justify-content: center;
+        flex-direction: column;
+        align-items: center;
+    }
+
+
+    .team-container {
+        margin-top: -40px; /* по-нагоре на мобилно */
+    }
+
+    .add-match-button {
+        margin-top: 20px;
+    }
+}

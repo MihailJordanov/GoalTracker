@@ -1,0 +1,360 @@
+/* Обновен стил за edit_team.css в стилистиката на add_match.css */
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600&display=swap');
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Orbitron', sans-serif;
+}
+
+body {
+    background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+    color: #fff;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    padding-top: 100px;
+}
+
+
+.navbar {
+    position: fixed;
+    top: 0;
+    width: 100%;
+    background-color: rgba(0, 0, 0, 0.544);
+    padding: 15px 0;
+    z-index: 1000;
+    box-shadow: 0 0 10px rgba(0,0,0,0.3);
+}
+
+.navbar nav ul {
+    display: flex;
+    justify-content: center;
+    list-style: none;
+    gap: 30px;
+}
+
+.navbar nav ul li a {
+    color: #00ffb7;
+    text-decoration: none;
+    font-weight: bold;
+    font-size: 24px;
+    padding: 8px 15px;
+    border-radius: 5px;
+    transition: 0.2s ease-in-out;
+}
+
+.navbar nav ul li a:hover {
+    color: #00ffc8;
+    text-shadow: 0 0 5px #00ffc8;
+}
+
+.container {
+    background-color: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(12px);
+    border-radius: 20px;
+    padding: 30px 40px;
+    width: 90%;
+    max-width: 600px;
+    box-shadow: 0 0 30px rgba(0, 0, 0, 0.3);
+}
+
+h2 {
+    text-align: center;
+    font-size: 26px;
+    margin-bottom: 25px;
+    color: #00ffb7;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+}
+
+label {
+    display: block;
+    margin-top: 15px;
+    margin-bottom: 5px;
+    font-size: 14px;
+    color: #e0e0e0;
+}
+
+input[type="text"],
+input[type="number"],
+input[type="file"] {
+    width: 100%;
+    padding: 10px 14px;
+    border: none;
+    border-radius: 12px;
+    background-color: rgba(255, 255, 255, 0.9);
+    color: #000;
+    font-size: 14px;
+    transition: 0.2s ease-in-out;
+}
+
+input:focus {
+    outline: none;
+    box-shadow: 0 0 0 2px #00ffb7;
+}
+
+.edit-btn {
+    width: 100%;
+    padding: 12px;
+    margin-top: 25px;
+    font-size: 16px;
+    background: linear-gradient(135deg, #00ffb7, #005656);
+    color: #0f2027;
+    border: none;
+    border-radius: 12px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: all 0.25s ease-in-out;
+}
+
+.edit-btn:hover {
+    background: linear-gradient(135deg, #00ffc8, #00a79d);
+    transform: scale(1.03);
+}
+
+.flash-messages ul {
+    list-style-type: none;
+    padding: 0;
+    margin: 0 0 20px 0;
+}
+
+.flash-message {
+    background-color: #ff4d4d;
+    color: white;
+    padding: 12px;
+    border-radius: 10px;
+    text-align: center;
+    margin-bottom: 10px;
+    font-weight: bold;
+}
+
+.logo-wrapper {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.edit-logo-text {
+    font-size: 16px;
+    font-weight: bold;
+    color: #e0e0e0;
+    margin-bottom: 10px;
+    display: block;
+}
+
+#current-logo {
+    display: inline-block;
+    cursor: pointer;
+}
+
+#current-logo img {
+    width: 150px;
+    height: 150px;
+    object-fit: contain;
+    border-radius: 10px;
+    border: 3px solid #00ffb7;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    transition: transform 0.3s ease;
+}
+
+#current-logo img:hover {
+    transform: scale(1.05);
+}
+
+.color-picker-container {
+    text-align: center;
+    margin-top: 30px;
+}
+
+.edit-color-text {
+    font-size: 16px;
+    font-weight: bold;
+    color: #e0e0e0;
+    margin-bottom: 10px;
+    display: block;
+}
+
+.color-picker-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 15px;
+}
+
+#team_color {
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    width: 120px;
+    height: 20px;
+    border-radius: 10px;
+    background-color: transparent;
+    cursor: pointer;
+    border: 2px solid #00ffb7;
+    outline: none;
+}
+
+#team_color::-webkit-color-swatch-wrapper {
+    padding: 0;
+}
+
+#team_color::-webkit-color-swatch {
+    border: none;
+    border-radius: 10px;
+    height: 100%;
+}
+
+#team_color_letters {
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    width: 120px;
+    height: 20px;
+    border-radius: 10px;
+    background-color: transparent;
+    cursor: pointer;
+    border: 2px solid #00ffb7;
+    outline: none;
+}
+
+#team_color_letters::-webkit-color-swatch-wrapper {
+    padding: 0;
+}
+
+#team_color_letters::-webkit-color-swatch {
+    border: none;
+    border-radius: 10px;
+    height: 100%;
+}
+
+#team-name-preview {
+    display: inline-block;
+    padding: 12px 20px;
+    margin-top: 15px;
+    font-size: 2rem;
+    font-weight: 900;
+    text-transform: uppercase;
+    border-radius: 10px;
+    transition: all 0.3s ease-in-out;
+
+    /* Контрастна сянка, за да изпъква текста на всякакъв фон */
+    text-shadow:
+        1px 1px 2px rgba(0, 0, 0, 0.7),
+        0 0 10px rgba(0, 0, 0, 0.3);
+
+    /* Леко вътрешно осветяване на фона */
+    box-shadow:
+        inset 0 0 20px rgba(255, 255, 255, 0.1),
+        0 0 10px rgba(0, 255, 183, 0.2);
+
+    /* Лека рамка за дефиниране */
+    border: 2px solid rgba(255, 255, 255, 0.1);
+}
+
+
+/* Стил за background изображение - подобно на #current-logo */
+#current-bg {
+    display: inline-block;
+    cursor: pointer;
+}
+
+#current-bg img {
+    width: 250px;
+    height: 150px;
+    object-fit: contain;
+    border-radius: 10px;
+    border: 3px solid #00ffb7; /* златиста рамка за разграничение от логото */
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    transition: transform 0.3s ease;
+    background-color: #111; /* fallback цвят зад фоновата снимка */
+}
+
+#current-bg img:hover {
+    transform: scale(1.05);
+}
+
+
+
+.team-code {
+    margin-top: 20px;
+    text-align: center;
+}
+
+.team-code-label {
+    font-size: 16px;
+    color: #ffffff;
+    font-weight: 500;
+    margin-right: 8px;
+    display: block;
+    margin-bottom: 6px;
+}
+
+.team-code-wrapper {
+    display: inline-block;
+    position: relative;
+}
+
+.team-code-value {
+    display: inline-block;
+    background-color: rgba(0, 0, 0, 0.75);
+    color: #00ffb7;
+    padding: 6px 14px;
+    border-radius: 10px;
+    font-size: 16px;
+    font-weight: bold;
+    letter-spacing: 1px;
+    font-family: 'Orbitron', sans-serif;
+    box-shadow: 0 0 8px rgba(0, 255, 183, 0.3);
+    transition: transform 0.15s ease;
+}
+
+.team-code-value:hover {
+    transform: scale(1.05);
+}
+
+.copied-msg {
+    position: absolute;
+    bottom: -20px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 12px;
+    color: #90ffd2;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+}
+
+
+@media (max-width: 600px) {
+    .container {
+        width: 90%;
+        padding: 20px;
+    }
+
+    h2 {
+        font-size: 22px;
+    }
+
+    .edit-btn {
+        font-size: 16px;
+        padding: 12px;
+    }
+
+    .navbar nav ul li a {
+        font-size:16px;
+    }
+}
+
+@keyframes fadeOut {
+    from {
+        opacity: 1;
+        transform: translateY(0);
+    }
+    to {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+}
+

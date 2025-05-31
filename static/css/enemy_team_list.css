@@ -1,0 +1,576 @@
+/* Orbitron font for sporty/tech vibe */
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700&display=swap');
+
+
+body {
+    margin: 0;
+    padding: 0;
+    font-family: 'Orbitron', sans-serif;
+    background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+    background-attachment: fixed;
+    background-size: cover;
+    color: #ffffff;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 40px 20px;
+    transition: all 0.6s ease-in-out;
+}
+
+
+
+.form-section {
+    display: none;
+    margin-top: 20px;
+    transition: all 0.6s ease-in-out;
+}
+.form-section.active {
+    display: block;
+}
+
+
+.navbar {
+    position: fixed;
+    top: 0;
+    width: 100%;
+    background-color: rgba(0, 0, 0, 0.544);
+    padding: 15px 0;
+    z-index: 1000;
+    box-shadow: 0 0 10px rgba(0,0,0,0.3);
+}
+
+.navbar nav ul {
+    display: flex;
+    justify-content: center;
+    list-style: none;
+    gap: 30px;
+}
+
+.navbar nav ul li a {
+    color: #00ffb7;
+    text-decoration: none;
+    font-weight: bold;
+    font-size: 24px;
+    padding: 8px 15px;
+    border-radius: 5px;
+    transition: 0.2s ease-in-out;
+}
+
+.navbar nav ul li a:hover {
+    color: #00ffc8;
+    text-shadow: 0 0 5px #00ffc8;
+}
+
+
+
+.flash-messages ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.flash-message {
+    padding: 12px;
+    margin: 10px 0;
+    border-radius: 10px;
+    text-align: center;
+    animation: slideIn 0.5s ease-out;
+    font-weight: bold;
+}
+
+.flash-message.success {
+    background-color: #4CAF50;
+    color: white;
+}
+
+.flash-message.error {
+    background-color: #f44336;
+    color: white;
+}
+
+.flash-message.info {
+    background-color: #2196F3;
+    color: white;
+}
+
+.forms-container {
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    gap: 40px;
+    flex-wrap: wrap;
+    margin-top: 30px;
+}
+
+.form-section {
+    width: 100%;
+    max-width: 420px;
+    padding: 25px 20px;
+    border: 2px solid #00ffb7;
+    border-radius: 16px;
+    background-color: rgba(255, 255, 255, 0.06);
+    display: none;
+    box-shadow: 0 0 10px rgba(0,255,183,0.15);
+    transition: all 0.3s ease-in-out;
+    box-sizing: border-box;
+}
+
+
+.form-section.active {
+    display: block;
+}
+
+.form-section h3 {
+    text-align: center;
+    color: #ffffff;
+    font-size: 22px;
+    margin-bottom: 20px;
+    letter-spacing: 1px;
+}
+
+.form-section label {
+    display: block;
+    text-align: center; /* Центрира текста вътре в label */
+    margin-bottom: 6px;
+    color: #ccc;
+    font-weight: 500;
+    font-size: 14px;
+    transition: all 0.6s ease-in-out;   
+}
+
+
+.form-section input[type="text"],
+.form-section input[type="number"],
+.form-section input[type="file"] {
+    width: calc(100% - 6px);
+    padding: 12px;
+    margin-bottom: 18px;
+    border: none;
+    border-radius: 10px;
+    font-size: 14px;
+    background-color: rgba(255, 255, 255, 0.9);
+    color: #000;
+    transition: all 0.3s ease;
+    font-family: 'Orbitron', sans-serif;
+    box-sizing: border-box;
+}
+
+.form-section input:focus {
+    outline: none;
+    box-shadow: 0 0 0 2px #00ffb7;
+}
+
+.form-section input[name="team_code"] {
+    letter-spacing: 2px;
+    text-transform: uppercase;
+}
+
+
+h1 {
+    text-align: center;
+    font-size: 52px;
+    color: #00ffb7;
+    margin-top: 120px;
+    letter-spacing: 2.5px;
+    font-weight: 700;
+    text-transform: uppercase;
+    animation: fadeInDown 1s ease-in-out;
+    transition: text-shadow 0.3s ease;
+    transition: all 0.6s ease-in-out;
+}
+
+
+h2 {
+    text-align: center;
+    font-size: 18px; /* по-малък размер */
+    color: #cccccc;
+    margin-top: 10px;
+    margin-bottom: 10px;
+    letter-spacing: 1px;
+    font-weight: 400;
+    text-transform: uppercase;
+    opacity: 0.85;
+    transition: all 0.3s ease;
+    transition: all 0.6s ease-in-out;
+}
+
+
+@keyframes fadeInDown {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.form-section button {
+    display: block;
+    margin: 20px auto 0 auto;
+}
+
+
+.file-upload-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    margin: 20px auto;
+}
+
+
+.file-upload-wrapper span {
+    font-size: 16px;
+    color: #e0e0e0;
+    font-weight: bold;
+    text-align: center;
+    width: 100%;
+}
+
+
+.custom-file-upload {
+    display: block;
+    width: 200px;
+    height: 200px;
+    background-image: url('../images/buttons/plus-icon.png');
+    background-size: contain; /* важно за иконката */
+    background-repeat: no-repeat;
+    background-position: center;
+    border-radius: 12px;
+    transition: all 0.3s ease;
+    cursor: pointer;
+    margin: 0 auto; /* Центрира го хоризонтално */
+    position: relative;
+    overflow: hidden;
+}
+
+
+
+.custom-file-upload input[type="file"] {
+    display: none;
+}
+
+.custom-file-upload:hover {
+    opacity: 0.85;
+}
+
+#imagePreview {
+    text-align: center;
+    margin-top: 20px;
+}
+
+#preview {
+    width: 140px;
+    height: 140px;
+    object-fit: contain;
+    border-radius: 10px;
+    border: 2px solid #00ffb7;
+    box-shadow: 0 4px 12px rgba(0,255,183,0.3);
+}
+
+
+
+
+
+.toggle-wrapper {
+    display: flex;
+    justify-content: center;
+    margin: 30px 0;
+}
+
+.toggle-switch {
+    position: relative;
+    width: 360px;
+    height: 55px;
+    border-radius: 30px;
+    overflow: hidden;
+    box-shadow: 0 0 15px rgba(0, 255, 183, 0.2);
+    transition: box-shadow 0.3s ease;
+}
+
+.toggle-switch input[type="checkbox"] {
+    display: none;
+}
+
+.toggle-switch label {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 100%;
+    background: #0e1a1e;
+    border: 2px solid #00ffb7;
+    border-radius: 30px;
+    cursor: pointer;
+    position: relative;
+    padding: 0;
+    z-index: 1;
+}
+
+.toggle-switch label .option {
+    flex: 1;
+    text-align: center;
+    line-height: 55px;
+    font-weight: bold;
+    font-size: 15px;
+    text-transform: uppercase;
+    color: #999;
+    z-index: 2;
+    transition: color 0.3s ease;
+    pointer-events: none;
+
+    user-select: none; /* 🔒 предотвратява селектиране на текста */
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+
+}
+
+.toggle-switch input[type="checkbox"]:checked + label .manual {
+    color: #ccc;
+}
+
+.toggle-switch input[type="checkbox"]:checked + label .code {
+    color: #ff00cc;
+    font-weight: 700;
+    text-shadow: 0 0 5px #00ffc8;
+}
+
+.toggle-switch input[type="checkbox"]:not(:checked) + label .manual {
+    color: #8afff7;
+    font-weight: 700;
+    text-shadow: 0 0 5px #00ffc8;
+}
+
+.toggle-switch input[type="checkbox"]:not(:checked) + label .code {
+    color: #ccc;
+}
+
+.toggle-switch label::before {
+    content: '';
+    position: absolute;
+    width: 50%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    background: linear-gradient(135deg, #00ffb7, #007c6c);
+    border-radius: 30px;
+    transform: translateX(0%);
+    transition: transform 0.35s ease;
+    z-index: 0;
+    box-shadow: inset 0 0 10px rgba(0, 255, 183, 0.5);
+}
+
+.toggle-switch input[type="checkbox"]:checked + label::before {
+    transform: translateX(100%);
+}
+
+
+
+button {
+    font-size: 1.1rem;
+    font-weight: bold;
+    padding: 14px 28px;
+    margin-top: 10px;
+    background: linear-gradient(135deg, #00ffb7, #007c6c);
+    color: #0f2027;
+    border: none;
+    border-radius: 40px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    cursor: pointer;
+    transition: all 0.3s ease-in-out;
+    box-shadow: 0 4px 15px rgba(0, 255, 183, 0.3), inset 0 0 5px #00ffb7;
+    position: relative;
+    overflow: hidden;
+    z-index: 1;
+}
+
+button::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background: linear-gradient(135deg, #00ffc8, #00c2a0);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    z-index: -1;
+}
+
+button:hover::before {
+    opacity: 1;
+}
+
+button:hover {
+    transform: scale(1.05);
+    box-shadow: 0 6px 18px rgba(0, 255, 183, 0.4), inset 0 0 10px #00ffc8;
+    color: #000;
+}
+
+
+.enemy-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    font-family: 'Orbitron', sans-serif;
+}
+
+.enemy-item {
+    display: flex;
+    align-items: center;
+    background: #111;
+    border: 1px solid #222;
+    border-radius: 12px;
+    margin-bottom: 10px;
+    padding: 10px 15px;
+    transition: background 0.3s ease, transform 0.2s ease;
+    gap: 15px;
+}
+
+.enemy-item:hover {
+    background: #1b1b1b;
+    transform: scale(1.01);
+}
+
+.enemy-logo {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid #00ffb7;
+    flex-shrink: 0;
+}
+
+.enemy-verified {
+    color: #00ffb7;
+    font-size: 18px;
+    margin-right: -5px;
+    margin-left: -5px;
+    transform: translateY(-2px);
+}
+
+.enemy-info {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    color: #eee;
+}
+
+.enemy-name {
+    font-size: 16px;
+    font-weight: bold;
+    color: #00ffb7;
+    margin-bottom: 3px;
+}
+
+.enemy-difficulty {
+    font-size: 14px;
+    color: #aaa;
+}
+
+
+
+.enemy-list-title {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 26px;
+    font-weight: 900;
+    color: #1ecfff;
+    text-shadow: 0 0 8px #1ecfff, 0 0 14px #1ecfff;
+    letter-spacing: 1px;
+    margin-top: 20px;
+    margin-bottom: 25px;
+    display: inline-block;
+    background: linear-gradient(90deg, #1ecfff 0%, #00ffb7 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    transition: transform 0.3s ease;
+}
+
+.enemy-list-title:hover {
+    transform: scale(1.04);
+    text-shadow: 0 0 12px #1ecfff, 0 0 24px #00ffb7;
+}
+
+
+
+@media (max-width: 600px) {
+    .forms-container {
+        flex-direction: column;
+        align-items: center;
+    }
+
+     .forms-container {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .form-section {
+        max-width: 90%;
+    }
+
+    body {
+        padding: 20px 10px;
+    }
+
+    h1 {
+        font-size: 32px;
+        margin-top: 80px;
+        text-align: center;
+    }
+
+    h2 {
+        font-size: 16px;
+        margin-bottom: 15px;
+    }
+
+    .toggle-wrapper {
+        margin: 20px 0;
+    }
+
+    .toggle-switch {
+        width: 280px;
+        height: 48px;
+    }
+
+    .toggle-switch label {
+        font-size: 12px;
+    }
+
+    .toggle-switch label .option {
+        font-size: 13px;
+        line-height: 48px;
+    }
+
+    .forms-container {
+        flex-direction: column;
+        gap: 20px;
+        align-items: center;
+    }
+
+    .form-section {
+        max-width: 100%;
+        padding: 20px 15px;
+    }
+
+    .form-section input[type="text"],
+    .form-section input[type="number"] {
+        font-size: 14px;
+        padding: 10px;
+    }
+
+}
+
