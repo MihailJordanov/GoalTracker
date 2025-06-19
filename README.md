@@ -22,7 +22,11 @@ Perfect for amateur leagues, local clubs, and friends who love playing together 
 
 ## 🚀 Getting Started (Developer Mode)
 
+## 🚀 Getting Started (Developer Mode)
+
+To run the project locally:
+
 1. **Clone the repository**
    ```bash
-   git clone https://github.com/MihailJordanov/YourTeam.git
-   cd YourTeam
+   git clone https://github.com/MihailJordanov/GoalTracker.git
+   cd GoalTracker
