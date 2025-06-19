@@ -116,7 +116,7 @@
 
 .stat-box {
     background: #0f2a30; /* твърд фон за контраст */
-    padding: 24px 18px;
+    padding: 8px 10px;
     border-radius: 16px;
     width: 8.6%;
     text-align: center;
@@ -166,6 +166,20 @@
 
 
 
+.mini-stats-title {
+    font-size: 1.2rem;
+    color: #000000;
+    text-align: center;
+    margin: 20px auto 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    font-weight: 600;
+    width: fit-content;
+    padding-bottom: 4px;
+}
+
+
+
 @media (max-width: 600px) {
     .mini-match-history {
         padding: 16px 18px;
@@ -206,7 +220,6 @@
     .stat-box {
         width: 27.5%; /* Прави ги достатъчно тесни, за да се съберат */
         min-width: 90px; /* Гарантира четимост */
-
         text-align: center;         /* Центрира текста хоризонтално */
         box-sizing: border-box;     /* Заедно с padding да не раздува ширината */
         display: flex;
