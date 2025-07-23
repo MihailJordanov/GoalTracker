@@ -27,12 +27,15 @@
                         <select id="team_one" name="team_one" required>
                             <option value="Juventus">Juventus</option>
                         </select>
-
-                        <label for="team_two">Away Team:</label>
-                        <select id="team_two" name="enemy_team_id" required>
-                            <option value="" disabled selected>Select an Away Team</option>
-                            <!-- Опции ще бъдат добавени тук чрез JavaScript -->
-                        </select>   
+                        
+                        <div class="away-team-row">
+                            <label for="team_two">Away Team:</label>
+                            <select id="team_two" name="enemy_team_id" required>
+                                <option value="" disabled selected>Select an Away Team</option>
+                                <!-- Опции ще бъдат добавени тук чрез JavaScript -->
+                            </select>  
+                            <a href="{{ url_for('enemy_team_bp.enemy_team_list', team_id=user_team[0]) }}" class="add-away-button">+ Add Enemy Team</a>
+                        </div>
 
                         <label for="team_one_result">Home Team Goals:</label>
                         <input type="number" id="team_one_result" name="team_one_result" min="0" class="short" required>

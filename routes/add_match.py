@@ -16,7 +16,7 @@ def go_to_add_match():
     conn = get_db_connection()
     cur = conn.cursor()
 
-    # 1. Check if user has player_type > 0
+    # Проверка за права
     cur.execute("SELECT player_type FROM user_team WHERE user_id = %s", (user_id,))
     result = cur.fetchone()
     if not result or result[0] <= 0:
@@ -25,9 +25,26 @@ def go_to_add_match():
         conn.close()
         return redirect(url_for('home_bp.home'))
 
+    # 🟢 Взимаме user_team
+    cur.execute("""
+        SELECT t.id, t.name
+        FROM user_team ut
+        JOIN teams t ON ut.team_id = t.id
+        WHERE ut.user_id = %s
+    """, (user_id,))
+    user_team = cur.fetchone()
+
+    if not user_team:
+        flash("You must be part of a team to add a match.", "error")
+        cur.close()
+        conn.close()
+        return redirect(url_for('home_bp.home'))
+
     cur.close()
     conn.close()
-    return render_template('add_match.html')
+
+    # 🟢 Подаваме user_team към шаблона
+    return render_template('add_match.html', user_team=user_team)
 
 
 # 1. Get team and player type
