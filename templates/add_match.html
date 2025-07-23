@@ -70,7 +70,7 @@
                             <option value="3">3v3</option>
                             <option value="4">4v4</option>
                             <option value="5">5v5</option>
-                            <option value="6">6v6</option>
+                            <option value="6" selected>6v6</option>
                             <option value="7">7v7</option>
                             <option value="8">8v8</option>
                             <option value="9">9v9</option>
@@ -80,7 +80,8 @@
 
 
                         <label for="schema">Tactical Schema:</label>
-                        <input type="text" id="schema" name="schema" placeholder="e.g. 4-3-3, 3-5-2" pattern="^\d+(-\d+)+$" title="Use only digits and hyphens (e.g. 4-3-3)">
+                        <input type="text" id="schema" name="schema" value="2-1-2" placeholder="e.g. 4-3-3, 3-5-2" pattern="^\d+(-\d+)+$" title="Use only digits and hyphens (e.g. 4-3-3)">
+
 
                         <label for="type">Type:</label>
                         <select id="type" name="type" required>

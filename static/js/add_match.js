@@ -48,7 +48,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     userSection.classList.add('user-section');
 
                     userSection.innerHTML = `
-                        <h3>${user.last_name}</h3>
+                        <h3>${user.last_name}</h3>  
                         <label class="played-label">
                             <input type="checkbox" name="played_${user.id}" class="played-checkbox" data-user-id="${user.id}" checked>
                             Played
@@ -58,24 +58,29 @@ document.addEventListener('DOMContentLoaded', function() {
                             <input type="number" id="goals_${user.id}" name="goals_${user.id}" class="stats-field" value="0" min="0">
                             <label for="assists_${user.id}">Assists:</label>
                             <input type="number" id="assists_${user.id}" name="assists_${user.id}" class="stats-field" value="0" min="0">
-                            <label for="shoots_${user.id}">Shoots:</label>
-                            <input type="number" id="shots_${user.id}" name="shots_${user.id}" class="stats-field" value="0" min="0">
-                            <label for="shoots_on_target_${user.id}">Shoots on Target:</label>
-                            <input type="number" id="shots_on_target_${user.id}" name="shots_on_target_${user.id}" class="stats-field" value="0" min="0">
-                            <label for="blocked_shoots_${user.id}">Blocked Shoots:</label>
-                            <input type="number" id="blocked_shoots_${user.id}" name="blocked_shoots_${user.id}" class="stats-field" value="0" min="0">
-                            <label for="saved_goals_${user.id}">Saved Shoots:</label>
-                            <input type="number" id="saved_goals_${user.id}" name="saved_goals_${user.id}" class="stats-field" value="0" min="0">
-                            <label for="passes_${user.id}">Passes:</label>
-                            <input type="number" id="passes_${user.id}" name="passes_${user.id}" class="stats-field" value="25" min="0">
-                            <label for="fouls_${user.id}">Fouls:</label>
-                            <input type="number" id="fouls_${user.id}" name="fouls_${user.id}" class="stats-field" value="0" min="0">
-                            <label for="yellow_cards_${user.id}">Yellow Cards:</label>
-                            <input type="number" id="yellow_cards_${user.id}" name="yellow_cards_${user.id}" class="stats-field" value="0" min="0" max="2">
-                            <label for="red_cards_${user.id}">Red Cards:</label>
-                            <input type="number" id="red_cards_${user.id}" name="red_cards_${user.id}" class="stats-field" value="0" min="0" max="1">
+
+                            <div class="extra-stats" style="display: none; margin-top: 10px;">
+                                <label for="shots_${user.id}">Shoots:</label>
+                                <input type="number" id="shots_${user.id}" name="shots_${user.id}" class="stats-field" value="0" min="0">
+                                <label for="shots_on_target_${user.id}">Shoots on Target:</label>
+                                <input type="number" id="shots_on_target_${user.id}" name="shots_on_target_${user.id}" class="stats-field" value="0" min="0">
+                                <label for="blocked_shoots_${user.id}">Blocked Shoots:</label>
+                                <input type="number" id="blocked_shoots_${user.id}" name="blocked_shoots_${user.id}" class="stats-field" value="0" min="0">
+                                <label for="saved_goals_${user.id}">Saved Shoots:</label>
+                                <input type="number" id="saved_goals_${user.id}" name="saved_goals_${user.id}" class="stats-field" value="0" min="0">
+                                <label for="passes_${user.id}">Passes:</label>
+                                <input type="number" id="passes_${user.id}" name="passes_${user.id}" class="stats-field" value="25" min="0">
+                                <label for="fouls_${user.id}">Fouls:</label>
+                                <input type="number" id="fouls_${user.id}" name="fouls_${user.id}" class="stats-field" value="0" min="0">
+                                <label for="yellow_cards_${user.id}">Yellow Cards:</label>
+                                <input type="number" id="yellow_cards_${user.id}" name="yellow_cards_${user.id}" class="stats-field" value="0" min="0" max="2">
+                                <label for="red_cards_${user.id}">Red Cards:</label>
+                                <input type="number" id="red_cards_${user.id}" name="red_cards_${user.id}" class="stats-field" value="0" min="0" max="1">
+                            </div>
+                            <button type="button" class="toggle-extra-stats">Show more</button>
                         </div>
-                    `; // 🟢 така е правилно
+                    `;
+
 
                 
                 container.appendChild(userSection);
@@ -92,7 +97,18 @@ document.addEventListener('DOMContentLoaded', function() {
                         userSection.classList.add('inactive');
                     }
                 }
-                
+
+                // 🔽 Toggle за "Show more"
+                const toggleButton = userSection.querySelector('.toggle-extra-stats');
+                const extraStats = userSection.querySelector('.extra-stats');
+
+                toggleButton.addEventListener('click', () => {
+                    const isHidden = extraStats.style.display === 'none';
+                    extraStats.style.display = isHidden ? 'block' : 'none';
+                    toggleButton.textContent = isHidden ? 'Hide extra stats' : 'Show more';
+                });
+
+
                 
                 toggleStatsFields();
                 checkbox.addEventListener('change', toggleStatsFields);

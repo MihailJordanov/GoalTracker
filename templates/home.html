@@ -32,6 +32,7 @@
                             <li><a href="#" onclick="openInviteModal()">Invite Player</a></li>
                             <li><a href="{{ url_for('team_bp.edit', team_id=user_team[0]) }}">Edit Team</a></li>
                             <li><a href="/match-history">Match History</a></li>
+                            <li><a href="{{ url_for('enemy_team_bp.enemy_team_list', team_id=user_team[0]) }}">Adding Enemy Teams</a></li>
                         </ul>
                     </li>
                 {% endif %}
