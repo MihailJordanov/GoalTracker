@@ -179,7 +179,7 @@ def add_matches():
         match_type = request.form.get('type')
         schema = request.form.get('schema')
         match_format = int(request.form.get('format'))
-        home_team = request.form.get('team_one')
+        home_team = request.form.get('team_one') or str(team_id)
         home_result = int(request.form.get('team_one_result'))
         away_result = int(request.form.get('team_two_result'))
         home_penalty = safe_int(request.form.get('home_team_penalty'))
@@ -284,11 +284,52 @@ def get_teams():
         print("Error while fetching enemy teams:", error_message)
         return jsonify([])
 
-# Returns all locations (example)
+# Returns all locations 
 @add_match_bp.route('/getLocations')
 def get_locations():
-    return jsonify(["Stadium A", "Stadium B", "City Park", "Training Center"])
+    if 'user_id' not in session:
+        return jsonify([])
 
+    user_id = session['user_id']
+    try:
+        conn = get_db_connection()
+        cur = conn.cursor()
+
+        # Get team_id of current user
+        cur.execute("SELECT team_id FROM user_team WHERE user_id = %s", (user_id,))
+        result = cur.fetchone()
+        if not result:
+            return jsonify([])
+
+        team_id = result[0]
+
+        # Get all locations for this team
+        cur.execute("""
+            SELECT id, name, city, country
+            FROM locations
+            WHERE team_id = %s
+            ORDER BY name ASC
+        """, (team_id,))
+        rows = cur.fetchall()
+
+        locations = []
+        for row in rows:
+            loc = {
+                "id": row[0],
+                "name": row[1],
+                "city": row[2],
+                "country": row[3]
+            }
+            locations.append(loc)
+
+        cur.close()
+        conn.close()
+        return jsonify(locations)
+
+    except Exception as e:
+        error_message = str(e).encode('utf-8', errors='replace').decode()
+        print("Error while fetching locations:", error_message)
+        return jsonify([])
 
 # Returns all users from the current user's team
 @add_match_bp.route('/getUsers')

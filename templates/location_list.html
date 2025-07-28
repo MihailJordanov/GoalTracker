@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Location</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/location_list.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+     <div class="navbar">
+        <nav>
+            <ul>
+                <li><a href="/home">Home</a></li>
+            </ul>
+        </nav>
+    </div>
+
+    <div class="flash-messages">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                <ul>
+                    {% for category, message in messages %}
+                        <li class="flash-message {{ category }}">{{ message }}</li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+        {% endwith %}
+    </div>
+
+
+    <h1>Add New Location</h1>
+
+    <form method="POST">
+        <input type="text" name="country" placeholder="Country (optional)">
+        <input type="text" name="city" placeholder="City (optional)">
+        <input type="text" name="name" placeholder="Location Name" required>
+        <button type="submit">Add Location</button>
+    </form>
+
+    {% if message %}
+        <div class="{{ 'success' if success else 'error' }}">{{ message }}</div>
+    {% endif %}
+
+    {% if locations %}
+        <h2>Existing Locations</h2>
+        <ul class="location-list">
+            {% for loc in locations %}
+                <li>{{ loc[3] }} {% if loc[2] %} – {{ loc[2] }}{% endif %}{% if loc[1] %}, {{ loc[1] }}{% endif %}</li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+
+
+</body>
+</html>

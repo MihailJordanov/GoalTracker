@@ -1,0 +1,236 @@
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700&display=swap');
+
+
+.navbar {
+    position: fixed;
+    top: 0;
+    width: 100%;
+    background-color: rgba(0, 0, 0, 0.544);
+    padding: 15px 0;
+    z-index: 1000;
+    box-shadow: 0 0 10px rgba(0,0,0,0.3);
+}
+
+.navbar nav ul {
+    display: flex;
+    justify-content: center;
+    list-style: none;
+    gap: 30px;
+}
+
+.navbar nav ul li a {
+    color: #00ffb7;
+    text-decoration: none;
+    font-weight: bold;
+    font-size: 24px;
+    padding: 8px 15px;
+    border-radius: 5px;
+    transition: 0.2s ease-in-out;
+}
+
+.navbar nav ul li a:hover {
+    color: #00ffc8;
+    text-shadow: 0 0 5px #00ffc8;
+}
+
+body {
+    margin: 0;
+    padding: 60px 20px;
+    font-family: 'Orbitron', sans-serif;
+    background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+    color: #ffffff;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background-attachment: fixed;
+    background-size: cover;
+    box-sizing: border-box;
+}
+
+/* Заглавие */
+h1 {
+    font-size: 48px;
+    color: #00ffb7;
+    margin-bottom: 30px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    text-align: center;
+}
+
+/* Подзаглавие */
+h2 {
+    font-size: 20px;
+    color: #cccccc;
+    margin-top: 40px;
+    margin-bottom: 20px;
+    text-align: center;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+/* Формата */
+form {
+    background: rgba(255, 255, 255, 0.05);
+    padding: 25px 30px;
+    border-radius: 16px;
+    border: 2px solid #00ffb7;
+    box-shadow: 0 0 12px rgba(0, 255, 183, 0.15);
+    max-width: 420px;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+/* Входни полета */
+input[type="text"] {
+    width: 100%;
+    padding: 12px;
+    margin-bottom: 15px;
+    border: none;
+    border-radius: 10px;
+    background-color: rgba(255, 255, 255, 0.9);
+    color: #000;
+    font-size: 14px;
+    font-family: 'Orbitron', sans-serif;
+    box-sizing: border-box;
+    transition: all 0.3s ease;
+}
+
+input[type="text"]:focus {
+    outline: none;
+    box-shadow: 0 0 0 2px #00ffb7;
+}
+
+/* Бутон */
+button {
+    display: block;
+    margin: 0 auto;
+    font-size: 1rem;
+    font-weight: bold;
+    padding: 14px 28px;
+    background: linear-gradient(135deg, #00ffb7, #007c6c);
+    color: #0f2027;
+    border: none;
+    border-radius: 40px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    cursor: pointer;
+    transition: all 0.3s ease-in-out;
+    box-shadow: 0 4px 15px rgba(0, 255, 183, 0.3), inset 0 0 5px #00ffb7;
+    position: relative;
+    overflow: hidden;
+    z-index: 1;
+}
+
+button:hover {
+    transform: scale(1.05);
+    box-shadow: 0 6px 18px rgba(0, 255, 183, 0.4), inset 0 0 10px #00ffc8;
+    color: #000;
+}
+
+/* Flash съобщения */
+.flash-messages ul {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 20px 0;
+}
+
+.flash-message {
+    padding: 12px;
+    margin: 10px 0;
+    border-radius: 10px;
+    text-align: center;
+    font-weight: bold;
+    animation: fadeIn 0.4s ease-out;
+}
+
+.flash-message.success {
+    background-color: #4CAF50;
+    color: white;
+}
+
+.flash-message.error {
+    background-color: #f44336;
+    color: white;
+}
+
+/* Списък с локации */
+.location-list {
+    list-style: none;
+    padding: 0;
+    margin: 20px auto;
+    max-width: 420px;
+    width: 100%;
+}
+
+.location-list li {
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid #00ffb7;
+    border-radius: 12px;
+    padding: 12px 16px;
+    margin-bottom: 12px;
+    color: #ffffff;
+    font-size: 15px;
+    font-weight: 500;
+    transition: background 0.3s ease;
+}
+
+.location-list li:hover {
+    background: rgba(0, 255, 183, 0.08);
+}
+
+
+/* Анимация */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Responsive */
+@media (max-width: 600px) {
+
+    .navbar {
+        padding: 0px 0;
+    }
+
+
+    body {
+        padding: 80px 10px;
+    }
+
+    h1 {
+        font-size: 30px;
+    }
+
+    form,
+    ul {
+        width: 100%;
+        max-width: 100%;
+        padding: 15px;
+        margin: 0;
+        box-sizing: border-box;
+    }
+
+    input[type="text"] {
+        font-size: 14px;
+        padding: 10px;
+    }
+
+    button {
+        font-size: 0.95rem;
+        padding: 12px 20px;
+        width: 100%;
+    }
+
+    ul li {
+        font-size: 14px;
+        padding: 10px 12px;
+    }
+}
+

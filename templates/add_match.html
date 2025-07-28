@@ -23,11 +23,11 @@
                 <div class="match-info">
                     <h2>Add Match</h2>
                     
-                        <label for="team_one">Home Team:</label>
-                        <select id="team_one" name="team_one" required>
-                            <option value="Juventus">Juventus</option>
+                      <label for="team_one">Home Team:</label>
+                        <select id="team_one" name="team_one" required class="readonly-select">
+                            <option value="{{ user_team[0] }}" selected>{{ user_team[1] }}</option>
                         </select>
-                        
+
                         <div class="away-team-row">
                             <label for="team_two">Away Team:</label>
                             <select id="team_two" name="enemy_team_id" required>
@@ -66,6 +66,7 @@
                             <option value="" disabled selected>Select a Location</option>
                             <!-- Опции ще бъдат добавени тук чрез JavaScript -->
                         </select> 
+                        <a href="{{ url_for('location.location_list', team_id=user_team[0]) }}" class="add-away-button">+ Add Location</a>
                         
                         <label for="format">Match Format:</label>
                         <select id="format" name="format" required>

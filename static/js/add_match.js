@@ -26,16 +26,18 @@ document.addEventListener('DOMContentLoaded', function() {
     fetch('/getLocations')
         .then(response => response.json())
         .then(locations => {
-            locations.forEach(location => {
-                var option = document.createElement('option');
-                option.value = location;
-                option.textContent = location;
+            const locationSelect = document.getElementById('location');
+            locationSelect.innerHTML = '<option value="" disabled selected>Select a Location</option>';
+
+            locations.forEach(loc => {
+                const option = document.createElement('option');
+                option.value = loc.id;
+                option.textContent = loc.name;
                 locationSelect.appendChild(option);
             });
         })
         .catch(error => {
             console.error('Error fetching locations:', error);
-            alert('Error loading locations.');
         });
 
     // Извличане на потребителите и динамично създаване на формата за статистики
@@ -284,5 +286,7 @@ document.addEventListener('DOMContentLoaded', function() {
             }); 
         }
 
+
+    
 
 });

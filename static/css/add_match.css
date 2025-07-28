@@ -220,8 +220,6 @@ background: #00ffb7;
     box-shadow: 0 0 10px #00ffb7, 0 0 20px #00ffb7;
 }
 
-
-
 @media (max-width: 600px) {
     body {
         padding: 20px;
