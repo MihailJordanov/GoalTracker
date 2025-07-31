@@ -1,3 +1,5 @@
+import os
+from dotenv import load_dotenv
 from flask import Flask
 from flask_login import LoginManager, UserMixin
 from routes.auth import auth_bp
@@ -13,7 +15,10 @@ from routes.location_list import location_bp
 from database.db import get_db_connection  # Импортираме връзката към базатаfrom routes.home import home_bp
 
 app = Flask(__name__)
-app.secret_key = 'JUVJUVJUV'
+
+load_dotenv()
+
+app.secret_key = os.environ.get('SECRET_KEY')
     
 # Flask-Login setup
 login_manager = LoginManager()  
