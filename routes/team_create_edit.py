@@ -10,14 +10,6 @@ from database.db import get_db_connection
 
 team_bp = Blueprint('team_bp', __name__)
 
-def get_db_connection():
-    return psycopg2.connect(
-        dbname="YourTeam",
-        user="misho",
-        password="1234",
-        host="localhost",
-        port="5432"
-    )
 
 UPLOAD_FOLDER = "static/uploads"
 if not os.path.exists(UPLOAD_FOLDER):
