@@ -19,11 +19,20 @@ def go_to_add_match():
     # Проверка за права
     cur.execute("SELECT player_type FROM user_team WHERE user_id = %s", (user_id,))
     result = cur.fetchone()
-    if not result or result[0] <= 0:
+    
+    if result is None or result[0] is None:
+        has_permission = False
+    else:
+        player_type = result[0]
+        has_permission = player_type > 0
+
+    if not has_permission:
         flash("You do not have permission to access this page.", "error")
         cur.close()
         conn.close()
         return redirect(url_for('home_bp.home'))
+
+
 
     # 🟢 Взимаме user_team
     cur.execute("""

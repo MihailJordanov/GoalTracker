@@ -277,6 +277,35 @@ input:focus {
 
 
 
+h3 {
+    font-size: 1.8rem;
+    font-family: 'Orbitron', sans-serif;
+    color: #00ffb7;
+    text-shadow: 0 0 5px rgba(0, 255, 183, 0.6);
+    border-bottom: 2px solid rgba(0, 255, 183, 0.4);
+    padding-bottom: 8px;
+    margin-top: 40px;
+    margin-bottom: 20px;
+    letter-spacing: 1.2px;
+    text-transform: uppercase;
+    position: relative;
+    text-align: center;
+}
+
+h3::after {
+    content: '';
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    bottom: -6px;
+    width: 60%;
+    height: 3px;
+    background: linear-gradient(to right, #00ffb7, #00bfff);
+    border-radius: 2px;
+    box-shadow: 0 0 5px #00ffb7;
+}
+
+
 .team-code {
     margin-top: 20px;
     text-align: center;

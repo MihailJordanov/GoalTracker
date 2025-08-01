@@ -1,0 +1,35 @@
+<link rel="stylesheet" href="{{ url_for('static', filename='css/team_players_list.css') }}">
+<div class="team-players-list">
+    {% for user_id, player in players.items() %}
+        <form class="player-card" method="POST" action="{{ url_for('manage_players_bp.update_player', team_id=team_id) }}">
+            <input type="hidden" name="user_id" value="{{ user_id }}">
+
+            <img src="{{
+                url_for('static', filename='uploads/' + player.image)
+                if player.image else
+                url_for('static', filename='images/buttons/default_player_img_4.png')
+            }}">
+
+            <div class="player-info">
+                <span class="player-name">{{ player.first_name }} {{ player.last_name }}</span>
+
+                <label>Number:</label>
+                <input type="number" name="number" value="{{ player.number }}" min="1" max="99" required>
+
+                <label>Type:</label>
+
+                {% if player.player_type == 3 %}
+                    <span class="readonly-type">Creator</span>
+                {% else %}
+                    <select name="player_type" required>
+                        <option value="0" {% if player.player_type == 0 %}selected{% endif %}>Fan</option>
+                        <option value="1" {% if player.player_type == 1 %}selected{% endif %}>User</option>
+                        <option value="2" {% if player.player_type == 2 %}selected{% endif %}>Admin</option>
+                    </select>
+                {% endif %}
+
+                <button type="submit">Save</button>
+            </div>
+        </form>
+    {% endfor %}
+</div>

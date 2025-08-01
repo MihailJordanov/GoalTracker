@@ -128,7 +128,15 @@
             <button type="submit" class="edit-btn">Save Changes</button>
         </form>
         
+            <!-- Players Management Section (Loaded from Partial) -->
+            <h3>Manage Players</h3>
+            <iframe src="{{ url_for('manage_players_bp.render_players_partial', team_id=team[0]) }}"
+                    style="width: 100%; border: none; height: 600px;"></iframe>
+
     </div>
+
+
+
 
     <script src="{{ url_for('static', filename='js/edit_team.js') }}"></script> <!-- Добавяме линк към външния JavaScript файл -->
 </body>
