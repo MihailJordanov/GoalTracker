@@ -13,7 +13,6 @@ from routes.edit_match import edit_match_bp
 from routes.enemy_team_list import enemy_team_bp
 from routes.location_list import location_bp
 from routes.manage_players import manage_players_bp
-from routes.utility import utility_bp;
 from database.db import get_db_connection  # Импортираме връзката към базатаfrom routes.home import home_bp
 
 app = Flask(__name__)
@@ -39,7 +38,6 @@ app.register_blueprint(edit_match_bp)
 app.register_blueprint(enemy_team_bp)
 app.register_blueprint(location_bp)
 app.register_blueprint(manage_players_bp)
-app.register_blueprint(utility_bp)
 
 # Дефиниране на клас User
 class User(UserMixin):
