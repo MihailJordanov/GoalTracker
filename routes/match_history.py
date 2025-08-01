@@ -67,7 +67,7 @@ def get_team_matches(team_id):
         LEFT JOIN enemy_teams et ON m.enemy_team_id = et.id
         WHERE m.team_id = %s
         ORDER BY m.date DESC
-        LIMIT 20;
+        LIMIT 100;
     """, (team_id,))
 
     rows = cur.fetchall()
