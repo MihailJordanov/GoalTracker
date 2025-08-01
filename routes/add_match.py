@@ -361,10 +361,11 @@ def get_users():
 
         # Get all users in that team
         cur.execute("""
-            SELECT u.id, u.last_name, ut.player_type
+            SELECT u.id, u.last_name, u.number, ut.player_type
             FROM users u
             JOIN user_team ut ON u.id = ut.user_id
             WHERE ut.team_id = %s
+            ORDER BY u.number
         """, (team_id,))
         rows = cur.fetchall()
 
@@ -372,8 +373,9 @@ def get_users():
         for row in rows:
             users.append({
                 "id": row[0],
-                "last_name": row[1],
-                "type": row[2]
+                "number" : row[1],
+                "last_name": row[2],
+                "type": row[3]
             })
 
         cur.close()

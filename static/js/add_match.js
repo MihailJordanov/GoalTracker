@@ -50,7 +50,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     userSection.classList.add('user-section');
 
                     userSection.innerHTML = `
-                        <h3>${user.last_name}</h3>  
+                        <h3>${user.last_name} <span class="player-number">${user.number}</span></h3>  
                         <label class="played-label">
                             <input type="checkbox" name="played_${user.id}" class="played-checkbox" data-user-id="${user.id}" checked>
                             Played
