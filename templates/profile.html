@@ -32,7 +32,7 @@
         <div class="profile-user-section">
             <form id="image-upload-form" action="/update-profile-picture" method="POST" enctype="multipart/form-data">
                 <label for="profile-picture-upload" class="profile-image-label">
-                    <img src="{{ url_for('static', filename='images/' + user.profile_picture) }}"
+                    <img src="{{ url_for('static', filename='uploads/' + user.profile_picture) }}"
                          alt="Profile Picture" class="player-img">
                 </label>
                 <input type="file" id="profile-picture-upload" name="profile_picture" accept="image/*" style="display: none;" onchange="this.form.submit();">
