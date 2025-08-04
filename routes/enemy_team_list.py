@@ -3,9 +3,18 @@ from flask import Blueprint, render_template, request, redirect, url_for, flash,
 from werkzeug.utils import secure_filename
 from database.db import get_db_connection
 import psycopg2.extras 
+import cloudinary
+import cloudinary.uploader
 
 enemy_team_bp = Blueprint('enemy_team_bp', __name__)
 UPLOAD_FOLDER = os.path.join('static', 'uploads', 'enemy_teams')
+
+
+cloudinary.config(
+    cloud_name=os.environ.get('CLOUDINARY_CLOUD_NAME'),
+    api_key=os.environ.get('CLOUDINARY_API_KEY'),
+    api_secret=os.environ.get('CLOUDINARY_API_SECRET')
+)
 
 # === Проверки и валидации ===
 
@@ -97,14 +106,13 @@ def handle_add_enemy_team(team_id):
 
     return redirect(url_for('enemy_team_bp.enemy_team_list', team_id=team_id))
 
+
 def save_image(image_file):
     if image_file:
-        filename = secure_filename(image_file.filename)
-        os.makedirs(UPLOAD_FOLDER, exist_ok=True)
-        path = os.path.join(UPLOAD_FOLDER, filename)
-        image_file.save(path)
-        return filename
+        upload_result = cloudinary.uploader.upload(image_file)
+        return upload_result['secure_url']  # ще запазим директния линк
     return None
+
 
 def save_enemy_team_to_db(team_id, name, difficulty, image_filename, team_code):
     conn = get_db_connection()

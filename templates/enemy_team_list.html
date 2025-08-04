@@ -94,12 +94,8 @@
                 {% for team in enemy_teams %}
                    <li class="enemy-item">
 
-                    <img src="{{ url_for('static', filename='uploads/enemy_teams/' ~ team.image) }}"
-                        alt="{{ team.name }}"
-                        class="enemy-logo">
-                    <p style="font-size: 12px; color: gray;">
-                        Path: {{ url_for('static', filename='uploads/enemy_teams/' ~ team.image) }}
-                    </p>
+                    <img src="{{ team.image }}" alt="{{ team.name }}" class="enemy-logo">
+
 
 
                     <div class="enemy-info">
