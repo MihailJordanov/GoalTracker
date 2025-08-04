@@ -90,7 +90,7 @@ def get_team_matches(team_id):
             home_pen = match.get('home_team_penalty')
             away_pen = match.get('away_team_penalty')
             if home_pen is not None and away_pen is not None and home_pen != away_pen:
-                match['outcome'] = 'win' if home_pen > away_pen else 'loss'
+                match['outcome'] = 'win' if home_pen > away_pen else 'loss' 
             else:
                 match['outcome'] = 'draw'
 
@@ -99,7 +99,9 @@ def get_team_matches(team_id):
             match['home_team_logo'] = url_for('static', filename=f'uploads/{match["home_team_logo"]}')
         
         if match.get('away_team_logo'):
-            match['away_team_logo'] = url_for('static', filename=f'uploads/{match["away_team_logo"]}')
+            if not match['away_team_logo'].startswith('http'):
+                match['away_team_logo'] = url_for('static', filename=f'uploads/{match["away_team_logo"]}')
+
 
     cur.close()
     conn.close()

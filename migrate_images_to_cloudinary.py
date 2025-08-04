@@ -1,46 +1,56 @@
 import os
+import psycopg2
 import cloudinary
 import cloudinary.uploader
-from database.db import get_db_connection
+from PIL import Image
 
-# Cloudinary конфигурация
+# === Настрой Cloudinary ===
 cloudinary.config(
-    cloud_name=os.environ.get("CLOUDINARY_CLOUD_NAME"),
-    api_key=os.environ.get("CLOUDINARY_API_KEY"),
-    api_secret=os.environ.get("CLOUDINARY_API_SECRET")
+    cloud_name="diael5zdg",
+    api_key="856348268889796",
+    api_secret="79r4BETBHkb4UigPjbmGNvaPj9o"
 )
 
-UPLOAD_PATH = os.path.join("static", "uploads", "enemy_teams")
+# === Настрой връзка към Render база ===
+conn = psycopg2.connect("postgresql://goaltracker_db_eu_user:kPPHMGnWrx5wHsYwXKvY3lnmPTOCLs9D@dpg-d25lph7diees73c20q00-a.frankfurt-postgres.render.com/goaltracker_db_eu?sslmode=require")
+cur = conn.cursor()
 
-def migrate_images():
-    conn = get_db_connection()
-    cur = conn.cursor()
+# === Извлечи enemy teams ===
+cur.execute("SELECT id, image FROM enemy_teams")
+rows = cur.fetchall()
 
-    # Взимаме всички със стар локален път
-    cur.execute("SELECT id, image FROM enemy_teams WHERE image LIKE 'enemy_teams/%'")
-    rows = cur.fetchall()
+for row in rows:
+    id_, image = row
+    local_path = os.path.join("static", "uploads", "enemy_teams", image)
+    if not os.path.exists(local_path):
+        print(f"❌ File not found: {local_path}")
+        continue
 
-    for enemy_id, image_path in rows:
-        full_path = os.path.join(UPLOAD_PATH, os.path.basename(image_path))
-
-        if not os.path.exists(full_path):
-            print(f"❌ Image not found: {full_path}")
+    file_ext = os.path.splitext(image)[1].lower()
+    if file_ext in [".jpg", ".jpeg"]:
+        # Конвертирай в PNG временно
+        try:
+            with Image.open(local_path) as im:
+                png_path = os.path.splitext(local_path)[0] + ".png"
+                im.save(png_path, "PNG")
+                local_path = png_path
+        except Exception as e:
+            print(f"⚠️ Failed to convert {image} to PNG: {e}")
             continue
 
-        print(f"📤 Uploading {full_path}...")
-        result = cloudinary.uploader.upload(full_path)
+    print(f"📤 Uploading {local_path}...")
 
-        if 'secure_url' in result:
-            cloud_url = result['secure_url']
-            cur.execute("UPDATE enemy_teams SET image = %s WHERE id = %s", (cloud_url, enemy_id))
-            print(f"✅ Updated ID {enemy_id} with {cloud_url}")
-        else:
-            print(f"⚠️ Upload failed for {image_path}")
+    try:
+        result = cloudinary.uploader.upload(local_path)
+        cloud_url = result['secure_url']
+        cur.execute("UPDATE enemy_teams SET image = %s WHERE id = %s", (cloud_url, id_))
+        print(f"✅ Updated ID {id_} with {cloud_url}")
+    except Exception as e:
+        print(f"❌ Failed to upload {local_path}: {e}")
 
-    conn.commit()
-    cur.close()
-    conn.close()
-    print("✅ Migration complete.")
+# === Запази промените ===
+conn.commit()
+cur.close()
+conn.close()
 
-if __name__ == "__main__":
-    migrate_images()
+print("✅ Migration complete.")
