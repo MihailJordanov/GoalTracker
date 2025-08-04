@@ -1,6 +1,8 @@
-# ⚽ YourTeam – Football Stats & Team Tracker
+# ⚽ GoalTracker – Football Stats & Team Tracker
 
-YourTeam is a modern web application that helps players and teams track their football performance, view detailed match history, create or join teams, and monitor progress in real-time.  
+🌐 **Live Demo:** [https://goaltracker-p1ve.onrender.com/](https://goaltracker-p1ve.onrender.com/)
+
+GoalTracker is a modern web application that helps players and teams track their football performance, view detailed match history, create or join teams, and monitor progress in real-time.  
 Perfect for amateur leagues, local clubs, and friends who love playing together and want to level up their game.
 
 ## 🌟 Features
