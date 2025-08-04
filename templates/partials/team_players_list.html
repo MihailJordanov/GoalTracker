@@ -4,11 +4,8 @@
         <form class="player-card" method="POST" action="{{ url_for('manage_players_bp.update_player', team_id=team_id) }}">
             <input type="hidden" name="user_id" value="{{ user_id }}">
 
-            <img src="{{
-                url_for('static', filename='uploads/' + player.image)
-                if player.image else
-                url_for('static', filename='images/buttons/default_player_img_4.png')
-            }}">
+            <img src="{{ player.image if player.image else url_for('static', filename='images/buttons/default_player_img_4.png') }}">
+
 
             <div class="player-info">
                 <span class="player-name">{{ player.first_name }} {{ player.last_name }}</span>

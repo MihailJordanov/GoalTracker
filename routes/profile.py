@@ -5,8 +5,17 @@ import os
 import hashlib
 import random
 import string
+import cloudinary
+import cloudinary.uploader
 
 profile_bp = Blueprint('profile_bp', __name__)
+
+cloudinary.config(
+    cloud_name=os.environ.get('CLOUDINARY_CLOUD_NAME'),
+    api_key=os.environ.get('CLOUDINARY_API_KEY'),
+    api_secret=os.environ.get('CLOUDINARY_API_SECRET')
+)
+
 
 def get_user_from_db(user_id):
     """Извлича информация за потребителя от базата данни."""
@@ -43,6 +52,14 @@ def format_user_data(user):
     if not user:
         return None
 
+    image_path = user[6]
+    if not image_path:
+        profile_picture = url_for('static', filename='images/buttons/default_player_img_2.png')
+    elif image_path.startswith("http"):
+        profile_picture = image_path  # Cloudinary
+    else:
+        profile_picture = url_for('static', filename=f'uploads/{image_path}')  # Локално
+
     return {
         'id': generate_user_id_from_hash(user[0]),
         'first_name': user[1],
@@ -50,13 +67,14 @@ def format_user_data(user):
         'title': user[3],
         'number': user[4],
         'email': user[5],
-        'profile_picture': user[6] if user[6] else 'buttons/default_player_img_2.png',
+        'profile_picture': profile_picture,
         'type': user[7],
         'max_goals': user[8],
         'max_assists': user[9],
         'played_matches': user[10],
         'win_matches': user[11]
     }
+
 
 @profile_bp.route('/profile')
 def profile():
@@ -109,32 +127,34 @@ def update_user_picture(user_id, filename):
 
 @profile_bp.route('/update-profile-picture', methods=['POST'])
 def update_profile_picture():
-    # Проверяваме дали потребителят е избрал файл
     if 'profile_picture' not in request.files:
         flash('No file part', 'error')
         return redirect(request.url)
-    
+
     file = request.files['profile_picture']
-    
+
     if file.filename == '':
         flash('No selected file', 'error')
         return redirect(request.url)
-    
+
     if file and allowed_file(file.filename):
-        filename = secure_filename(file.filename)
-        file.save(os.path.join(UPLOAD_FOLDER, filename))
-        
-        # Актуализираме потребителското изображение в базата данни
-        user_id = get_current_user_id()  # Това трябва да е начинът да получиш текущия потребител
-        update_user_picture(user_id, filename)
-        
-        flash('Profile picture updated successfully!', 'success')
-        return redirect(url_for('profile_bp.profile'))  # Пренасочваме към страницата с профила
+        try:
+            # 👉 Качваме в Cloudinary директно от `file`
+            result = cloudinary.uploader.upload(file)
+            cloud_url = result['secure_url']
 
-    else:
-        flash('Invalid file type', 'error')
-        return redirect(request.url)
+            # 🔄 Обновяваме Cloudinary URL в базата
+            user_id = get_current_user_id()
+            update_user_picture(user_id, cloud_url)
 
+            flash('Profile picture updated successfully!', 'success')
+        except Exception as e:
+            flash(f'Cloudinary upload failed: {e}', 'error')
+
+        return redirect(url_for('profile_bp.profile'))
+
+    flash('Invalid file type', 'error')
+    return redirect(request.url)
 
 
 

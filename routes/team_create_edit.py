@@ -7,9 +7,16 @@ from werkzeug.utils import secure_filename
 import psycopg2
 from datetime import datetime, date 
 from database.db import get_db_connection 
+import cloudinary
+import cloudinary.uploader
 
 team_bp = Blueprint('team_bp', __name__)
 
+cloudinary.config(
+    cloud_name=os.environ.get('CLOUDINARY_CLOUD_NAME'),
+    api_key=os.environ.get('CLOUDINARY_API_KEY'),
+    api_secret=os.environ.get('CLOUDINARY_API_SECRET')
+)
 
 UPLOAD_FOLDER = "static/uploads"
 if not os.path.exists(UPLOAD_FOLDER):
@@ -298,15 +305,28 @@ def edit(team_id):
             return redirect(url_for('team_bp.edit', team_id=team_id))
 
         # Обработка на логото
-        logo_filename = process_logo(logo, team[2])
+        logo_filename = team[2]
+        if logo and logo.filename:
+            try:
+                result = cloudinary.uploader.upload(logo)
+                logo_filename = result['secure_url']
+            except Exception as e:
+                flash(f'Error uploading logo: {e}', 'error')
+                return redirect(url_for('team_bp.edit', team_id=team_id))
+
 
         # Обработка на background image само ако е включен
-        if enable_bg_image and team_image_bg:
-            bg_filename = process_logo(team_image_bg, team[5])
+        bg_filename = team[5]
+        if enable_bg_image and team_image_bg and team_image_bg.filename:
+            try:
+                result = cloudinary.uploader.upload(team_image_bg)
+                bg_filename = result['secure_url']
+            except Exception as e:
+                flash(f'Error uploading background image: {e}', 'error')
+                return redirect(url_for('team_bp.edit', team_id=team_id))
         elif not enable_bg_image:
-            bg_filename = None
-        else:
-            bg_filename = team[5]
+            bg_filename = None  # Премахваме фоновото изображение
+
 
         # Актуализация
         update_team(team_id, name, logo_filename, team_color, team_color_letters, bg_filename)
@@ -358,11 +378,15 @@ def create():
 
         # Запазване на логото
         logo_filename = None
-        if logo:
-            filename = secure_filename(logo.filename)
-            logo_path = os.path.join(UPLOAD_FOLDER, filename)
-            logo.save(logo_path)
-            logo_filename = filename  # Запазваме името на файла за базата данни
+        logo_filename = None
+        if logo and logo.filename:
+            try:
+                result = cloudinary.uploader.upload(logo)
+                logo_filename = result['secure_url']  # Записваме директен линк към Cloudinary
+            except Exception as e:
+                flash(f'Error uploading logo: {e}', 'error')
+                return redirect(url_for('team_bp.create'))
+
 
         new_team_id = create_team_in_db(name, country, city, year, logo_filename, team_color)
 

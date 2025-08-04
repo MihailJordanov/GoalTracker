@@ -57,7 +57,12 @@
                 <input type="file" id="logo" name="logo" accept="image/*" onchange="previewImage(event)" style="display: none;">
                 <div id="current-logo" onclick="document.getElementById('logo').click();">
                     {% if team[2] %}
-                        <img src="{{ url_for('static', filename='uploads/' + team[2]) }}" alt="Current Logo" id="preview" />
+                        <img src="{{
+                                team[2] if team[2] and 'http' in team[2]
+                                else url_for('static', filename='uploads/' + team[2]) if team[2]
+                                else url_for('static', filename='images/buttons/plus-icon.png')
+                            }}" alt="Current Logo" id="preview" />
+
                     {% else %}
                         <img src="{{ url_for('static', filename='images/buttons/plus-icon.png') }}" alt="Default Logo" id="preview" />
                     {% endif %}
@@ -80,7 +85,12 @@
                     <input type="file" id="team_image_bg" name="team_image_bg" accept="image/*" onchange="previewBgImage(event)" style="display: none;">
                     <div id="current-bg" onclick="document.getElementById('team_image_bg').click();">
                         {% if team[5] %}
-                            <img src="{{ url_for('static', filename='uploads/' + team[5]) }}" alt="Current Background" id="bg-preview" />
+                            <img src="{{
+                                    team[5] if team[5] and 'http' in team[5]
+                                    else url_for('static', filename='uploads/' + team[5]) if team[5]
+                                    else url_for('static', filename='images/buttons/plus-icon.png')
+                                }}" alt="Current Background" id="bg-preview" />
+
                         {% else %}
                             <img src="{{ url_for('static', filename='images/buttons/plus-icon.png') }}" alt="Default Background" id="bg-preview" />
                         {% endif %}

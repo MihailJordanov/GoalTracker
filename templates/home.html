@@ -84,7 +84,11 @@
                     <div class="team-logo-container">
                         {% if user_team[2] %}
                             <a href="{{ url_for('team_bp.edit', team_id=user_team[0]) }}" class="edit-logo-button">
-                                <img src="{{ url_for('static', filename='uploads/' + user_team[2]) }}" alt="Team Logo" class="team-logo">
+                                <img src="{{
+                                        user_team[2] if user_team[2] and 'http' in user_team[2]
+                                        else url_for('static', filename='uploads/' + user_team[2]) if user_team[2]
+                                        else url_for('static', filename='images/buttons/plus-icon.png')
+                                    }}" alt="Team Logo" class="team-logo">
                             </a>
                         {% else %}
                             <p>There is no logo for this team.</p>
