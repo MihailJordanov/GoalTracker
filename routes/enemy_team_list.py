@@ -103,7 +103,7 @@ def save_image(image_file):
         os.makedirs(UPLOAD_FOLDER, exist_ok=True)
         path = os.path.join(UPLOAD_FOLDER, filename)
         image_file.save(path)
-        return f'enemy_teams/{filename}'
+        return filename
     return None
 
 def save_enemy_team_to_db(team_id, name, difficulty, image_filename, team_code):
