@@ -62,18 +62,18 @@ document.addEventListener('DOMContentLoaded', function() {
                             <input type="number" id="assists_${user.id}" name="assists_${user.id}" class="stats-field" value="0" min="0">
 
                             <div class="extra-stats" style="display: none; margin-top: 10px;">
-                                <label for="shots_${user.id}">Shoots:</label>
-                                <input type="number" id="shots_${user.id}" name="shots_${user.id}" class="stats-field" value="0" min="0">
-                                <label for="shots_on_target_${user.id}">Shoots on Target:</label>
-                                <input type="number" id="shots_on_target_${user.id}" name="shots_on_target_${user.id}" class="stats-field" value="0" min="0">
+                                <label for="shoots_${user.id}">Shoots:</label>
+                                <input type="number" id="shoots_${user.id}" name="shoots_${user.id}" class="stats-field" value="0" min="0">
+                                <label for="shoots_on_target_${user.id}">Shoots on Target:</label>
+                                <input type="number" id="shoots_on_target_${user.id}" name="shoots_on_target_${user.id}" class="stats-field" value="0" min="0">
                                 <label for="blocked_shoots_${user.id}">Blocked Shoots:</label>
                                 <input type="number" id="blocked_shoots_${user.id}" name="blocked_shoots_${user.id}" class="stats-field" value="0" min="0">
                                 <label for="saved_goals_${user.id}">Saved Shoots:</label>
                                 <input type="number" id="saved_goals_${user.id}" name="saved_goals_${user.id}" class="stats-field" value="0" min="0">
                                 <label for="passes_${user.id}">Passes:</label>
                                 <input type="number" id="passes_${user.id}" name="passes_${user.id}" class="stats-field" value="25" min="0">
-                                <label for="fouls_${user.id}">Fouls:</label>
-                                <input type="number" id="fouls_${user.id}" name="fouls_${user.id}" class="stats-field" value="0" min="0">
+                                <label for="falls_${user.id}">Fouls:</label>
+                                <input type="number" id="falls_${user.id}" name="falls_${user.id}" class="stats-field" value="0" min="0">
                                 <label for="yellow_cards_${user.id}">Yellow Cards:</label>
                                 <input type="number" id="yellow_cards_${user.id}" name="yellow_cards_${user.id}" class="stats-field" value="0" min="0" max="2">
                                 <label for="red_cards_${user.id}">Red Cards:</label>

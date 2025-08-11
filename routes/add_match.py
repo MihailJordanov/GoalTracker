@@ -101,10 +101,11 @@ def get_user_stats_from_form(request, uid):
         'blocked_shoots': int(request.form.get(f'blocked_shoots_{uid}', 0)),
         'saved_goals': int(request.form.get(f'saved_goals_{uid}', 0)),
         'passes': int(request.form.get(f'passes_{uid}', 0)),
-        'falles': int(request.form.get(f'falles_{uid}', 0)),
+        'falls': int(request.form.get(f'falls_{uid}', 0)), 
         'yellow_cards': int(request.form.get(f'yellow_cards_{uid}', 0)),
         'red_cards': int(request.form.get(f'red_cards_{uid}', 0)),
     }
+
 
 # 5. Insert player stats
 def insert_user_match(cur, uid, team_id, match_id, stats):
@@ -114,7 +115,7 @@ def insert_user_match(cur, uid, team_id, match_id, stats):
             saved_goals, passes, falls, yellow_cards, red_cards
         ) VALUES (
             %(user_id)s, %(team_id)s, %(match_id)s, %(goals)s, %(assists)s, %(shoots)s, %(shoots_on_target)s, %(blocked_shoots)s,
-            %(saved_goals)s, %(passes)s, %(falles)s, %(yellow_cards)s, %(red_cards)s
+            %(saved_goals)s, %(passes)s, %(falls)s, %(yellow_cards)s, %(red_cards)s
         )
     """, {**stats, 'user_id': uid, 'team_id': team_id, 'match_id': match_id})
 
@@ -166,7 +167,92 @@ def safe_int(val, default=0):
         return default
     
 
+
+def recompute_user_aggregates(cur, uid: int):
+    """
+    Пресмята от нулата totals, рекорди, хеттрикове, played_matches и W/D/L
+    за даден потребител, на база всички редове в user_match.
+    """
+    stats = ['goals','assists','shoots','shoots_on_target','blocked_shoots','saved_goals','passes','falls']
+
+    # totals
+    cur.execute("""
+        SELECT
+            COALESCE(SUM(goals),0),
+            COALESCE(SUM(assists),0),
+            COALESCE(SUM(shoots),0),
+            COALESCE(SUM(shoots_on_target),0),
+            COALESCE(SUM(blocked_shoots),0),
+            COALESCE(SUM(saved_goals),0),
+            COALESCE(SUM(passes),0),
+            COALESCE(SUM(falls),0)
+        FROM user_match
+        WHERE user_id = %s
+    """, (uid,))
+    totals = cur.fetchone()
+    for i, stat in enumerate(stats):
+        cur.execute(f"UPDATE users SET max_{stat} = %s WHERE id = %s", (totals[i], uid))
+
+    # max in one match
+    cur.execute("""
+        SELECT
+            COALESCE(MAX(goals),0),
+            COALESCE(MAX(assists),0),
+            COALESCE(MAX(shoots),0),
+            COALESCE(MAX(shoots_on_target),0),
+            COALESCE(MAX(blocked_shoots),0),
+            COALESCE(MAX(saved_goals),0),
+            COALESCE(MAX(passes),0),
+            COALESCE(MAX(falls),0)
+        FROM user_match
+        WHERE user_id = %s
+    """, (uid,))
+    maxes = cur.fetchone()
+    for i, stat in enumerate(stats):
+        cur.execute(f"UPDATE users SET max_{stat}_in_one_match = %s WHERE id = %s", (maxes[i], uid))
+
+    # hat-tricks
+    cur.execute("SELECT goals FROM user_match WHERE user_id = %s", (uid,))
+    total_hat_tricks = sum((r[0] or 0) // 3 for r in cur.fetchall())
+    cur.execute("UPDATE users SET max_hat_tricks = %s WHERE id = %s", (total_hat_tricks, uid))
+
+    # played matches
+    cur.execute("SELECT COUNT(DISTINCT match_id) FROM user_match WHERE user_id = %s", (uid,))
+    played = cur.fetchone()[0] or 0
+    cur.execute("UPDATE users SET played_matches = %s WHERE id = %s", (played, uid))
+
+    # W/D/L – ако вашият отбор не е винаги "home", тук трябва разграничаване home/away
+    cur.execute("""
+        SELECT m.home_team_result, m.away_team_result, m.home_team_penalty, m.away_team_penalty
+        FROM user_match um
+        JOIN matches m ON m.id = um.match_id
+        WHERE um.user_id = %s
+    """, (uid,))
+    wins = draws = loses = 0
+    for h, a, ph, pa in cur.fetchall():
+        if h > a:
+            wins += 1
+        elif h < a:
+            loses += 1
+        else:
+            if ph is not None and pa is not None and ph != pa:
+                if ph > pa:
+                    wins += 1
+                else:
+                    loses += 1
+            else:
+                draws += 1
+
+    cur.execute("""
+        UPDATE users
+        SET win_matches = %s, draw_matches = %s, lose_matches = %s
+        WHERE id = %s
+    """, (wins, draws, loses, uid))
+
+
+
     
+
 @add_match_bp.route('/addMatches', methods=['POST'])
 def add_matches():
     if 'user_id' not in session:
@@ -184,7 +270,7 @@ def add_matches():
 
         team_id = user_info[1]
 
-        # Взимане на данни от формата
+        # данни от форма
         match_type = request.form.get('type')
         schema = request.form.get('schema')
         match_format = int(request.form.get('format'))
@@ -197,24 +283,25 @@ def add_matches():
         location = request.form.get('location')
         match_date = datetime.fromisoformat(date)
 
-        # Взимаме enemy_team_id (ID от селекцията)
         raw_enemy_team_id = request.form.get('enemy_team_id')
         enemy_team_id = int(raw_enemy_team_id) if raw_enemy_team_id and raw_enemy_team_id.strip().isdigit() else None
 
-        # Взимаме името на отбора (away_team) по ID
         away_team = None
         if enemy_team_id is not None:
             cur.execute("SELECT name FROM enemy_teams WHERE id = %s", (enemy_team_id,))
-            result = cur.fetchone()
-            if result:
-                away_team = result[0]
+            r = cur.fetchone()
+            if r:
+                away_team = r[0]
 
-        # Вмъкваме мача
-        match_id = insert_match(cur, team_id, match_type, schema, home_team, away_team,
-                                home_result, away_result, match_date, location, match_format,
-                                home_penalty, away_penalty, enemy_team_id)
+        # вмъкваме мача
+        match_id = insert_match(
+            cur, team_id, match_type, schema, home_team, away_team,
+            home_result, away_result, match_date, location, match_format,
+            home_penalty, away_penalty, enemy_team_id
+        )
 
         players = get_team_players(cur, team_id)
+        played_user_ids = []
 
         for uid in players:
             if not request.form.get(f'played_{uid}'):
@@ -222,10 +309,11 @@ def add_matches():
 
             stats = get_user_stats_from_form(request, uid)
             insert_user_match(cur, uid, team_id, match_id, stats)
-            update_user_totals(cur, uid, stats, home_result, away_result, home_penalty, away_penalty)
+            played_user_ids.append(uid)
 
-            if match_type != 'Training':
-                update_user_max_per_match(cur, uid, stats)
+        # ⬇️ преизчисляване от нулата за изигралите в този мач
+        for uid in played_user_ids:
+            recompute_user_aggregates(cur, uid)
 
         conn.commit()
         flash("Match and player statistics were successfully saved.", "success")
@@ -236,7 +324,6 @@ def add_matches():
             conn.rollback()
         error_message = str(e).encode('utf-8', errors='replace').decode()
         print("! DB ERROR:", error_message)
-        import traceback
         traceback.print_exc()
         flash(f"Database error: {error_message}", "error")
         return redirect(url_for('add_match_bp.go_to_add_match'))
@@ -246,6 +333,8 @@ def add_matches():
             cur.close()
         if 'conn' in locals():
             conn.close()
+
+
 
 # Returns all teams (example)
 @add_match_bp.route('/getTeams')
@@ -361,7 +450,7 @@ def get_users():
 
         # Get all users in that team
         cur.execute("""
-            SELECT u.id, u.last_name, u.number, ut.player_type
+            SELECT u.id, u.number, u.last_name, ut.player_type
             FROM users u
             JOIN user_team ut ON u.id = ut.user_id
             WHERE ut.team_id = %s
