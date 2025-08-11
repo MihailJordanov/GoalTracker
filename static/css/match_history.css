@@ -378,9 +378,32 @@ tr.clickable:hover {
 /* 4. Голове – по-голям и плътен шрифт */
 #player-stats-container td:nth-child(2) {
     font-size: 1.3rem;
-    font-weight: bold;
+    font-weight: 800;
     color: #ffffff;
-    text-shadow: 0 0 4px #00ffb7;
+    text-shadow: 0 0 6px #00ffb7, 0 0 14px rgba(0,255,183,0.35);
+    letter-spacing: 0.3px;
+    background: linear-gradient(180deg, rgba(0,255,183,0.08), rgba(0,255,183,0.02));
+    border-radius: 6px;
+}
+
+/* Assists – втори по сила акцент (по-умерен от головете) */
+#player-stats-container td:nth-child(3) {
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: #bffff0;                 /* по-мек нюанс */
+    text-shadow: 0 0 4px rgba(0,255,183,0.35);
+    background: linear-gradient(180deg, rgba(0,255,183,0.05), rgba(0,255,183,0.015));
+    border-radius: 6px;
+}
+
+/* По желание – подсили и заглавията в хедъра */
+#player-stats-container thead th.col-goals { 
+    color: #ffffff;
+    text-shadow: 0 0 8px #00ffb7;
+}
+#player-stats-container thead th.col-assists { 
+    color: #d8fff6;
+    text-shadow: 0 0 6px rgba(0,255,183,0.6);
 }
 
 /* Редуване на редове */
@@ -537,7 +560,157 @@ tr.clickable:hover {
 }
 
 
+/* ======= MATCH SCORE HEADER ======= */
+.match-score-header {
+    margin: 10px auto 18px;
+    max-width: 1100px;
+    padding: 14px 18px;
+    border-radius: 16px;
+    background: linear-gradient(135deg, rgba(0,255,183,0.08), rgba(0,255,183,0.02));
+    border: 1px solid rgba(0,255,183,0.25);
+    box-shadow: 0 0 18px rgba(0,255,183,0.12), inset 0 0 18px rgba(0,255,183,0.05);
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    align-items: center;
+    gap: 12px;
+    backdrop-filter: blur(8px);
+}
 
+.match-score-header .team-side {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    min-width: 0; /* за да работи ellipsis */
+}
+
+.match-score-header .team-side.home {
+    justify-content: flex-start;
+}
+.match-score-header .team-side.away {
+    justify-content: flex-end;
+}
+
+.match-score-header .team-badge {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background-size: cover;
+    background-position: center;
+    box-shadow: 0 0 10px rgba(0,255,183,0.35);
+    border: 1px solid rgba(0,255,183,0.4);
+    flex-shrink: 0;
+}
+
+.match-score-header .team-name {
+    color: #eafffb;
+    text-shadow: 0 0 8px rgba(0,255,183,0.55);
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.match-score-header .score-stack {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    min-width: 160px;
+}
+
+.match-score-header .main-score {
+    font-size: 2.4rem;
+    font-weight: 800;
+    color: #ffffff;
+    line-height: 1;
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+    text-shadow:
+      0 0 6px #00ffb7,
+      0 0 16px rgba(0,255,183,0.35);
+}
+
+.match-score-header .score-sep {
+    opacity: 0.9;
+}
+
+.match-score-header .home-score,
+.match-score-header .away-score {
+    padding: 2px 8px;
+    border-radius: 10px;
+    background: rgba(0,255,183,0.08);
+    box-shadow: inset 0 0 8px rgba(0,255,183,0.2);
+}
+
+.match-score-header .penalties {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.95rem;
+    background: linear-gradient(180deg, rgba(255,215,0,0.08), rgba(255,215,0,0.02));
+    padding: 4px 10px;
+    border-radius: 999px;
+    border: 1px solid rgba(255,215,0,0.35);
+    box-shadow: 0 0 10px rgba(255,215,0,0.25);
+}
+
+.match-score-header .pen-label {
+    color: #ffd700;
+    text-shadow: 0 0 6px rgba(255,215,0,0.8);
+    font-weight: 700;
+    letter-spacing: 0.3px;
+}
+.match-score-header .pen-score {
+    color: #fff5c2;
+    text-shadow: 0 0 6px rgba(255,215,0,0.6);
+    font-weight: 700;
+}
+
+/* Малки екстри: победителят да свети леко по-силно */
+.match-score-header.win-home .home-score { box-shadow: 0 0 14px rgba(0,255,183,0.45); }
+.match-score-header.win-away .away-score { box-shadow: 0 0 14px rgba(0,255,183,0.45); }
+
+.teams-vs {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 14px;
+    font-family: 'Orbitron', sans-serif;
+    margin-bottom: 8px;
+    flex-wrap: wrap;
+}
+
+.team-name-vs {
+    font-size: 1.4rem;
+    font-weight: 600;
+    color: #00ffb7;
+    text-shadow: 0 0 5px rgba(0, 255, 183, 0.8), 0 0 10px rgba(0, 255, 183, 0.5);
+    max-width: 40vw;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+}
+
+.vs-label {
+    font-size: 1.2rem;
+    font-weight: bold;
+    color: #8ff4d7;
+    padding: 3px 10px;
+    text-transform: uppercase;
+}
+
+.team-badge {
+    display: inline-block;
+    width: 50px; /* Можеш да коригираш размера */
+    height: 50px;
+    background-size: contain; /* или cover, според предпочитания */
+    background-repeat: no-repeat;
+    background-position: center;
+    border-radius: 50%; /* за кръгъл вид */
+    box-shadow: 0 0 6px rgba(0, 255, 183, 0.6); /* неон ефект */
+}
 
 @media (max-width: 600px) {
     
@@ -697,11 +870,24 @@ tr.clickable:hover {
         display: none; /* скрива текста, ако има */
     }
 
+    /* Goals – най-силен и на мобилни */
     #player-stats-container td:nth-child(2) {
-        font-size: 0.75rem;           /* Goals – по-голям */
-        font-weight: bold;
+        font-size: 0.85rem;
+        font-weight: 800;
         color: #ffffff;
         text-shadow: 0 0 4px #00ffb7;
+        background: rgba(0,255,183,0.06);
+        border-radius: 4px;
+    }
+
+    /* Assists – по-умерен акцент от головете */
+    #player-stats-container td:nth-child(3) {
+        font-size: 0.8rem;
+        font-weight: 700;
+        color: #d6fff3;
+        text-shadow: 0 0 3px rgba(0,255,183,0.35);
+        background: rgba(0,255,183,0.035);
+        border-radius: 4px;
     }
 
     .toggle-button {
@@ -713,6 +899,51 @@ tr.clickable:hover {
         font-size: 1rem;
         padding: 1px 6px;
     }
+
+ .match-score-header {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 8px;
+        padding: 12px 8px;
+        text-align: center;
+    }
+
+    .match-score-header .match-title {
+        font-size: 1rem;
+        font-weight: bold;
+        color: #00ffb7;
+        text-shadow: 0 0 6px rgba(0, 255, 183, 0.5);
+        white-space: normal; /* позволяваме пренасяне на имената */
+    }
+
+    .match-score-header .main-score {
+        font-size: 1.8rem;
+        font-weight: bold;
+        color: #fff;
+        text-shadow: 0 0 8px #00ffb7;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .match-score-header .penalties {
+        font-size: 0.9rem;
+        padding: 3px 8px;
+        background: rgba(255, 215, 0, 0.1);
+        border-radius: 6px;
+        color: #ffd700;
+        text-shadow:
+            0 0 6px rgba(255, 215, 0, 0.6),
+            0 0 12px rgba(255, 215, 0, 0.4);
+        margin-top: 4px;
+    }
+
+     .team-name-vs {
+        font-size: 1rem;
+        max-width: 35vw;
+    }
+
 
 }
 

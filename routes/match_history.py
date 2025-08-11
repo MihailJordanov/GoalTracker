@@ -155,26 +155,61 @@ def get_user_player_type_for_match(user_id, match_id):
     return row[0] if row else 0
 
 
-
 @match_history_bp.route('/match/<int:match_id>/players')
 def match_players(match_id):
     conn = get_db_connection()
     cur = conn.cursor()
+    try:
+        # 1) Инфо за мача: отбори, резултат, дузпи
+        cur.execute("""
+            SELECT 
+                home_team, 
+                away_team, 
+                home_team_result, 
+                away_team_result,
+                home_team_penalty, 
+                away_team_penalty
+            FROM matches
+            WHERE id = %s
+        """, (match_id,))
+        row = cur.fetchone()
+        if row:
+            home_team, away_team, home_res, away_res, home_pen, away_pen = row
+        else:
+            home_team = away_team = ""
+            home_res = away_res = None
+            home_pen = away_pen = None
 
-    cur.execute("""
-        SELECT um.*, u.first_name, u.last_name, u.number
-        FROM user_match um
-        JOIN users u ON u.id = um.user_id
-        WHERE um.match_id = %s;
-    """, (match_id,))
+        # 2) Статистики за играчите – сортирани по голове, после асистенции
+        cur.execute("""
+            SELECT um.*, u.first_name, u.last_name, u.number
+            FROM user_match um
+            JOIN users u ON u.id = um.user_id
+            WHERE um.match_id = %s
+            ORDER BY um.goals DESC, um.assists DESC, u.last_name ASC, u.first_name ASC, u.number ASC
+        """, (match_id,))
+        rows = cur.fetchall()
+        columns = [desc[0] for desc in cur.description]
+        players = [dict(zip(columns, r)) for r in rows]
 
+    finally:
+        cur.close()
+        conn.close()
+
+    # 3) Правата на потребителя (за бутона Edit)
     user_id = session.get('user_id')
-    player_type = get_user_player_type_for_match(user_id, match_id) if user_id else 0   
-    rows = cur.fetchall()
-    columns = [desc[0] for desc in cur.description]
-    players = [dict(zip(columns, row)) for row in rows]
+    player_type = get_user_player_type_for_match(user_id, match_id) if user_id else 0
 
-    cur.close()
-    conn.close()
-
-    return render_template('partials/player_stats.html', players=players, match_id=match_id, player_type=player_type)
+    # 4) Рендер към темплейта – подаваме отделните полета
+    return render_template(
+        'partials/player_stats.html',
+        players=players,
+        match_id=match_id,
+        player_type=player_type,
+        home_team=home_team,
+        away_team=away_team,
+        home_res=home_res,
+        away_res=away_res,
+        home_pen=home_pen,
+        away_pen=away_pen
+    )

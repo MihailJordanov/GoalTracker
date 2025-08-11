@@ -1,3 +1,39 @@
+<div class="match-score-header">
+  <div class="team-side home">
+    {% if home_logo %}
+      <span class="team-badge" style="background-image:url('{{ home_logo }}')"></span>
+    {% endif %}
+  </div>
+
+  <div class="score-stack">
+    <div class="teams-vs">
+      <span class="team-name-vs">{{ home_team }}</span>
+      <span class="vs-label">vs</span>
+      <span class="team-name-vs">{{ away_team }}</span>
+    </div>
+
+    <div class="main-score">
+      <span class="home-score">{{ home_res }}</span>
+      <span class="score-sep">:</span>
+      <span class="away-score">{{ away_res }}</span>
+    </div>
+
+    {% if home_pen is not none and away_pen is not none and home_pen != away_pen %}
+    <div class="penalties">
+      <span class="pen-label">Penalties</span>
+      <span class="pen-score">{{ home_pen }} : {{ away_pen }}</span>
+    </div>
+    {% endif %}
+  </div>
+
+  <div class="team-side away">
+    {% if away_logo %}
+      <span class="team-badge" style="background-image:url('{{ away_logo }}')"></span>
+    {% endif %}
+  </div>
+</div>
+
+
 <table border="1">
     <thead>
         <tr>
