@@ -13,52 +13,60 @@ from routes.edit_match import edit_match_bp
 from routes.enemy_team_list import enemy_team_bp
 from routes.location_list import location_bp
 from routes.manage_players import manage_players_bp
-from database.db import get_db_connection  # Импортираме връзката към базатаfrom routes.home import home_bp
-
-app = Flask(__name__)
+from database.db import get_db_connection
+from config import DevelopmentConfig, ProductionConfig
 
 load_dotenv()
 
-app.secret_key = os.environ.get('SECRET_KEY')
-    
-# Flask-Login setup
-login_manager = LoginManager()  
-login_manager.init_app(app)
-login_manager.login_view = "auth.login"
+def create_app():
+    app = Flask(__name__)
+    # Избери конфигурация по среда
+    if os.getenv("FLASK_ENV") == "production":
+        app.config.from_object(ProductionConfig)
+    else:
+        app.config.from_object(DevelopmentConfig)
 
-# Регистриране на Blueprint-ите
-app.register_blueprint(auth_bp)
-app.register_blueprint(home_bp)
-app.register_blueprint(team_bp)
-app.register_blueprint(profile_bp)
-app.register_blueprint(add_match_bp)
-app.register_blueprint(match_history_bp)
-app.register_blueprint(notifications_bp)
-app.register_blueprint(edit_match_bp)
-app.register_blueprint(enemy_team_bp)
-app.register_blueprint(location_bp)
-app.register_blueprint(manage_players_bp)
+    # Flask-Login
+    login_manager = LoginManager()
+    login_manager.init_app(app)
+    login_manager.login_view = "auth.login"
 
-# Дефиниране на клас User
-class User(UserMixin):
-    def __init__(self, id, username):
-        self.id = id
-        self.username = username
+    class User(UserMixin):
+        def __init__(self, id, username):
+            self.id = id
+            self.username = username
 
-# Функция за зареждане на потребител по ID
-@login_manager.user_loader
-def load_user(user_id):
-    conn = get_db_connection()
-    cursor = conn.cursor()
-    cursor.execute("SELECT id, username FROM users WHERE id = %s", (user_id,))
-    user_data = cursor.fetchone()
-    cursor.close()
-    conn.close()
-    
-    if user_data:
-        return User(user_data[0], user_data[1])
-    return None
+    @login_manager.user_loader
+    def load_user(user_id):
+        conn = get_db_connection()
+        cursor = conn.cursor()
+        # ⚠️ Увери се, че колоната username съществува. Ако нямаш username, ползвай email или first_name.
+        cursor.execute("SELECT id, COALESCE(username, email) FROM users WHERE id = %s", (user_id,))
+        user_data = cursor.fetchone()
+        cursor.close()
+        conn.close()
 
-# Стартиране на приложението
+        if user_data:
+            return User(user_data[0], user_data[1])
+        return None
+
+    # Регистриране на Blueprint-ите
+    app.register_blueprint(auth_bp)
+    app.register_blueprint(home_bp)
+    app.register_blueprint(team_bp)
+    app.register_blueprint(profile_bp)
+    app.register_blueprint(add_match_bp)
+    app.register_blueprint(match_history_bp)
+    app.register_blueprint(notifications_bp)
+    app.register_blueprint(edit_match_bp)
+    app.register_blueprint(enemy_team_bp)
+    app.register_blueprint(location_bp)
+    app.register_blueprint(manage_players_bp)
+
+    return app
+
+app = create_app()
+
 if __name__ == '__main__':
-    app.run(debug=True)
+    # В dev среда BASE_URL по подразбиране е http://127.0.0.1:5000
+    app.run(debug=app.config.get("DEBUG", False))
