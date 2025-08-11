@@ -252,7 +252,6 @@ def recompute_user_aggregates(cur, uid: int):
 
 
     
-
 @add_match_bp.route('/addMatches', methods=['POST'])
 def add_matches():
     if 'user_id' not in session:
@@ -270,11 +269,10 @@ def add_matches():
 
         team_id = user_info[1]
 
-        # данни от форма
+        # Данни от форма
         match_type = request.form.get('type')
         schema = request.form.get('schema')
         match_format = int(request.form.get('format'))
-        home_team = request.form.get('team_one') or str(team_id)
         home_result = int(request.form.get('team_one_result'))
         away_result = int(request.form.get('team_two_result'))
         home_penalty = safe_int(request.form.get('home_team_penalty'))
@@ -283,23 +281,34 @@ def add_matches():
         location = request.form.get('location')
         match_date = datetime.fromisoformat(date)
 
+        # Взимаме името на нашия (home) отбор от БД по team_id
+        cur.execute("SELECT name FROM teams WHERE id = %s", (team_id,))
+        row = cur.fetchone()
+        if row and row[0]:
+            home_team_name = row[0]
+        else:
+            # fallback – ако по някаква причина няма запис, пробваме стойността от формата (която е име)
+            home_team_name = request.form.get('team_one') or "Unknown Team"
+
+        # Изчисляваме away team име, ако е подаден enemy_team_id
         raw_enemy_team_id = request.form.get('enemy_team_id')
         enemy_team_id = int(raw_enemy_team_id) if raw_enemy_team_id and raw_enemy_team_id.strip().isdigit() else None
 
-        away_team = None
+        away_team_name = None
         if enemy_team_id is not None:
             cur.execute("SELECT name FROM enemy_teams WHERE id = %s", (enemy_team_id,))
             r = cur.fetchone()
             if r:
-                away_team = r[0]
+                away_team_name = r[0]
 
-        # вмъкваме мача
+        # Вмъкваме мача – подаваме home_team_name вместо ID
         match_id = insert_match(
-            cur, team_id, match_type, schema, home_team, away_team,
+            cur, team_id, match_type, schema, home_team_name, away_team_name,
             home_result, away_result, match_date, location, match_format,
             home_penalty, away_penalty, enemy_team_id
         )
 
+        # Играчите от отбора и запис на статистики
         players = get_team_players(cur, team_id)
         played_user_ids = []
 
@@ -311,7 +320,7 @@ def add_matches():
             insert_user_match(cur, uid, team_id, match_id, stats)
             played_user_ids.append(uid)
 
-        # ⬇️ преизчисляване от нулата за изигралите в този мач
+        # Преизчисляване на агрегатите за изигралите
         for uid in played_user_ids:
             recompute_user_aggregates(cur, uid)
 
@@ -333,7 +342,6 @@ def add_matches():
             cur.close()
         if 'conn' in locals():
             conn.close()
-
 
 
 # Returns all teams (example)
