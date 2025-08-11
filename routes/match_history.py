@@ -49,22 +49,28 @@ def check_user_team(user_id):
         return False
     return True
 
-
 def get_team_matches(team_id):
     conn = get_db_connection()
     cur = conn.cursor()
 
     cur.execute("""
-        SELECT m.id, m.team_id, m.type, m.schema, m.home_team,
+        SELECT 
+            m.id, m.team_id, m.type, m.schema, m.home_team,
             et.name AS away_team,
             m.home_team_result, m.away_team_result,
             m.home_team_penalty, m.away_team_penalty,
-            m.date, m.location, m.format,
+            m.date,
+            m.location,                    -- запазваме го, ако ти трябва ID-то
+            l.name AS location_name,       -- ИМЕТО на локацията
+            l.city AS location_city,
+            l.country AS location_country,
+            m.format,
             t.logo AS home_team_logo,
             et.image AS away_team_logo
         FROM matches m
         JOIN teams t ON m.team_id = t.id
         LEFT JOIN enemy_teams et ON m.enemy_team_id = et.id
+        LEFT JOIN locations l ON l.id::text = m.location::text
         WHERE m.team_id = %s
         ORDER BY m.date DESC
         LIMIT 100;
@@ -75,13 +81,13 @@ def get_team_matches(team_id):
     matches = [dict(zip(columns, row)) for row in rows]
 
     for match in matches:
-        # Форматиране на дата и час
+        # Форматиране дата/час
         if isinstance(match['date'], (datetime, date)):
             match_date = match['date']
             match['date_str'] = match_date.strftime('%d-%m-%y')
             match['time_str'] = match_date.strftime('%H:%M')
 
-        # Определяне на изхода
+        # Изход от мача
         if match['home_team_result'] > match['away_team_result']:
             match['outcome'] = 'win'
         elif match['home_team_result'] < match['away_team_result']:
@@ -90,18 +96,16 @@ def get_team_matches(team_id):
             home_pen = match.get('home_team_penalty')
             away_pen = match.get('away_team_penalty')
             if home_pen is not None and away_pen is not None and home_pen != away_pen:
-                match['outcome'] = 'win' if home_pen > away_pen else 'loss' 
+                match['outcome'] = 'win' if home_pen > away_pen else 'loss'
             else:
                 match['outcome'] = 'draw'
 
-        # Преобразуване на логата
+        # Лога
         if match.get('home_team_logo'):
             match['home_team_logo'] = url_for('static', filename=f'uploads/{match["home_team_logo"]}')
-        
         if match.get('away_team_logo'):
             if not match['away_team_logo'].startswith('http'):
                 match['away_team_logo'] = url_for('static', filename=f'uploads/{match["away_team_logo"]}')
-
 
     cur.close()
     conn.close()

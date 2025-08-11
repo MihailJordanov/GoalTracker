@@ -70,7 +70,7 @@
                         <div class="team-name away">{{ match.away_team }}</div>
                     </div>
                     <div class="match-details">
-                        <span>{{ match.location }}</span>
+                        <span>{{ match.location_name or match.location }}</span>
                         <span><strong>Format:</strong> {{ match.format }} v {{ match.format }}</span>
                         <span><strong>Schema:</strong> {{ match.schema }}</span>
                         <span>
