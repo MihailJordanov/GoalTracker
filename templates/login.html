@@ -44,7 +44,7 @@
             <form action="{{ url_for('auth.login') }}" method="POST" class="login-form">
                 <div class="input-group">
                     <label for="email">Email</label>
-                    <input type="email" id="email" name="email" required>
+                    <input type="email" id="email" name="email" value="{{ request.form.email or '' }}" required>
                 </div>
                 <div class="input-group">
                     <label for="password">Password</label>
