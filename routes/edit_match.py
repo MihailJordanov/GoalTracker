@@ -85,28 +85,16 @@ def save_match_data(match_id, team_id, match_data):
     cur = conn.cursor()
     try:
         old_data = fetch_old_user_match_data(cur, match_id)
-        all_played_before = set(row[1] for row in old_data)
 
         played_ids = [int(pid) for pid in match_data.getlist('played[]')]
-        played_now = set(played_ids)
-        removed_ids = list(all_played_before - played_now)
-        added_ids = list(played_now - all_played_before)
-
-        old_result = fetch_old_result(cur, match_id)
-
-        reduce_old_stats(cur, old_data, removed_ids)
 
         update_match_record(cur, match_id, match_data)
-
-
-        new_result = fetch_new_result(cur, match_id)
-        outcome = get_outcome(*new_result)
 
         insert_or_update_user_stats(cur, match_data, team_id, match_id)
 
         delete_unplayed_users(cur, match_id, team_id, played_ids)
 
-        recalculate_user_stats(conn, cur, match_id, old_result, old_data)
+        recalculate_user_stats(conn, cur, match_id, old_data)
 
         conn.commit()
         flash("The match was edited successfully!", "success")
@@ -134,23 +122,6 @@ def fetch_old_result(cur, match_id):
     return cur.fetchone()
 
 
-def reduce_old_stats(cur, old_data, removed_ids):
-    for row in old_data:
-        user_id = row[1]
-        if user_id not in removed_ids:
-            continue  # Само за премахнати
-
-        stats = {
-            'goals': row[4], 'assists': row[5], 'shoots': row[6],
-            'shoots_on_target': row[7], 'blocked_shoots': row[8],
-            'saved_goals': row[9], 'passes': row[10], 'falls': row[11]
-        }
-        for stat, value in stats.items():
-            cur.execute(f"UPDATE users SET max_{stat} = GREATEST(0, max_{stat} - %s) WHERE id = %s", (value, user_id))
-
-        # Намаляване на изиграни мачове – само ако е премахнат
-        cur.execute("UPDATE users SET played_matches = GREATEST(0, played_matches - 1) WHERE id = %s", (user_id,))
-
 
 def update_match_record(cur, match_id, match_data):
     cur.execute("""
@@ -173,25 +144,6 @@ def update_match_record(cur, match_id, match_data):
     ))
 
 
-def update_user_match_outcome(cur, user_ids, old_outcome, new_outcome):
-    for user_id in user_ids:
-        if old_outcome:
-            if old_outcome == 'win':
-                cur.execute("UPDATE users SET win_matches = GREATEST(0, win_matches - 1) WHERE id = %s", (user_id,))
-            elif old_outcome == 'draw':
-                cur.execute("UPDATE users SET draw_matches = GREATEST(0, draw_matches - 1) WHERE id = %s", (user_id,))
-            elif old_outcome == 'lose':
-                cur.execute("UPDATE users SET lose_matches = GREATEST(0, lose_matches - 1) WHERE id = %s", (user_id,))
-        if new_outcome:
-            if new_outcome == 'win':
-                cur.execute("UPDATE users SET win_matches = win_matches + 1 WHERE id = %s", (user_id,))
-            elif new_outcome == 'draw':
-                cur.execute("UPDATE users SET draw_matches = draw_matches + 1 WHERE id = %s", (user_id,))
-            elif new_outcome == 'lose':
-                cur.execute("UPDATE users SET lose_matches = lose_matches + 1 WHERE id = %s", (user_id,))
-
-
-
 def fetch_new_result(cur, match_id):
     cur.execute("SELECT home_team_result, away_team_result, home_team_penalty, away_team_penalty FROM matches WHERE id = %s", (match_id,))
     return cur.fetchone()
@@ -209,19 +161,27 @@ def get_outcome(home, away, pen_home, pen_away):
 
 
 def insert_or_update_user_stats(cur, match_data, team_id, match_id):
-    for key in match_data:
-        if key.startswith('player_'):
-            parts = key.split('_')
-            if len(parts) >= 3 and parts[0] == 'player':
-                stat = '_'.join(parts[1:-1])
-                uid = int(parts[-1])
-                value = int(match_data[key])
-                cur.execute(f"""
-                    INSERT INTO user_match (user_id, team_id, match_id, {stat})
-                    VALUES (%s, %s, %s, %s)
-                    ON CONFLICT (user_id, match_id) DO UPDATE
-                    SET {stat} = EXCLUDED.{stat}
-                """, (uid, team_id, match_id, value))
+    
+    ALLOWED_STATS = {"goals","assists","shoots","shoots_on_target","blocked_shoots",
+                    "saved_goals","passes","falls","yellow_cards","red_cards"}
+    for key, raw in match_data.items():
+        if not key.startswith("player_"):
+            continue
+        # разделяне отдясно: player_<stat>_<uid>, като <stat> може да съдържа "_"
+        try:
+            stat, uid_s = key[len("player_"):].rsplit("_", 1)
+            if stat not in ALLOWED_STATS:
+                continue
+            uid = int(uid_s)
+            value = int(raw) if str(raw).strip() != "" else 0
+        except Exception:
+            continue
+        cur.execute(f"""
+            INSERT INTO user_match (user_id, team_id, match_id, {stat})
+            VALUES (%s, %s, %s, %s)
+            ON CONFLICT (user_id, match_id) DO UPDATE SET {stat} = EXCLUDED.{stat}
+        """, (uid, team_id, match_id, value))
+
 
 
 def delete_unplayed_users(cur, match_id, team_id, played_ids):
@@ -233,73 +193,99 @@ def delete_unplayed_users(cur, match_id, team_id, played_ids):
         """, [match_id, team_id] + played_ids)
         
 
-def recalculate_user_stats(conn, cur, match_id, old_result, old_data):
-    cur.execute("SELECT * FROM user_match WHERE match_id = %s", (match_id,))
-    rows = cur.fetchall()
-    user_stats = {}
+def recalculate_user_stats(conn, cur, match_id, old_data):
+    # Кои са старите и новите участници?
+    old_user_ids = set(row[1] for row in old_data)  # row[1] = user_id от старата снимка
+    cur.execute("SELECT DISTINCT user_id FROM user_match WHERE match_id = %s", (match_id,))
+    new_user_ids = set(r[0] for r in cur.fetchall())
 
-    for row in rows:
-        user_id = row[1]
-        stats = {
-            'goals': row[4], 'assists': row[5], 'shoots': row[6],
-            'shoots_on_target': row[7], 'blocked_shoots': row[8],
-            'saved_goals': row[9], 'passes': row[10], 'falls': row[11]
-        }
-        for stat, value in stats.items():
-            cur.execute(f"UPDATE users SET max_{stat} = max_{stat} + %s WHERE id = %s", (value, user_id))
-            cur.execute(f"SELECT max_{stat}_in_one_match FROM users WHERE id = %s", (user_id,))
-            max_val = cur.fetchone()[0]
-            if value > max_val:
-                cur.execute(f"UPDATE users SET max_{stat}_in_one_match = %s WHERE id = %s", (value, user_id))
+    affected_user_ids = old_user_ids | new_user_ids
 
-        # hat-trick
-        hat_tricks = stats['goals'] // 3
-        if hat_tricks > 0:
-            cur.execute("UPDATE users SET max_hat_tricks = max_hat_tricks + %s WHERE id = %s", (hat_tricks, user_id))
-
-        # played matches
-        cur.execute("UPDATE users SET played_matches = played_matches + 1 WHERE id = %s", (user_id,))
-
-    # Вземаме новия резултат (след ъпдейта)
+    # 1) Пресметни изхода на мача (ако се е променил, ще го отчетем долу при win/draw/lose)
     cur.execute("""
         SELECT home_team_result, away_team_result, home_team_penalty, away_team_penalty
-        FROM matches
-        WHERE id = %s
+        FROM matches WHERE id = %s
     """, (match_id,))
     new_result = cur.fetchone()
 
 
-    if old_result and new_result:
-        old_outcome = get_outcome(*old_result)
-        new_outcome = get_outcome(*new_result)
+    # 2) За всеки засегнат потребител преизчисли всички агрегати от user_match
+    for uid in affected_user_ids:
+        # totals
+        cur.execute("""
+            SELECT
+                COALESCE(SUM(goals),0),
+                COALESCE(SUM(assists),0),
+                COALESCE(SUM(shoots),0),
+                COALESCE(SUM(shoots_on_target),0),
+                COALESCE(SUM(blocked_shoots),0),
+                COALESCE(SUM(saved_goals),0),
+                COALESCE(SUM(passes),0),
+                COALESCE(SUM(falls),0)
+            FROM user_match
+            WHERE user_id = %s
+        """, (uid,))
+        totals = cur.fetchone()  # 8 стойности
 
-        cur.execute("SELECT user_id FROM user_match WHERE match_id = %s", (match_id,))
-        new_user_ids = set(row[0] for row in cur.fetchall())
+        stats = ['goals','assists','shoots','shoots_on_target','blocked_shoots','saved_goals','passes','falls']
+        for i, stat in enumerate(stats):
+            cur.execute(f"UPDATE users SET max_{stat} = %s WHERE id = %s", (totals[i], uid))
 
-        # Вземи user_ids, които са били в стария мач (old_data)
-        cur.execute("SELECT user_id FROM user_match WHERE match_id = %s", (match_id,))
-        cur.execute("SELECT DISTINCT user_id FROM user_match WHERE match_id = %s", (match_id,))
-        new_user_ids = set(r[0] for r in cur.fetchall())
+        # max in one match
+        cur.execute("""
+            SELECT
+                COALESCE(MAX(goals),0),
+                COALESCE(MAX(assists),0),
+                COALESCE(MAX(shoots),0),
+                COALESCE(MAX(shoots_on_target),0),
+                COALESCE(MAX(blocked_shoots),0),
+                COALESCE(MAX(saved_goals),0),
+                COALESCE(MAX(passes),0),
+                COALESCE(MAX(falls),0)
+            FROM user_match
+            WHERE user_id = %s
+        """, (uid,))
+        maxes = cur.fetchone()
+        for i, stat in enumerate(stats):
+            cur.execute(f"UPDATE users SET max_{stat}_in_one_match = %s WHERE id = %s", (maxes[i], uid))
 
-        cur.execute("SELECT DISTINCT user_id FROM user_match WHERE match_id = %s", (match_id,))
-        cur.execute("SELECT DISTINCT user_id FROM user_match WHERE match_id = %s", (match_id,))
-        cur.execute("SELECT user_id FROM user_match WHERE match_id = %s", (match_id,))
-        new_user_ids = set([row[0] for row in cur.fetchall()])
+        # hat-tricks (общ брой в историята)
+        cur.execute("SELECT goals FROM user_match WHERE user_id = %s", (uid,))
+        goals_list = [r[0] for r in cur.fetchall()]
+        total_hat_tricks = sum(g // 3 for g in goals_list)
+        cur.execute("UPDATE users SET max_hat_tricks = %s WHERE id = %s", (total_hat_tricks, uid))
 
-        old_user_ids = set(row[1] for row in old_data)  # row[1] = user_id
+        # played_matches (брой мачове с ред в user_match)
+        cur.execute("SELECT COUNT(DISTINCT match_id) FROM user_match WHERE user_id = %s", (uid,))
+        played = cur.fetchone()[0] or 0
+        cur.execute("UPDATE users SET played_matches = %s WHERE id = %s", (played, uid))
 
-        kept_users = old_user_ids & new_user_ids
-        removed_users = old_user_ids - new_user_ids
-        added_users = new_user_ids - old_user_ids
+        # win/draw/lose — броим по изхода на всеки мач от таблица matches
+        # (ползваме същата логика за penalties)
+        cur.execute("""
+            SELECT m.home_team_result, m.away_team_result, m.home_team_penalty, m.away_team_penalty
+            FROM user_match um
+            JOIN matches m ON m.id = um.match_id
+            WHERE um.user_id = %s
+        """, (uid,))
+        wins = draws = loses = 0
+        for h, a, ph, pa in cur.fetchall():
+            if h > a:
+                wins += 1
+            elif h < a:
+                loses += 1
+            else:
+                if ph is not None and pa is not None and ph != pa:
+                    if ph > pa: wins += 1
+                    else: loses += 1
+                else:
+                    draws += 1
 
-        # Намаляване на win/draw/lose за тези, които са били в мача, ако има промяна
-        update_user_match_outcome(cur, kept_users, old_outcome, new_outcome) if old_outcome != new_outcome else None
-
-        # Премахване само на изтрити
-        update_user_match_outcome(cur, removed_users, old_outcome, None)
-
-        # Добавяне само на нови
-        update_user_match_outcome(cur, added_users, None, new_outcome)
+        cur.execute("""
+            UPDATE users
+            SET win_matches = %s, draw_matches = %s, lose_matches = %s
+            WHERE id = %s
+        """, (wins, draws, loses, uid))
 
 
 def get_match_result(match_id, cur):
@@ -322,49 +308,79 @@ def get_user_match_rows(match_id, cur):
     return cur.fetchall()
 
 
-def recalculate_max_stats_for_user(user_id, cur):
-    stats = ['goals', 'assists', 'shoots', 'shoots_on_target', 'blocked_shoots',
-             'saved_goals', 'passes', 'falls']
+def recompute_user_aggregates(cur, uid):
+    stats = ['goals','assists','shoots','shoots_on_target','blocked_shoots','saved_goals','passes','falls']
 
-    for stat in stats:
-        # Общо
-        cur.execute(f"SELECT SUM({stat}) FROM user_match WHERE user_id = %s", (user_id,))
-        total = cur.fetchone()[0] or 0
-        cur.execute(f"UPDATE users SET max_{stat} = %s WHERE id = %s", (total, user_id))
+    # totals
+    cur.execute(f"""
+        SELECT
+            COALESCE(SUM(goals),0), COALESCE(SUM(assists),0), COALESCE(SUM(shoots),0),
+            COALESCE(SUM(shoots_on_target),0), COALESCE(SUM(blocked_shoots),0),
+            COALESCE(SUM(saved_goals),0), COALESCE(SUM(passes),0), COALESCE(SUM(falls),0)
+        FROM user_match WHERE user_id = %s
+    """, (uid,))
+    totals = cur.fetchone()
+    for i, stat in enumerate(stats):
+        cur.execute(f"UPDATE users SET max_{stat} = %s WHERE id = %s", (totals[i], uid))
 
-        # Най-много в един мач
-        cur.execute(f"SELECT MAX({stat}) FROM user_match WHERE user_id = %s", (user_id,))
-        max_one = cur.fetchone()[0] or 0
-        cur.execute(f"UPDATE users SET max_{stat}_in_one_match = %s WHERE id = %s", (max_one, user_id))
+    # max in one match
+    cur.execute(f"""
+        SELECT
+            COALESCE(MAX(goals),0), COALESCE(MAX(assists),0), COALESCE(MAX(shoots),0),
+            COALESCE(MAX(shoots_on_target),0), COALESCE(MAX(blocked_shoots),0),
+            COALESCE(MAX(saved_goals),0), COALESCE(MAX(passes),0), COALESCE(MAX(falls),0)
+        FROM user_match WHERE user_id = %s
+    """, (uid,))
+    maxes = cur.fetchone()
+    for i, stat in enumerate(stats):
+        cur.execute(f"UPDATE users SET max_{stat}_in_one_match = %s WHERE id = %s", (maxes[i], uid))
 
-    # Hat-tricks
-    cur.execute("SELECT goals FROM user_match WHERE user_id = %s", (user_id,))
-    goals_list = [r[0] for r in cur.fetchall()]
-    total_hat_tricks = sum(g // 3 for g in goals_list)
-    cur.execute("UPDATE users SET max_hat_tricks = %s WHERE id = %s", (total_hat_tricks, user_id))
+    # hat-tricks
+    cur.execute("SELECT goals FROM user_match WHERE user_id = %s", (uid,))
+    total_hat_tricks = sum((r[0] or 0)//3 for r in cur.fetchall())
+    cur.execute("UPDATE users SET max_hat_tricks = %s WHERE id = %s", (total_hat_tricks, uid))
 
+    # played matches
+    cur.execute("SELECT COUNT(DISTINCT match_id) FROM user_match WHERE user_id = %s", (uid,))
+    played = cur.fetchone()[0] or 0
+    cur.execute("UPDATE users SET played_matches = %s WHERE id = %s", (played, uid))
 
-def apply_stat_reductions(user_id, goals, outcome, cur):
-    # Намаляване на hat-tricks
-    hat_tricks = goals // 3
-    if hat_tricks > 0:
-        cur.execute("""
-            UPDATE users
-            SET max_hat_tricks = GREATEST(0, max_hat_tricks - %s)
-            WHERE id = %s
-        """, (hat_tricks, user_id))
+    # W/D/L – според всички мачове на този потребител
+    cur.execute("""
+        SELECT m.home_team, m.away_team, m.home_team_result, m.away_team_result,
+               m.home_team_penalty, m.away_team_penalty, ut.team_id
+        FROM user_match um
+        JOIN matches m ON m.id = um.match_id
+        JOIN user_team ut ON ut.user_id = um.user_id
+        WHERE um.user_id = %s
+    """, (uid,))
+    wins = draws = loses = 0
+    rows = cur.fetchall()
 
-    # Намаляване на изиграни мачове
-    cur.execute("UPDATE users SET played_matches = GREATEST(0, played_matches - 1) WHERE id = %s", (user_id,))
+    # !!! ВАЖНО:
+    # Ако вашият отбор не е винаги "home", тук трябва да знаем дали
+    # нашият отбор е home или away в дадения мач (напр. чрез сравнение с името
+    # на отбора или чрез отделна колона). Временно предполагаме, че "home_team"
+    # е вашият отбор. Ако това НЕ е вярно, добави проверка кой е нашият отбор
+    # и сравнявай съответните резултати.
+    for home_team, away_team, h, a, ph, pa, team_id in rows:
+        # TODO: ако вашият отбор е away, размени h/a за коректно броене
+        if h > a:
+            wins += 1
+        elif h < a:
+            loses += 1
+        else:
+            if ph is not None and pa is not None and ph != pa:
+                if ph > pa: wins += 1
+                else: loses += 1
+            else:
+                draws += 1
 
-    # Намаляване на резултат (win/draw/lose)
-    if outcome == 'win':
-        cur.execute("UPDATE users SET win_matches = GREATEST(0, win_matches - 1) WHERE id = %s", (user_id,))
-    elif outcome == 'draw':
-        cur.execute("UPDATE users SET draw_matches = GREATEST(0, draw_matches - 1) WHERE id = %s", (user_id,))
-    elif outcome == 'lose':
-        cur.execute("UPDATE users SET lose_matches = GREATEST(0, lose_matches - 1) WHERE id = %s", (user_id,))
-
+    cur.execute("""
+        UPDATE users
+        SET win_matches = %s, draw_matches = %s, lose_matches = %s
+        WHERE id = %s
+    """, (wins, draws, loses, uid))
 
 
 @edit_match_bp.route('/delete-match/<int:match_id>', methods=['POST'])
@@ -383,38 +399,31 @@ def delete_match(match_id):
     cur = conn.cursor()
 
     try:
-        outcome = get_match_result(match_id, cur)
+        # кои потребители са засегнати от този мач
         rows = get_user_match_rows(match_id, cur)
+        affected_user_ids = set(row[1] for row in rows)
 
-        # Намаляваме сборните броячи
-        for row in rows:
-            user_id = row[1]
-            apply_stat_reductions(user_id, row[4], outcome, cur)
-
-        # Изтриваме статистиките от user_match
+        # изтрий статистиките за този мач
         cur.execute("DELETE FROM user_match WHERE match_id = %s", (match_id,))
 
-        # Пресмятаме новите max_*, *_in_one_match, hat-tricks
-        user_ids = set(row[1] for row in rows)
-        for uid in user_ids:
-            recalculate_max_stats_for_user(uid, cur)
-
-        # Изтриваме самия мач
+        # изтрий самия мач
         cur.execute("DELETE FROM matches WHERE id = %s", (match_id,))
+
+        # преизчисли „от нулата“ за всеки засегнат потребител (по всички останали мачове)
+        for uid in affected_user_ids:
+            recompute_user_aggregates(cur, uid)  # виж функцията по-долу
 
         conn.commit()
         flash("Match deleted successfully.", "success")
-
     except Exception as e:
         conn.rollback()
         flash("Failed to delete match.", "error")
-
+        print("Error:", str(e))
     finally:
         cur.close()
         conn.close()
 
     return redirect(url_for('match_history_bp.match_history'))
-
 
 
 @edit_match_bp.route('/edit-match/<int:match_id>', methods=['GET', 'POST'])
