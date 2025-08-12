@@ -9,6 +9,7 @@ from itsdangerous import URLSafeTimedSerializer, BadSignature, SignatureExpired
 import smtplib
 from email.mime.text import MIMEText
 from email.utils import parseaddr
+from email.mime.multipart import MIMEMultipart
 
 auth_bp = Blueprint('auth', __name__)
 
@@ -42,29 +43,105 @@ def verify_reset_token(token: str, expected_password_hash: str, max_age: int):
 
 def send_reset_email(to_email: str, reset_link: str):
     from flask import current_app
+
     subject = "Reset your Football Stats password"
+    preview_text = "Use the button below to reset your password. The link is valid for 1 hour."
+
+    # Plain-text fallback (за клиенти без HTML)
     text = f"""Hello,
 
-We received a request to reset your password.
-This link is valid for 1 hour:
+We received a request to reset your password. This link is valid for 1 hour.
 
-{reset_link}
+Reset password: {reset_link}
 
 If you didn't request this, you can ignore the email.
 – GoalTracker
 """
-    msg = MIMEText(text, _charset='utf-8')
-    msg['Subject'] = subject
-    msg['From'] = current_app.config['MAIL_FROM']   # например "GoalTracker <goaltrackereu@gmail.com>"
-    msg['To'] = to_email
 
-    envelope_from = parseaddr(current_app.config['MAIL_FROM'])[1]  # чист имейл за SMTP
-    with smtplib.SMTP(current_app.config['MAIL_SERVER'], current_app.config['MAIL_PORT']) as server:
-        if current_app.config.get('MAIL_USE_TLS', True):
+    # HTML версия с „бутон“
+    html = f"""\
+<!DOCTYPE html>
+<html>
+  <body style="margin:0;padding:0;background:#0b0f12;font-family:Arial,Helvetica,sans-serif;color:#e6f7f1;">
+    <!-- preview text (скрито) -->
+    <div style="display:none;max-height:0;overflow:hidden;opacity:0;color:transparent;">
+      {preview_text}
+    </div>
+
+    <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="background:#0b0f12;padding:24px 0;">
+      <tr>
+        <td align="center">
+          <table role="presentation" width="560" cellspacing="0" cellpadding="0" border="0" style="background:#12181d;border-radius:12px;padding:32px;border:1px solid #0f2a23;">
+            <tr>
+              <td align="left" style="font-size:24px;font-weight:700;color:#a6fff0;padding-bottom:8px;">GoalTracker</td>
+            </tr>
+            <tr>
+              <td style="font-size:18px;font-weight:600;padding:8px 0 0;">Reset your password</td>
+            </tr>
+            <tr>
+              <td style="font-size:14px;line-height:20px;color:#b7c9c4;padding:8px 0 20px;">
+                We received a request to reset your password. The link is valid for <strong>1 hour</strong>.
+              </td>
+            </tr>
+
+            <!-- Bulletproof button -->
+            <tr>
+              <td align="center" style="padding:8px 0 24px;">
+                <table role="presentation" cellspacing="0" cellpadding="0" border="0">
+                  <tr>
+                    <td align="center" bgcolor="#00ffb7" style="border-radius:10px;">
+                      <a href="{reset_link}" target="_blank"
+                         style="display:inline-block;padding:14px 22px;font-size:16px;font-weight:700;
+                                text-decoration:none;color:#081414;background:#00ffb7;border-radius:10px;">
+                        Reset password
+                      </a>
+                    </td>
+                  </tr>
+                </table>
+              </td>
+            </tr>
+
+            <tr>
+              <td style="font-size:12px;line-height:18px;color:#7f8e89;">
+                If the button doesn’t work, copy and paste this link into your browser:<br>
+                <a href="{reset_link}" style="color:#7fe9cf;word-break:break-all;">{reset_link}</a>
+              </td>
+            </tr>
+
+            <tr>
+              <td style="font-size:12px;line-height:18px;color:#6d7a76;padding-top:20px;">
+                If you didn’t request this, you can safely ignore this email.
+              </td>
+            </tr>
+
+            <tr>
+              <td style="font-size:12px;color:#4a5552;padding-top:24px;border-top:1px solid #182126;">
+                &copy; {2025} GoalTracker
+              </td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+    </table>
+  </body>
+</html>
+"""
+
+    msg = MIMEMultipart("alternative")
+    msg["Subject"] = subject
+    msg["From"] = current_app.config["MAIL_FROM"]
+    msg["To"] = to_email
+
+    # прикачваме текст и HTML (текстът първи е fallback)
+    msg.attach(MIMEText(text, "plain", "utf-8"))
+    msg.attach(MIMEText(html, "html", "utf-8"))
+
+    envelope_from = parseaddr(current_app.config["MAIL_FROM"])[1]
+    with smtplib.SMTP(current_app.config["MAIL_SERVER"], current_app.config["MAIL_PORT"]) as server:
+        if current_app.config.get("MAIL_USE_TLS", True):
             server.starttls()
-        server.login(current_app.config['MAIL_USERNAME'], current_app.config['MAIL_PASSWORD'])
+        server.login(current_app.config["MAIL_USERNAME"], current_app.config["MAIL_PASSWORD"])
         server.sendmail(envelope_from, [to_email], msg.as_string())
-
 
 # Начална страница
 @auth_bp.route('/')
