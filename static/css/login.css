@@ -218,6 +218,33 @@ footer {
 }
 
 
+.password-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.password-wrapper input {
+    width: 100%;
+    padding-right: 40px;
+}
+
+.toggle-password {
+    position: absolute;
+    right: 10px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 18px;
+    color: #002a1e; /* твоят футуристичен цвят */
+    transition: color 0.3s ease;
+}
+
+.toggle-password:hover {
+    color: #004634; /* малко по-тъмно при hover */
+}
+
+
 @keyframes fadeIn {
     from { opacity: 0; transform: translateY(-10px); }
     to { opacity: 1; transform: translateY(0); }
