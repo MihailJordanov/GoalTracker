@@ -1,0 +1,349 @@
+:root{
+  --bg:#0b0f14;
+  --card:#0f141b;
+  --muted:#6f7d8c;
+  --text:#e8f7f0;
+  --accent:#00ffb7;
+  --accent-weak: rgba(0,255,183,.2);
+  --border:#1b2530;
+  --shadow:0 8px 32px rgba(0,0,0,.35), inset 0 0 0 1px var(--border);
+  --radius:18px;
+  --nav-h: 64px;
+}
+
+*{
+    box-sizing:border-box
+}
+
+
+
+
+
+/* Neon Navbar */
+.navbar {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  height: var(--nav-h);
+  background: rgba(0, 0, 0, 0.7);
+  z-index: 1000;
+  box-shadow: 0 0 10px rgba(0, 255, 183, 0.3);
+  display: flex;
+  align-items: center;    /* центрира вертикално елементите */
+  justify-content: center;
+  padding: 0;            /* махаме стария padding: 15px 0; */
+  text-align: center;
+}
+
+
+.navbar nav ul {
+    display: flex;
+    justify-content: center;
+    list-style: none;
+    gap: 30px;
+    padding: 0;
+    margin: 0;
+}
+
+.navbar nav ul li a {
+    color: #00ffb7;
+    text-decoration: none;
+    font-weight: bold;
+    font-size: 20px;
+    padding: 8px 15px;
+    border-radius: 8px;
+    transition: all 0.2s ease-in-out;
+}
+
+.navbar nav ul li a:hover {
+    color: #00ffc8;
+    background-color: rgba(0, 255, 183, 0.1);
+    text-shadow: 0 0 8px #00ffc8;
+}
+
+html,body{
+    margin:0;
+    padding:0;
+    background:var(--bg);
+    color:var(--text);
+    font-family:Orbitron,system-ui,-apple-system,Segoe UI,Roboto,sans-serif
+}
+
+.container{
+    max-width:1200px;
+    margin:24px auto;
+    padding:0 16px;
+    margin-top: 100px;
+}
+
+.header{display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:12px;
+    margin-bottom:16px
+}
+
+.title{
+    font-weight:800;
+    letter-spacing:.5px;
+    font-size:clamp(20px,3vw,28px);
+    display:flex;
+    align-items:center;
+    gap:10px
+}
+
+.title .dot{
+    width:10px;
+    height:10px;
+    border-radius:50%;
+    background:var(--accent);
+    box-shadow:0 0 18px var(--accent)
+}
+
+.toolbar{
+    display:flex;
+    gap:10px;
+    flex-wrap:wrap
+}
+
+.search{display:flex;
+    align-items:center;
+    gap:8px;padding:10px 12px;
+    min-width:240px;
+    background:linear-gradient(180deg,rgba(255,255,255,.02),rgba(255,255,255,0));
+    border:1px solid var(--border);border-radius:14px;box-shadow:var(--shadow)
+}
+
+.search input{background:transparent;border:none;outline:none;color:var(--text);width:100%;font-size:14px;letter-spacing:.4px}
+
+.table-wrap{background:linear-gradient(180deg,rgba(255,255,255,.02),rgba(255,255,255,0));
+    border:1px solid var(--border);
+    border-radius:var(--radius)
+    ;box-shadow:var(--shadow);
+    overflow:hidden
+}
+
+table{
+    width:100%;
+    border-collapse:separate;
+    border-spacing:0
+}
+
+thead th{position:sticky;
+    top:0;
+    z-index:2;
+    background:rgba(11,15,20,.8);
+    backdrop-filter:blur(8px);
+    text-align:left;
+    font-weight:600;
+    font-size:12px;
+    color:var(--muted);
+    letter-spacing:.8px;
+    text-transform:uppercase;
+    padding:12px 14px;
+    border-bottom:1px solid var(--border)
+}
+
+tbody td{padding:14px;
+    border-bottom:1px solid var(--border);
+    vertical-align:middle;
+    font-size:14px
+}
+
+tbody tr:hover{
+    background:rgba(0,255,183,.05)
+}
+
+.player{
+    display:flex;
+    align-items:center;
+    gap:12px
+}
+
+.avatar{width:40px;
+    height:40px;
+    border-radius:50%;
+    background:radial-gradient(circle at 30% 30%,var(--accent-weak),transparent 60%);
+    border:1px solid var(--border);
+    overflow:hidden;flex:0 0 auto
+}
+
+.avatar img{width:100%;
+    height:100%;
+    object-fit:cover;
+    display:block
+}
+
+.name{
+  font-weight:800;               
+  letter-spacing:.3px;
+  line-height:1.1;
+}
+
+.number{
+    font-size:12px;
+    color:var(--muted)
+}
+
+.number-badge{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  padding:4px 10px;
+  font-size:12px;
+  letter-spacing:.5px;
+  border-radius:999px;
+  border:1px solid var(--border);
+  background: radial-gradient(circle at 30% 30%, var(--accent-weak), rgba(255,255,255,0) 60%);
+  color:var(--text);
+  box-shadow: 0 0 12px rgba(0,255,183,.25) inset;
+  transform: translateY(1px);     /* лека визуална центровка спрямо baseline */
+}
+
+
+
+/* Make the numbers themselves pop */
+tbody td:nth-child(3){
+  font-weight: 800;
+  font-size: 22px; 
+  color: var(--accent);
+  text-shadow: 0 0 6px rgba(0, 195, 255, 0.5);
+}
+
+tbody td:nth-child(4){
+  font-weight: 800;
+  font-size: 18px; 
+  color: var(--accent);
+  text-shadow: 0 0 6px rgba(0, 255, 183, 0.5);
+}
+
+/* Center the "Player" column header */
+thead th:first-child {
+  text-align: center;
+}
+
+
+/* Table header styling */
+thead th {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  background: rgba(11, 15, 20, .9);
+  backdrop-filter: blur(8px);
+
+  text-align: left;
+  font-weight: 800;                 /* удебелено */
+  font-size: 13px;                  /* малко по-голямо */
+  color: var(--accent);             /* неонов акцентен цвят */
+  letter-spacing: 1px;
+  text-transform: uppercase;
+
+  padding: 12px 14px;
+  border-bottom: 1px solid var(--border);
+
+  /* леко неоново сияние */
+  text-shadow: 0 0 6px rgba(0, 255, 183, 0.4);
+}
+
+
+
+
+
+.identity{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  flex-wrap:wrap;
+}
+
+
+.pill{padding:6px 10px;
+    border:1px solid var(--border);
+    border-radius:999px;font-size:12px;
+    color:var(--text);
+  background:rgba(255,255,255,.02)
+}
+
+@media (max-width:900px){
+
+  .col-optional{display:none}
+  .name{font-size:14px}
+}
+
+
+/* --- Mobile fixes --- */
+@media (max-width: 600px) {
+
+    
+    .navbar nav ul {
+        gap: 15px;
+    }
+
+    .navbar nav ul li a {
+        font-size:16px;
+    }
+
+  /* 1) Prevent any horizontal scroll at the root */
+  html, body { 
+    overflow-x: hidden;
+    }
+
+
+  /* 2) Let header stack + allow search to shrink */
+  .header { 
+    flex-direction: column;
+     align-items: flex-start;
+    }
+
+  .toolbar { 
+    width: 100%;
+    }
+  .search { width: 95%;
+     min-width: 0;
+    }      
+  .search input {
+     min-width: 0;
+    }
+
+  /* 3) Table must never exceed the viewport */
+  .table-wrap { 
+        width: 95%;
+        max-width: 95%;
+        overflow-x: hidden;
+    }
+  table { table-layout: fixed;
+     width: 95%;
+    }
+
+  /* Keep only Player(1), Goals(3), Assists(4) */
+  thead th:not(:nth-child(1)):not(:nth-child(3)):not(:nth-child(4)) {
+     display: none; 
+    }
+  tbody td:not(:nth-child(1)):not(:nth-child(3)):not(:nth-child(4)) { 
+    display: none; 
+    }
+
+  /* Proportions that always fit */
+  thead th:nth-child(1), tbody td:nth-child(1) { 
+    width: 50%; 
+    }
+    
+  thead th:nth-child(3), tbody td:nth-child(3),
+  thead th:nth-child(4), tbody td:nth-child(4) {
+     width: 25%; text-align: center; 
+    }
+
+  /* 4) Prevent “Player” cell from forcing overflow */
+  .player { min-width: 0; }
+  .identity { min-width: 0; }
+    .name {
+    font-size: 10px;
+    white-space: normal;  /* разрешава нов ред */
+    overflow: visible;    /* премахва изрязването */
+    text-overflow: unset; /* няма ... */
+    line-height: 1.2;     /* по-близки редове */
+    font-weight: 800;
+    letter-spacing: .3px;
+    }
+  /* 5) Slightly reduce container side padding on narrow screens */
+  .container { padding-left: 12px; padding-right: 12px; }
+}

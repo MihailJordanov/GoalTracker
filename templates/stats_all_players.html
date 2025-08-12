@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Players Statistics – {{ team_name  }}</title>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/stats_all_players.css') }}">
+</head>
+<body>
+
+    <div class="navbar">
+        <nav>
+            <ul>
+                <li><a href="/home">Home</a></li>
+                <li><a href="/profile">Profile</a></li>
+            </ul>
+        </nav>
+    </div>
+
+  <div class="container">
+    <div class="header">
+      <div class="title">
+        <span class="dot"></span>
+        Players Statistics — {{ team_name  }}
+      </div>
+      <div class="toolbar">
+        <div class="search">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <path d="M21 21l-4.35-4.35M10.5 18a7.5 7.5 0 1 1 0-15 7.5 7.5 0 0 1 0 15Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+          </svg>
+          <input id="searchInput" type="text" placeholder="Search by name/number..." />
+        </div>
+      </div>
+    </div>
+
+    <div class="table-wrap">
+      <table id="playersTable">
+        <thead>
+          <tr>
+            <th>Player</th>
+            <th>Total Matches</th>
+            <th>Goals (max)</th>
+            <th>Assists (max)</th>
+            <th class="col-optional">Shots (max)</th>
+            <th class="col-optional">On Target (max)</th>
+            <th class="col-optional">Blocked (max)</th>
+            <th class="col-optional">Saved (max)</th>
+            <th class="col-optional">Passes (max)</th>
+            <th class="col-optional">Fouls/Falls (max)</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for p in players %}
+          <tr>
+            <td>
+              <div class="player">
+                <div class="avatar">
+                {% if p.image %}
+                    {% if p.image.startswith('http') %}
+                    <img src="{{ p.image }}" alt="{{ p.first_name }} {{ p.last_name }}">
+                    {% else %}
+                    <img src="{{ url_for('static', filename=p.image) }}" alt="{{ p.first_name }} {{ p.last_name }}">
+                    {% endif %}
+                {% else %}
+                    <img src="{{ url_for('static', filename='images/buttons/default_player_img_4.png') }}"
+                        alt="Default player image">
+                {% endif %}
+                </div>
+                <div class="identity">
+                    <div class="name">{{ p.first_name }} {{ p.last_name }}</div>
+                    <div class="number-badge">#{{ p.number if p.number is not none else '—' }}</div>
+                </div>
+              </div>
+            </td>
+            <td><span class="pill">{{ p.played_matches }}</span></td>
+            <td>{{ p.max_goals }}</td>
+            <td>{{ p.max_assists }}</td>
+            <td class="col-optional">{{ p.max_shoots }}</td>
+            <td class="col-optional">{{ p.max_shoots_on_target }}</td>
+            <td class="col-optional">{{ p.max_blocked_shoots }}</td>
+            <td class="col-optional">{{ p.max_saved_goals }}</td>
+            <td class="col-optional">{{ p.max_passes }}</td>
+            <td class="col-optional">{{ p.max_falls }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <script src="{{ url_for('static', filename='js/stats_all_players.js') }}"></script>
+</body>
+</html>
