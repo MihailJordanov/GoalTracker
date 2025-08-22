@@ -944,6 +944,57 @@ tr.clickable:hover {
         max-width: 35vw;
     }
 
+    .player-row {
+        cursor: pointer;
+    }
+
+    .player-tooltip {
+        position: fixed;
+        z-index: 9999;
+        padding: 6px 10px;
+        background: rgba(0, 0, 0, 0.9);
+        border: 1px solid #00ffb7;
+        border-radius: 8px;
+        box-shadow: 0 0 10px rgba(0,255,183,0.45), inset 0 0 8px rgba(0,255,183,0.15);
+        color: #fff;
+        font-size: 0.9rem;
+        line-height: 1.2;
+        pointer-events: none;
+    }
+
+    .player-tooltip::after {
+        content: "";
+        position: absolute;
+        width: 0; height: 0;
+        left: var(--arrow-x, 50%);
+        transform: translateX(-50%);
+    }
+
+    .player-tooltip[data-arrow-direction="up"]::after {
+        border-left: 7px solid transparent;
+        border-right: 7px solid transparent;
+        border-top: 7px solid rgba(0, 0, 0, 0.9);
+        bottom: -7px;
+    }
+
+    .player-tooltip[data-arrow-direction="down"]::after {
+        border-left: 7px solid transparent;
+        border-right: 7px solid transparent;
+        border-bottom: 7px solid rgba(0, 0, 0, 0.9);
+        top: -7px;
+    }
+
+    .player-row.active {
+        background: rgba(0, 255, 183, 0.15); 
+        box-shadow: inset 0 0 10px rgba(0, 255, 183, 0.5), 0 0 6px rgba(0, 255, 183, 0.35);
+        transition: background 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .player-row:hover {
+        background: rgba(0, 255, 183, 0.1);
+        box-shadow: inset 0 0 6px rgba(0, 255, 183, 0.3);
+    }
+
 
 }
 

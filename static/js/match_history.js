@@ -103,5 +103,76 @@ document.addEventListener("DOMContentLoaded", function () {
 });
 
 
+(function () {
+  const mq = window.matchMedia('(max-width: 600px)');
+  let currentTooltip = null;
+  let currentRowEl = null;
 
+  function removeTooltip() {
+    if (currentTooltip) {
+      currentTooltip.remove();
+      currentTooltip = null;
+    }
+    if (currentRowEl) {
+      currentRowEl.classList.remove('active');
+      currentRowEl = null;
+    }
+  }
 
+  function showTooltip(row) {
+    removeTooltip();
+
+    const name = row.dataset.playerName?.trim() || 'Unknown';
+    const tip = document.createElement('div');
+    tip.className = 'player-tooltip';
+    tip.textContent = name;
+    document.body.appendChild(tip);
+
+    const r = row.getBoundingClientRect();
+    const tipRect = tip.getBoundingClientRect();
+
+    let top = r.top - tipRect.height - 8;
+    let arrowDirection = 'up';
+    if (top < 8) {
+      top = r.bottom + 8;
+      arrowDirection = 'down';
+    }
+
+    let left = r.left + (r.width / 2) - (tipRect.width / 2);
+    left = Math.max(8, Math.min(left, window.innerWidth - tipRect.width - 8));
+
+    tip.style.top = top + 'px';
+    tip.style.left = left + 'px';
+
+    const arrowX = r.left + (r.width / 2) - left;
+    tip.style.setProperty('--arrow-x', arrowX + 'px');
+    tip.dataset.arrowDirection = arrowDirection;
+
+    row.classList.add('active');
+    currentTooltip = tip;
+    currentRowEl = row;
+  }
+
+  document.addEventListener('click', function (e) {
+    if (!mq.matches) return;
+
+    const target = e.target.closest('.player-row');
+    if (target) {
+      if (target.classList.contains('active')) {
+        removeTooltip();
+      } else {
+        showTooltip(target);
+      }
+    } else {
+      removeTooltip();
+    }
+  });
+
+  window.addEventListener('resize', () => {
+    if (!mq.matches) removeTooltip();
+  });
+
+  window.addEventListener('scroll', () => {
+    if (mq.matches) removeTooltip();
+  }, { passive: true });
+})();

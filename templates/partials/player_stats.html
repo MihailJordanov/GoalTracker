@@ -52,11 +52,12 @@
     </thead>       
     <tbody> 
         {% for p in players %}
-        <tr>
+        <tr class="player-row"
+            data-player-name="{{ (p.first_name ~ ' ' ~ p.last_name) if p.first_name else p.last_name }}">
             <td>
-                <span class="player-name">{{ p.last_name }}</span>
-                <span class="player-number">#{{ p.number }}</span>  
-            </td>            
+              <span class="player-name">{{ p.last_name }}</span>
+              <span class="player-number">#{{ p.number }}</span>
+            </td>
             <td>{{ p.goals }}</td>
             <td>{{ p.assists }}</td>
             <td>{{ p.shoots }}</td>
@@ -70,6 +71,7 @@
         </tr>
         {% endfor %}
     </tbody>
+
 </table>
 
 {% if player_type >= 2 %}
