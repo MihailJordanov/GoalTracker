@@ -51,9 +51,23 @@ body {
     display: flex;
     flex-direction: column;
     gap: 20px;
-    margin-top: 120px;
+    margin-top: 100px;
     padding: 0 20px;
+    transition: opacity .18s ease, transform .18s ease;
 }
+
+/* smooth content transition when toggling view */
+.match-cards.switching-out {
+  opacity: 0;
+  transform: translateY(6px);
+}
+
+.match-cards.switching-in {
+  opacity: 1;
+  transform: translateY(0);
+  transition: opacity .22s ease, transform .22s ease;
+}
+
 
 .match-card {
     background: rgba(255, 255, 255, 0.05);
@@ -301,8 +315,8 @@ tr.clickable:hover {
     font-size: 4.8rem;
     font-weight: 600;
     color: #00ffb7;
-    margin-top: 160px;
-    margin-bottom: 30px;
+    margin-top: 100px;
+    margin-bottom: 50px;
     text-transform: uppercase;
     letter-spacing: 2px;
 }
@@ -712,8 +726,243 @@ tr.clickable:hover {
     box-shadow: 0 0 6px rgba(0, 255, 183, 0.6); /* неон ефект */
 }
 
+
+
+/* Segmented toggle: single-button look with sliding thumb */
+.view-toggle {
+    position: relative;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    align-items: center;
+    width: clamp(220px, 50vw, 360px);
+    margin: 3px auto 6px;                 /* по-малко разстояние и центрирано */
+    padding: 4px;
+    border: 1px solid rgba(0,255,183,0.35);
+    border-radius: 999px;
+    background: rgba(0,255,183,0.06);
+    box-shadow: 0 0 12px rgba(0,255,183,0.15);
+    overflow: hidden;
+}
+
+/* плъзгащ се фон (thumb) */
+.view-toggle::before {
+    content: "";
+    position: absolute;
+    top: 4px;
+    left: 4px;
+    height: calc(100% - 8px);
+    width: calc(50% - 4px);
+    border-radius: 999px;
+    background: linear-gradient(180deg, rgba(0,255,183,0.25), rgba(0,255,183,0.08));
+    box-shadow: 0 0 10px rgba(0,255,183,0.35), inset 0 0 8px rgba(0,255,183,0.15);
+    transition: transform .25s ease;
+    transform: translateX(0);              /* Detailed по default */
+}
+/* когато сме в Compact – плъзгачът отива надясно */
+.view-toggle.compact-active::before {
+    transform: translateX(100%);
+}
+
+.view-toggle .toggle-pill {
+    position: relative;
+    z-index: 1;                             /* над thumb-а */
+    border: 0;
+    background: transparent;
+    color: #8ff4d7;
+    font-family: 'Orbitron', sans-serif;
+    font-size: 0.9rem;
+    padding: 8px 0;                         /* хор. padding го дава контейнерът */
+    border-radius: 999px;                   /* за по-приятен tap */
+    cursor: pointer;
+    letter-spacing: .5px;
+    transition: color .2s ease, transform .2s ease;
+}
+.view-toggle .toggle-pill.active {
+    color: #0b1e24;                         /* текст върху зеления thumb */
+    text-shadow: 0 0 6px rgba(0,255,183,0.5);
+}
+.view-toggle .toggle-pill:hover {
+    transform: translateY(-1px);
+}
+
+/* ===== Compact mode (container gets .compact-mode) ===== */
+.compact-mode .match-card {
+  padding: 10px 16px 10px 22px;
+  border-radius: 14px;
+  box-shadow: 0 0 10px rgba(0,255,183,0.18);
+  position: relative; /* за да държим stripe вътре */
+}
+
+/* Базови цветови променливи според изхода */
+.compact-mode .match-card.win  { --acc1:#00ff88; --acc2:#00d17a; --glow:rgba(0,255,136,.55); }
+.compact-mode .match-card.loss { --acc1:#ff4e4e; --acc2:#cc2b2b; --glow:rgba(255,78,78,.55); }
+.compact-mode .match-card.draw { --acc1:#4eafff; --acc2:#2e84e0; --glow:rgba(78,175,255,.55); }
+
+.compact-mode .match-card .home-logo,
+.compact-mode .match-card .away-logo,
+.compact-mode .match-card .match-details { display:none !important; }
+
+.compact-mode .match-card .match-header { margin:0; }
+.compact-mode .match-card .team-name { font-size:.95rem; text-shadow:0 0 3px #00ffc8; }
+.compact-mode .match-card .score { font-size:1.4rem; line-height:1; }
+.compact-mode .match-card .main-score { font-weight:800; }
+.compact-mode .match-card .penalty-score { display:none; }
+
+.compact-mode .match-cards { gap:10px; }
+.compact-mode .match-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 0 18px rgba(0,255,183,0.28);
+}
+
+/* ── НОВА иновативна лента ───────────────────────────────────────────── */
+.compact-mode .match-card .stripe {
+  position:absolute; inset:0 auto 0 0;
+  width:8px; /* малко по-видима */
+  border-radius: 0 6px 6px 0;
+  transform: none !important;            /* override на по-стар skew */
+  overflow:hidden;
+  background:
+    linear-gradient(180deg, var(--acc1), var(--acc2)) padding-box,           /* основен градиент */
+    repeating-linear-gradient(to bottom, rgba(255,255,255,.14) 0 2px, transparent 2px 6px); /* микро текстура */
+  filter: drop-shadow(0 0 6px var(--glow));
+  clip-path: polygon(0 0, 100% 0, 100% 86%, 60% 100%, 0 100%); /* диагонално „опашче“ */
+  z-index: 1;
+
+  /* 🔽 Долнo сияние (и основен ореол) – подредени drop-shadow-и */
+  filter:
+    drop-shadow(0 0 6px var(--glow))              /* базов ореол */
+    drop-shadow(0 10px 14px var(--glow-bottom));  /* под-светене надолу */
+
+}
+
+/* shimmer „проблясък“ по лентата */
+.compact-mode .match-card .stripe::before{
+  content:"";
+  position:absolute;
+  left:-60%; right:-60%;
+  height:40%;
+  top:-30%;
+  background: radial-gradient(80% 70% at 50% 50%, rgba(255,255,255,.35), rgba(255,255,255,0) 70%);
+  transform: translateY(120%) rotate(8deg);
+  mix-blend-mode: screen;
+  opacity:.6;
+  animation: stripeShine 2.2s ease-in-out infinite;
+}
+
+/* подчертаване при интро/hover */
+.compact-mode .match-card.compact-intro .stripe::after,
+.compact-mode .match-card:hover .stripe::after{
+  content:"";
+  position:absolute; inset:0;
+  box-shadow: inset 0 0 18px var(--glow), 0 0 14px var(--glow);
+  opacity:0;
+  animation: stripePulse 600ms ease-out forwards;
+}
+
+/* анимации */
+@keyframes stripeShine{
+  0%{   transform: translateY(120%) rotate(8deg); }
+  50%{  transform: translateY(0)    rotate(8deg); }
+  100%{ transform: translateY(-120%) rotate(8deg); }
+}
+@keyframes stripePulse{
+  0%{   opacity:0; }
+  30%{  opacity:.9; }
+  100%{ opacity:0; }
+}
+
+/* уважаваме reduced motion */
+@media (prefers-reduced-motion: reduce){
+  .compact-mode .match-card .stripe::before,
+  .compact-mode .match-card.compact-intro .stripe::after,
+  .compact-mode .match-card:hover .stripe::after{
+    animation: none;
+    opacity: .25;
+  }
+}
+
+
+
+
+/* Compact intro animation */
+@keyframes compactSpinIn {
+  0%   { opacity: 0; transform: perspective(600px) rotateX(20deg) translateY(8px) scale(0.98); }
+  60%  { opacity: 1; transform: perspective(600px) rotateX(-3deg) translateY(0) scale(1.01); }
+  100% { opacity: 1; transform: perspective(600px) rotateX(0) translateY(0) scale(1); }
+}
+
+/* светлинен проблясък */
+@keyframes compactFlash {
+  0%   { box-shadow: 0 0 0 rgba(0,0,0,0); }
+  30%  { box-shadow: 0 0 18px var(--flash-color, rgba(0,255,183,0.6)); }
+  100% { box-shadow: 0 0 0 rgba(0,0,0,0); }
+}
+
+/* клас, който включва двете анимации */
+.compact-mode .match-card.compact-intro {
+  will-change: transform, opacity, box-shadow;
+  animation:
+    compactSpinIn 420ms ease-out both,
+    compactFlash 520ms ease-out both;
+  /* delay ще се подава от JS за последователност */
+}
+
+/* цвят според изхода (override на --flash-color) */
+.compact-mode .match-card.win.compact-intro  { --flash-color: rgba(0,255,136,0.85); }
+.compact-mode .match-card.loss.compact-intro { --flash-color: rgba(255,78,78,0.9); }
+.compact-mode .match-card.draw.compact-intro { --flash-color: rgba(78,175,255,0.9); }
+
+/* Respect user preferences */
+@media (prefers-reduced-motion: reduce) {
+  .compact-mode .match-card.compact-intro {
+    animation: none;
+    opacity: 1;
+    transform: none;
+    box-shadow: none;
+  }
+}
+
+/* Иконка при flash (показва се за миг отдясно) */
+.flash-icon {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%) scale(0.8);
+  opacity: 0;
+  pointer-events: none;
+  z-index: 2;
+  filter: drop-shadow(0 0 6px rgba(0,0,0,0.35));
+  animation: flashIconPop var(--icon-dur, 650ms) ease-out forwards;
+  --icon-size: 22px;              
+  font-size: var(--icon-size);
+}
+
+/* Цвят според изхода (можеш да пипнеш нюансите) */
+.match-card.win  .flash-icon { color: #00ff88; text-shadow: 0 0 8px rgba(0,255,136,0.7); }
+.match-card.loss .flash-icon { color: #ff4e4e; text-shadow: 0 0 8px rgba(255,78,78,0.7); }
+.match-card.draw .flash-icon { color: #4eafff; text-shadow: 0 0 8px rgba(78,175,255,0.7); }
+
+/* Самата pop анимация */
+@keyframes flashIconPop {
+  0%   { opacity: 0; transform: translateY(-50%) scale(0.55) rotate(-10deg); }
+  28%  { opacity: 1; transform: translateY(-50%) scale(1.22) rotate(0deg); }
+  70%  { opacity: 1; transform: translateY(-50%) scale(1.06); }
+  90%  { opacity: 1; transform: translateY(-50%) scale(1.06); }
+  100% { opacity: 0; transform: translateY(-50%) scale(0.95) translateX(8px); }
+}
+
+
+
+
+
+
 @media (max-width: 600px) {
     
+
+  
+
+
+
     .navbar nav ul {
         gap: 15px;
     }
@@ -723,7 +972,7 @@ tr.clickable:hover {
     }
 
     .match-cards {
-        margin-top: 100px;
+        margin-top: 50px;
         padding: 0 10px;
         gap: 15px;
     }
@@ -798,18 +1047,13 @@ tr.clickable:hover {
     }
 
     .reveal-title {
-        font-size: 2.2rem;
         margin-top: 100px;
         padding: 0 10px;
-    }
-
-    .reveal-title {
         font-size: 1.8rem;
-        margin-top: 100px;
         text-align: center;
-        padding: 0 10px;
         flex-wrap: wrap;
         line-height: 1.2;
+        margin-bottom: -50px;
     }
 
     .reveal-title span {
@@ -900,7 +1144,7 @@ tr.clickable:hover {
         padding: 1px 6px;
     }
 
- .match-score-header {
+    .match-score-header {
         display: flex;
         flex-direction: column;
         align-items: center;
@@ -993,6 +1237,20 @@ tr.clickable:hover {
     .player-row:hover {
         background: rgba(0, 255, 183, 0.1);
         box-shadow: inset 0 0 6px rgba(0, 255, 183, 0.3);
+    }
+
+
+    .view-toggle {
+        margin-top: 80px; /* за да не се сблъсква с navbar-а */
+    }
+    .compact-mode .match-card {
+        padding: 10px 14px 10px 20px;
+    }
+    .compact-mode .match-card .team-name {
+        font-size: 0.9rem;
+    }
+    .compact-mode .match-card .score {
+        font-size: 1.3rem;
     }
 
 
