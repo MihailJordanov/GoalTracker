@@ -263,6 +263,22 @@ thead th {
   background:rgba(255,255,255,.02)
 }
 
+
+#page-loader {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: #0f2027;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+    transition: opacity 0.5s ease;
+}
+
+
 @media (max-width:900px){
 
   .col-optional{display:none}
