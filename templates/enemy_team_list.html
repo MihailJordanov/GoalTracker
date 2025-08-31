@@ -58,7 +58,7 @@
                 <label for="image" class="file-upload-wrapper">
                     <span>Select Team Logo</span>
                     <label for="image" class="custom-file-upload">
-                        <input type="file" id="image" name="image" accept="image/*" onchange="previewImage(event)" required>
+                        <input type="file" id="image" name="image" accept="image/*" onchange="previewImage(event)">
                     </label>
                 </label>
 
@@ -89,33 +89,43 @@
 
     <!-- Списък с противникови отбори -->
         <div class="enemy-list-title">List of enemy teams</div>
-        {% if enemy_teams %}
+            {% if enemy_teams %}
             <ul class="enemy-list">
-                {% for team in enemy_teams %}
-                   <li class="enemy-item">
-
-                    <img src="{{ team.image }}" alt="{{ team.name }}" class="enemy-logo">
-                    <!--<p style="font-size: 12px; color: gray;">
-                        Cloudinary URL: {{ team.image }}
-                    </p>-->
-
-
-
-                    <div class="enemy-info">
-                        <strong class="enemy-name">{{ team.name }}</strong>
-                        <span class="enemy-difficulty">{{ team.difficulty }} / 10</span>
-                    </div>  
-        
-                    {% if team.team_code != '000000' %}
-                        <span class="enemy-verified">✔</span>
+                {% for enemy in enemy_teams %}
+                <li class="enemy-item" data-enemy-id="{{ enemy.id }}" data-has-code="{{ 1 if enemy.team_code != '000000' else 0 }}">
+                    <!-- Скритият бар с бутона; ще го показваме при селекция -->
+                    {% if enemy.team_code == '000000' %}
+                    <div class="enemy-actions" style="display:none;">
+                        <form class="change-logo-form"
+                            action="{{ url_for('enemy_team_bp.change_enemy_logo', team_id=team[0], enemy_id=enemy.id) }}"
+                            method="post" enctype="multipart/form-data">
+                        <input type="file" name="image" accept="image/*" class="hidden-file" style="display:none;"
+                                onchange="this.form.submit()">
+                        <button type="button" class="change-logo-btn">Change logo</button>
+                        </form>
+                    </div>
                     {% endif %}
 
+                    <img src="{{ enemy.image or default_enemy_logo_url }}"
+                        alt="{{ enemy.name }}"
+                        class="enemy-logo"
+                        onerror="this.onerror=null; this.src='{{ default_enemy_logo_url }}';">
+
+                    <div class="enemy-info">
+                    <strong class="enemy-name">{{ enemy.name }}</strong>
+                    <span class="enemy-difficulty">{{ enemy.difficulty }} / 10</span>
+                    </div>
+
+                    {% if enemy.team_code != '000000' %}
+                    <span class="enemy-verified">✔</span>
+                    {% endif %}
                 </li>
                 {% endfor %}
             </ul>
-        {% else %}
+            {% else %}
             <p>You don't have any enemy teams added yet.</p>
-        {% endif %}
+            {% endif %}
+
 
 </body>
 </html>

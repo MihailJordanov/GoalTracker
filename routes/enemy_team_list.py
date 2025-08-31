@@ -5,6 +5,7 @@ from database.db import get_db_connection
 import psycopg2.extras 
 import cloudinary
 import cloudinary.uploader
+from cloudinary.utils import cloudinary_url
 
 enemy_team_bp = Blueprint('enemy_team_bp', __name__)
 UPLOAD_FOLDER = os.path.join('static', 'uploads', 'enemy_teams')
@@ -28,20 +29,15 @@ def check_access(user_id, team_id):
         return False
     return True
 
-def validate_enemy_team_data(name, difficulty, image):
+def validate_enemy_team_data(name, difficulty):
     if not name.strip():
         return False, "Enemy team name is required."
-
     try:
         difficulty = int(difficulty)
         if not (1 <= difficulty <= 10):
             return False, "Difficulty must be between 1 and 10."
     except ValueError:
         return False, "Invalid difficulty format. Must be a number."
-
-    if not image:
-        return False, "Image is required."
-
     return True, ""
 
 def validate_team_code_data(team_code, difficulty, user_team_code, team_id):
@@ -67,19 +63,15 @@ def handle_add_enemy_team(team_id):
     if form_type == 'manual':
         name = request.form['name']
         difficulty = request.form['difficulty']
-        image = request.files['image']
+        image = request.files.get('image')  # .get(), не ['image']
 
-        is_valid, message = validate_enemy_team_data(name, difficulty, image)
+        is_valid, message = validate_enemy_team_data(name, difficulty)
         if not is_valid:
             flash(message, 'error')
             return redirect(url_for('enemy_team_bp.enemy_team_list', team_id=team_id))
 
-        image_filename = save_image(image)
-        if not image_filename:
-            flash("Failed to save image.", 'error')
-            return redirect(url_for('enemy_team_bp.enemy_team_list', team_id=team_id))
-
-        save_enemy_team_to_db(team_id, name, difficulty, image_filename, '000000')
+        image_url = save_image(image)  # може да е None
+        save_enemy_team_to_db(team_id, name, difficulty, image_url or '', '000000')
         flash('Enemy team successfully added!', 'success')
 
     elif form_type == 'team_code':
@@ -106,13 +98,12 @@ def handle_add_enemy_team(team_id):
 
     return redirect(url_for('enemy_team_bp.enemy_team_list', team_id=team_id))
 
-
 def save_image(image_file):
-    if image_file:
+    # Качваме само ако има подаден файл и име
+    if image_file and getattr(image_file, "filename", "").strip():
         upload_result = cloudinary.uploader.upload(image_file)
-        return upload_result['secure_url']  # ще запазим директния линк
+        return upload_result["secure_url"]
     return None
-
 
 def save_enemy_team_to_db(team_id, name, difficulty, image_filename, team_code):
     conn = get_db_connection()
@@ -172,6 +163,34 @@ def get_enemy_teams(team_id):
     conn.close()
     return [dict(row) for row in teams]
 
+
+# helpers
+
+def get_enemy_team(team_id, enemy_id):
+    conn = get_db_connection()
+    cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
+    cur.execute("""
+        SELECT id, team_id, name, difficulty, image, team_code
+        FROM enemy_teams
+        WHERE id = %s AND team_id = %s
+    """, (enemy_id, team_id))
+    row = cur.fetchone()
+    cur.close()
+    conn.close()
+    return dict(row) if row else None
+
+def update_enemy_team_logo(enemy_id, team_id, image_url):
+    conn = get_db_connection()
+    cur = conn.cursor()
+    cur.execute("""
+        UPDATE enemy_teams
+        SET image = %s
+        WHERE id = %s AND team_id = %s
+    """, (image_url, enemy_id, team_id))
+    conn.commit()
+    cur.close()
+    conn.close()
+
 # === Методи за достъп и права ===
 
 def check_user_permissions(user_id, team_id):
@@ -205,6 +224,20 @@ def get_team_by_id(team_id):
     conn.close()
     return team
 
+DEFAULT_ENEMY_LOGO_PUBLIC_ID = "app/default_enemy_team_img"
+
+
+def get_default_enemy_logo_url():
+    url, _ = cloudinary_url(
+        DEFAULT_ENEMY_LOGO_PUBLIC_ID,
+        secure=True,
+        fetch_format="auto",  # Cloudinary ще върне правилното разширение (jpg/png/webp)
+        quality="auto",
+        width=128, height=128, crop="fill", gravity="auto"
+    )
+    return url
+
+
 @enemy_team_bp.route('/team/<int:team_id>/enemy_teams', methods=['GET', 'POST'])
 def enemy_team_list(team_id):
     if not user_logged_in():
@@ -225,4 +258,55 @@ def enemy_team_list(team_id):
         return handle_add_enemy_team(team_id)
 
     enemy_teams = get_enemy_teams(team_id)
-    return render_template('enemy_team_list.html', team=team, enemy_teams=enemy_teams)
+    return render_template(
+        'enemy_team_list.html',
+        team=team,
+        enemy_teams=enemy_teams,
+        default_enemy_logo_url=get_default_enemy_logo_url()  
+    )
+
+
+
+# route за смяна на лого
+@enemy_team_bp.post('/team/<int:team_id>/enemy_teams/<int:enemy_id>/logo')
+def change_enemy_logo(team_id, enemy_id):
+    if not user_logged_in():
+        flash('Please log in to manage enemy teams.', 'error')
+        return redirect(url_for('auth.index'))
+
+    user_id = session['user_id']
+    if not check_access(user_id, team_id):
+        return redirect(url_for('home_bp.home'))
+
+    enemy = get_enemy_team(team_id, enemy_id)
+    if not enemy:
+        flash("Enemy team not found.", "error")
+        return redirect(url_for('enemy_team_bp.enemy_team_list', team_id=team_id))
+
+    # само за ръчно добавени (без тикче)
+    if enemy["team_code"] != '000000':
+        flash("You can't change the logo of a verified (by code) team.", "error")
+        return redirect(url_for('enemy_team_bp.enemy_team_list', team_id=team_id))
+
+    file = request.files.get('image')
+    if not file or not getattr(file, "filename", "").strip():
+        flash("Please select an image.", "error")
+        return redirect(url_for('enemy_team_bp.enemy_team_list', team_id=team_id))
+
+    # качване в Cloudinary
+    try:
+        upload_result = cloudinary.uploader.upload(
+            file,
+            folder=f"enemy_teams/{team_id}",   # по избор: групирай по team_id
+            public_id=f"enemy_{enemy_id}",     # фиксирано име за overwrite
+            overwrite=True,
+            resource_type="image"
+        )
+        image_url = upload_result["secure_url"]
+    except Exception as e:
+        flash(f"Failed to upload image: {e}", "error")
+        return redirect(url_for('enemy_team_bp.enemy_team_list', team_id=team_id))
+
+    update_enemy_team_logo(enemy_id, team_id, image_url)
+    flash("Logo updated successfully!", "success")
+    return redirect(url_for('enemy_team_bp.enemy_team_list', team_id=team_id))

@@ -439,10 +439,94 @@ button:hover {
     gap: 15px;
 }
 
+.enemy-item.selected {
+    box-shadow: 0 0 12px rgba(0, 234, 255, 0.6);
+}
+
 .enemy-item:hover {
     background: #1b1b1b;
     transform: scale(1.01);
 }
+
+
+/* Плаващ “Change logo” над картата */
+.enemy-actions {
+    position: absolute;
+    top: -48px;                 /* колко над enemy-item да стои */
+    left: 50%;
+    transform: translateX(-50%);
+    display: none;              /* показва се само когато е селектирано */
+    z-index: 20;
+    pointer-events: none;       /* попречи на неволните кликове извън бутона */
+}
+
+/* Показваме панела, когато item е селектиран */
+.enemy-item.selected .enemy-actions {
+    display: block;
+}
+
+/* Самото бутонче – черно с бели букви и синя рамка */
+.enemy-actions .change-logo-btn {
+    pointer-events: auto;       /* да приема кликове */
+    background: #0f1115;        /* почти черно, леко “живо” */
+    color: #ffffff;
+    border: 1px solid #1ecfff;  /* деликатна синкава рамка */
+    border-radius: 8px;
+    padding: 8px 14px;
+    font-size: 13.5px;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    cursor: pointer;
+    box-shadow: 0 6px 18px rgba(0, 255, 183, 0.10), 0 1px 0 rgba(255,255,255,0.04) inset;
+    transition: transform 0.15s ease, box-shadow 0.2s ease, border-color 0.2s ease, background 0.2s ease;
+    outline: none;
+}
+
+/* Hover / Active състояния */
+.enemy-actions .change-logo-btn:hover {
+    background: #131720;
+    border-color: #00ffb7;      /* подсилваме неоновия акцент */
+    box-shadow: 0 8px 22px rgba(0, 255, 183, 0.18), 0 0 10px rgba(30, 207, 255, 0.24);
+    transform: translateY(-1px);
+}
+.enemy-actions .change-logo-btn:active {
+    transform: translateY(0);
+    box-shadow: 0 3px 10px rgba(0, 255, 183, 0.13);
+}
+
+/* Достъпност: клавиатурен фокус */
+.enemy-actions .change-logo-btn:focus-visible {
+    box-shadow: 0 0 0 3px rgba(0, 255, 183, 0.35);
+}
+
+/* Стрелка по средата, сочеща към enemy-item */
+.enemy-actions::after {
+    content: "";
+    position: absolute;
+    bottom: -7px;               /* изкарва “връхчето” под бутона */
+    left: 50%;
+    transform: translateX(-50%) rotate(45deg);
+    width: 12px;
+    height: 12px;
+    background: #0f1115;        /* същия фон като бутона */
+    border-left: 1px solid #1ecfff;
+    border-bottom: 1px solid #1ecfff;
+    z-index: -1;                /* да влиза snug към картата */
+    box-shadow: 2px 2px 8px rgba(0, 255, 183, 0.10);
+}
+
+/* Намалена анимация за хора с предпочитание */
+@media (prefers-reduced-motion: reduce) {
+    .enemy-actions .change-logo-btn {
+        transition: none;
+    }
+}
+
+/* Малки екрани – повдигни малко по-нагоре */
+@media (max-width: 600px) {
+    .enemy-actions { top: -54px; }
+}
+
 
 .enemy-logo {
     width: 48px;

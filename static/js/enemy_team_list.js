@@ -78,6 +78,47 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // Apply default theme on load
     applyManualTheme();
+
+    // избор на enemy елемент
+    const enemyItems = document.querySelectorAll(".enemy-item");
+    let selectedItem = null;
+
+    enemyItems.forEach(li => {
+        li.addEventListener("click", (e) => {
+        // избягай от клик по бутона да не затваря/отваря пак
+        if (e.target.closest(".change-logo-form") || e.target.classList.contains("change-logo-btn")) {
+            return;
+        }
+
+        if (selectedItem && selectedItem !== li) {
+            selectedItem.classList.remove("selected");
+            const prevActions = selectedItem.querySelector(".enemy-actions");
+            if (prevActions) prevActions.style.display = "none";
+        }
+
+        if (li.classList.contains("selected")) {
+            li.classList.remove("selected");
+            const actions = li.querySelector(".enemy-actions");
+            if (actions) actions.style.display = "none";
+            selectedItem = null;
+        } else {
+            li.classList.add("selected");
+            const actions = li.querySelector(".enemy-actions");
+            if (actions) actions.style.display = "block";
+            selectedItem = li;
+        }
+        });
+
+        // бутон Change logo -> отваря file input
+        const btn = li.querySelector(".change-logo-btn");
+        if (btn) {
+        btn.addEventListener("click", (e) => {
+            e.stopPropagation();
+            const fileInput = li.querySelector('.change-logo-form input[type="file"]');
+            if (fileInput) fileInput.click();
+            });
+        }
+    });
 });
 
 
