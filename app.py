@@ -14,6 +14,7 @@ from routes.enemy_team_list import enemy_team_bp
 from routes.location_list import location_bp
 from routes.manage_players import manage_players_bp
 from routes.stats_all_players import stats_all_players_bp
+from werkzeug.middleware.proxy_fix import ProxyFix 
 from database.db import get_db_connection
 from config import DevelopmentConfig, ProductionConfig
 
@@ -26,6 +27,12 @@ def create_app():
         app.config.from_object(ProductionConfig)
     else:
         app.config.from_object(DevelopmentConfig)
+
+    # ✅ ВАЖНО: ProxyFix след като app е създаден
+    app.wsgi_app = ProxyFix(
+        app.wsgi_app,
+        x_for=1, x_proto=1, x_host=1, x_port=1
+    )
 
     # Flask-Login
     login_manager = LoginManager()

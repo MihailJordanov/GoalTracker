@@ -167,88 +167,84 @@ def safe_int(val, default=0):
         return default
     
 
-
-def recompute_user_aggregates(cur, uid: int):
-    """
-    Пресмята от нулата totals, рекорди, хеттрикове, played_matches и W/D/L
-    за даден потребител, на база всички редове в user_match.
-    """
-    stats = ['goals','assists','shoots','shoots_on_target','blocked_shoots','saved_goals','passes','falls']
-
-    # totals
+def recompute_user_aggregates_fast(cur, uid: int):
     cur.execute("""
-        SELECT
-            COALESCE(SUM(goals),0),
-            COALESCE(SUM(assists),0),
-            COALESCE(SUM(shoots),0),
-            COALESCE(SUM(shoots_on_target),0),
-            COALESCE(SUM(blocked_shoots),0),
-            COALESCE(SUM(saved_goals),0),
-            COALESCE(SUM(passes),0),
-            COALESCE(SUM(falls),0)
-        FROM user_match
-        WHERE user_id = %s
-    """, (uid,))
-    totals = cur.fetchone()
-    for i, stat in enumerate(stats):
-        cur.execute(f"UPDATE users SET max_{stat} = %s WHERE id = %s", (totals[i], uid))
-
-    # max in one match
-    cur.execute("""
-        SELECT
-            COALESCE(MAX(goals),0),
-            COALESCE(MAX(assists),0),
-            COALESCE(MAX(shoots),0),
-            COALESCE(MAX(shoots_on_target),0),
-            COALESCE(MAX(blocked_shoots),0),
-            COALESCE(MAX(saved_goals),0),
-            COALESCE(MAX(passes),0),
-            COALESCE(MAX(falls),0)
-        FROM user_match
-        WHERE user_id = %s
-    """, (uid,))
-    maxes = cur.fetchone()
-    for i, stat in enumerate(stats):
-        cur.execute(f"UPDATE users SET max_{stat}_in_one_match = %s WHERE id = %s", (maxes[i], uid))
-
-    # hat-tricks
-    cur.execute("SELECT goals FROM user_match WHERE user_id = %s", (uid,))
-    total_hat_tricks = sum((r[0] or 0) // 3 for r in cur.fetchall())
-    cur.execute("UPDATE users SET max_hat_tricks = %s WHERE id = %s", (total_hat_tricks, uid))
-
-    # played matches
-    cur.execute("SELECT COUNT(DISTINCT match_id) FROM user_match WHERE user_id = %s", (uid,))
-    played = cur.fetchone()[0] or 0
-    cur.execute("UPDATE users SET played_matches = %s WHERE id = %s", (played, uid))
-
-    # W/D/L – ако вашият отбор не е винаги "home", тук трябва разграничаване home/away
-    cur.execute("""
-        SELECT m.home_team_result, m.away_team_result, m.home_team_penalty, m.away_team_penalty
-        FROM user_match um
-        JOIN matches m ON m.id = um.match_id
-        WHERE um.user_id = %s
-    """, (uid,))
-    wins = draws = loses = 0
-    for h, a, ph, pa in cur.fetchall():
-        if h > a:
-            wins += 1
-        elif h < a:
-            loses += 1
-        else:
-            if ph is not None and pa is not None and ph != pa:
-                if ph > pa:
-                    wins += 1
-                else:
-                    loses += 1
-            else:
-                draws += 1
-
-    cur.execute("""
-        UPDATE users
-        SET win_matches = %s, draw_matches = %s, lose_matches = %s
-        WHERE id = %s
-    """, (wins, draws, loses, uid))
-
+    WITH
+    totals AS (
+      SELECT
+        COALESCE(SUM(goals),0) g,
+        COALESCE(SUM(assists),0) a,
+        COALESCE(SUM(shoots),0) s,
+        COALESCE(SUM(shoots_on_target),0) sot,
+        COALESCE(SUM(blocked_shoots),0) bs,
+        COALESCE(SUM(saved_goals),0) sg,
+        COALESCE(SUM(passes),0) p,
+        COALESCE(SUM(falls),0) f
+      FROM user_match WHERE user_id = %s
+    ),
+    maxes AS (
+      SELECT
+        COALESCE(MAX(goals),0) g,
+        COALESCE(MAX(assists),0) a,
+        COALESCE(MAX(shoots),0) s,
+        COALESCE(MAX(shoots_on_target),0) sot,
+        COALESCE(MAX(blocked_shoots),0) bs,
+        COALESCE(MAX(saved_goals),0) sg,
+        COALESCE(MAX(passes),0) p,
+        COALESCE(MAX(falls),0) f
+      FROM user_match WHERE user_id = %s
+    ),
+    hts AS (
+      SELECT COALESCE(SUM((goals/3)::int),0) hat FROM user_match WHERE user_id = %s
+    ),
+    played AS (
+      SELECT COALESCE(COUNT(DISTINCT match_id),0) pm FROM user_match WHERE user_id = %s
+    ),
+    wdl AS (
+      SELECT
+        SUM(CASE 
+              WHEN m.home_team_result > m.away_team_result THEN 1
+              WHEN m.home_team_result < m.away_team_result THEN 0
+              WHEN m.home_team_penalty IS NOT NULL AND m.away_team_penalty IS NOT NULL AND m.home_team_penalty <> m.away_team_penalty
+                   THEN CASE WHEN m.home_team_penalty > m.away_team_penalty THEN 1 ELSE 0 END
+              ELSE 0
+            END) AS wins,
+        SUM(CASE 
+              WHEN m.home_team_result < m.away_team_result THEN 1
+              WHEN m.home_team_result > m.away_team_result THEN 0
+              WHEN m.home_team_penalty IS NOT NULL AND m.away_team_penalty IS NOT NULL AND m.home_team_penalty <> m.away_team_penalty
+                   THEN CASE WHEN m.home_team_penalty < m.away_team_penalty THEN 1 ELSE 0 END
+              ELSE 0
+            END) AS loses,
+        SUM(CASE 
+              WHEN m.home_team_result = m.away_team_result AND 
+                   (m.home_team_penalty IS NULL OR m.away_team_penalty IS NULL OR m.home_team_penalty = m.away_team_penalty)
+                 THEN 1 ELSE 0 END) AS draws
+      FROM user_match um
+      JOIN matches m ON m.id = um.match_id
+      WHERE um.user_id = %s
+    )
+    UPDATE users u
+    SET
+      max_goals = t.g,
+      max_assists = t.a,
+      max_shoots = t.s,
+      max_shoots_on_target = t.sot,
+      max_blocked_shoots = t.bs,
+      max_saved_goals = t.sg,
+      max_passes = t.p,
+      max_falls = t.f,
+      max_goals_in_one_match = m.g,
+      max_assists_in_one_match = m.a,
+      max_passes_in_one_match = m.p,
+      max_hat_tricks = h.hat,
+      played_matches = pl.pm,
+      win_matches = w.wins,
+      draw_matches = w.draws,
+      lose_matches = w.loses
+    FROM totals t, maxes m, hts h, played pl, wdl w
+    WHERE u.id = %s
+    """, (uid, uid, uid, uid, uid, uid))
 
 
     
@@ -322,7 +318,7 @@ def add_matches():
 
         # Преизчисляване на агрегатите за изигралите
         for uid in played_user_ids:
-            recompute_user_aggregates(cur, uid)
+            recompute_user_aggregates_fast(cur, uid)
 
         conn.commit()
         flash("Match and player statistics were successfully saved.", "success")
