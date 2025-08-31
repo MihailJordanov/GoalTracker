@@ -5,9 +5,50 @@ from werkzeug.utils import secure_filename
 import psycopg2
 from datetime import datetime, date 
 from database.db import get_db_connection
+from cloudinary.utils import cloudinary_url
 
 match_history_bp = Blueprint('match_history_bp', __name__)
     
+
+IMAGE_EXTS = {'.png', '.jpg', '.jpeg', '.webp', '.gif', '.svg'}
+
+def resolve_logo(value: str | None, *, cloudinary_folder: str | None = None):
+    """
+    Връща URL към лого:
+    - ако е пълен http(s) URL -> връща го;
+    - ако е Cloudinary public_id -> връща Cloudinary URL (f_auto,q_auto);
+    - иначе приема, че е локален файл в static/uploads.
+    """
+    if not value:
+        return None
+
+    val = str(value).strip()
+
+    # 1) Вече е пълен URL (вкл. Cloudinary)
+    if val.startswith('http://') or val.startswith('https://'):
+        return val
+
+    # 2) Изглежда като локално файлово име? (има разширение и няма папки вътре)
+    _, ext = os.path.splitext(val.lower())
+    looks_like_local_file = (ext in IMAGE_EXTS) and ('/' not in val and '\\' not in val)
+
+    if looks_like_local_file:
+        return url_for('static', filename=f'uploads/{val}')
+
+    # 3) Иначе третираме като Cloudinary public_id
+    public_id = f'{cloudinary_folder}/{val}' if cloudinary_folder else val
+    url, _ = cloudinary_url(
+        public_id,
+        secure=True,
+        fetch_format="auto",   # f_auto
+        quality="auto",        # q_auto
+        # Може да добавите трансформации (size, crop, dpr), ако искате:
+        # width=256, height=256, crop="limit"
+    )
+    return url
+
+
+
 def get_user_team_id(user_id):
     conn = get_db_connection()
     cur = conn.cursor()
@@ -49,6 +90,7 @@ def check_user_team(user_id):
         return False
     return True
 
+
 def get_team_matches(team_id):
     conn = get_db_connection()
     cur = conn.cursor()
@@ -60,13 +102,13 @@ def get_team_matches(team_id):
             m.home_team_result, m.away_team_result,
             m.home_team_penalty, m.away_team_penalty,
             m.date,
-            m.location,                    -- запазваме го, ако ти трябва ID-то
-            l.name AS location_name,       -- ИМЕТО на локацията
-            l.city AS location_city,
+            m.location,
+            l.name   AS location_name,
+            l.city   AS location_city,
             l.country AS location_country,
             m.format,
-            t.logo AS home_team_logo,
-            et.image AS away_team_logo
+            t.logo   AS home_team_logo,   -- очакваме: public_id ИЛИ пълен URL ИЛИ локален файл
+            et.image AS away_team_logo    -- очакваме: public_id ИЛИ пълен URL ИЛИ локален файл
         FROM matches m
         JOIN teams t ON m.team_id = t.id
         LEFT JOIN enemy_teams et ON m.enemy_team_id = et.id
@@ -100,18 +142,13 @@ def get_team_matches(team_id):
             else:
                 match['outcome'] = 'draw'
 
-        # Лога
-        if match.get('home_team_logo'):
-            match['home_team_logo'] = url_for('static', filename=f'uploads/{match["home_team_logo"]}')
-        if match.get('away_team_logo'):
-            if not match['away_team_logo'].startswith('http'):
-                match['away_team_logo'] = url_for('static', filename=f'uploads/{match["away_team_logo"]}')
+        # Лога (Cloudinary-first; fallback към static/uploads)
+        match['home_team_logo'] = resolve_logo(match.get('home_team_logo'), cloudinary_folder=None)
+        match['away_team_logo'] = resolve_logo(match.get('away_team_logo'), cloudinary_folder=None)
 
     cur.close()
     conn.close()
     return matches
-
-
 
 @match_history_bp.route('/match-history')
 def match_history():
