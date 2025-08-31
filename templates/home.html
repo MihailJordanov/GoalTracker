@@ -8,6 +8,19 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/mini_match_history.css') }}">
 </head>
 <body>
+
+    <!-- Loader overlay -->
+    <div id="page-loader">
+        <lottie-player
+            src="{{ url_for('static', filename='lottie/playing_football_guy.json') }}"
+            background="transparent"
+            speed="1"
+            style="width: 200px; height: 200px;"
+            loop
+            autoplay>
+        </lottie-player>
+    </div>
+
     <!-- Покажи флаш съобщения тук -->
     <div class="flash-messages">
         {% with messages = get_flashed_messages(with_categories=true) %}
@@ -150,20 +163,6 @@
         <h3>Notifications</h3>
         <ul id="notifications-list"></ul>
     </div>
-
-
-    <!-- Loader overlay -->
-    <div id="page-loader">
-    <lottie-player
-        src="{{ url_for('static', filename='lottie/football_stadium.json') }}"
-        background="transparent"
-        speed="1"
-        style="width: 200px; height: 200px;"
-        loop
-        autoplay>
-    </lottie-player>
-    </div>
-
 
     <!-- Включи външен JavaScript файл -->
     <script src="{{ url_for('static', filename='js/flash_messages.js') }}"></script>
