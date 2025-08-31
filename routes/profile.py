@@ -7,6 +7,8 @@ import random
 import string
 import cloudinary
 import cloudinary.uploader
+from cloudinary.utils import cloudinary_url
+
 
 profile_bp = Blueprint('profile_bp', __name__)
 
@@ -47,16 +49,28 @@ def generate_user_id_from_hash(user_id):
     return user_id_str[:6]
 
 
+DEFAULT_AVATAR_PUBLIC_ID = "app/default_player_img"  # от upload-a
+DEFAULT_AVATAR_FORMAT = "png"                        # ако ти трябва фиксирано разширение
+
+def get_default_avatar_url():
+    url, _ = cloudinary_url(
+        DEFAULT_AVATAR_PUBLIC_ID,
+        format=DEFAULT_AVATAR_FORMAT,
+        secure=True
+    )
+    return url
+
 def format_user_data(user):
     """Форматира данните за потребителя в речник."""
     if not user:
         return None
 
     image_path = user[6]
+
     if not image_path:
-        profile_picture = url_for('static', filename='images/buttons/default_player_img_2.png')
+        profile_picture = get_default_avatar_url()   # Cloudinary default
     elif image_path.startswith("http"):
-        profile_picture = image_path  # Cloudinary
+        profile_picture = image_path                 # Cloudinary (пълен URL)
     else:
         profile_picture = url_for('static', filename=f'uploads/{image_path}')  # Локално
 
