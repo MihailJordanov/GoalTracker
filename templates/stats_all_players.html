@@ -89,6 +89,20 @@
     </div>
   </div>
 
+      <!-- Loader overlay -->
+    <div id="page-loader">
+    <lottie-player
+        src="{{ url_for('static', filename='lottie/rising_stats_graph.json') }}"
+        background="transparent"
+        speed="1"
+        style="width: 200px; height: 200px;"
+        loop
+        autoplay>
+    </lottie-player>
+    </div>
+
+  <script src="https://unpkg.com/@lottiefiles/lottie-player@latest/dist/lottie-player.js"></script>
+  <script src="{{ url_for('static', filename='js/loader.js') }}"></script>
   <script src="{{ url_for('static', filename='js/stats_all_players.js') }}"></script>
 </body>
 </html>
