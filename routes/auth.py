@@ -4,7 +4,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import logout_user, login_required
 from psycopg2 import sql
 import re
-import psycopg2
+from psycopg2 import sql, IntegrityError
 from itsdangerous import URLSafeTimedSerializer, BadSignature, SignatureExpired
 import smtplib
 from email.mime.text import MIMEText
@@ -149,136 +149,179 @@ def index():
     return render_template('main.html')
 
 
-# Страница за регистрация
+# Само латиница: една или повече думи, разделени с по един space
+NAME_LATIN_RE = re.compile(r"^[A-Z][a-z]+(?: [A-Z][a-z]+)*$")
+# Само кирилица: една или повече думи, разделени с по един space
+NAME_CYRILLIC_RE = re.compile(r"^[А-Я][а-я]+(?: [А-Я][а-я]+)*$")
+
+EMAIL_RE = re.compile(r"[^@]+@[^@]+\.[^@]+")
+
+def validate_name(name: str, label: str) -> tuple[str | None, str]:
+    """
+    Връща (error_message, cleaned_name).
+    Ако няма грешка -> (None, cleaned_name).
+    """
+    cleaned = name.strip()
+
+    if len(cleaned) < 3:
+        return f"{label} must be at least 3 characters long.", cleaned
+    if len(cleaned) > 50:
+        return f"{label} must be no more than 50 characters long.", cleaned
+    if not cleaned:
+        return f"{label} is required.", cleaned
+    if cleaned[0].islower():
+        return f"{label} must start with a capital letter.", cleaned
+
+    if not (NAME_LATIN_RE.match(cleaned) or NAME_CYRILLIC_RE.match(cleaned)):
+        return (
+            f"{label} must contain only letters (either all Latin or all Cyrillic) "
+            f"with single spaces between words (no leading/trailing or double spaces).",
+            cleaned,
+        )
+
+    return None, cleaned
+
+def validate_email(email: str) -> tuple[str | None, str]:
+    cleaned = email.strip().lower()
+    if not EMAIL_RE.match(cleaned):
+        return "Please enter a valid email address.", cleaned
+    return None, cleaned
+
+def validate_passwords(password: str, confirm: str) -> str | None:
+    if len(password) < 6:
+        return 'Password must be at least 6 characters long.'
+    if password != confirm:
+        return 'Passwords do not match.'
+    return None
+
+def first_validation_error(
+    first_name: str, last_name: str, email: str, password: str, confirm_password: str
+) -> tuple[str | None, str, str, str]:
+    """
+    Връща (error, cleaned_first_name, cleaned_last_name, cleaned_email).
+    Ако error е None, ползвай върнатите cleaned стойности в БД.
+    """
+    err, cleaned_fn = validate_name(first_name, "First name")
+    if err:
+        return err, cleaned_fn, "", ""
+
+    err, cleaned_ln = validate_name(last_name, "Last name")
+    if err:
+        return err, cleaned_fn, cleaned_ln, ""
+
+    err, cleaned_email = validate_email(email)
+    if err:
+        return err, cleaned_fn, cleaned_ln, cleaned_email
+
+    err = validate_passwords(password, confirm_password)
+    if err:
+        return err, cleaned_fn, cleaned_ln, cleaned_email
+
+    return None, cleaned_fn, cleaned_ln, cleaned_email
+
+# ---------- Data Base logic ----------
+
+def email_exists(cur, email: str) -> bool:
+    cur.execute("SELECT 1 FROM users WHERE email = %s LIMIT 1", (email,))
+    return cur.fetchone() is not None
+
+def build_user_data(first_name: str, last_name: str, email: str, password: str) -> tuple:
+    """Връща tuple подреден точно като колоните в INSERT-а."""
+    return (
+        first_name,                              # 1
+        last_name,                               # 2
+        "",                                      # 3 title
+        0,                                       # 4 number
+        email,                                   # 5
+        generate_password_hash(password, method='pbkdf2:sha256'),  # 6
+        "",                                      # 7 image
+        0,                                       # 8 type
+        0, 0, 0, 0,                              # 9 - 12
+        0, 0, 0, 0,                              # 13 - 16
+        0, 0, 0, 0,                              # 17 - 20
+        0, 0, 0, 0,                              # 21 - 24
+        0,                                       # 25
+        0, 0, 0, 0,                              # 26 - 29
+        0, 0                                      # 30 - 31
+    )
+
+def create_user_and_return(conn, user_data: tuple) -> tuple[int, str]:
+    """Вмъква потребител и връща (id, first_name). Използва RETURNING за 1 заявка."""
+    insert_sql = sql.SQL("""
+        INSERT INTO users (
+            first_name, last_name, title, number, email, password, image, type,
+            max_goals, max_goals_in_one_match, max_assists, max_assists_in_one_match,
+            max_shoots, max_shoots_in_one_match, max_shoots_on_target, max_shoots_on_target_in_one_match,
+            max_blocked_shoots, max_blocked_shoots_in_one_match, max_saved_goals, max_saved_goals_in_one_match,
+            max_passes, max_passes_in_one_match, max_falls, max_falls_in_one_match, max_hat_tricks,
+            played_matches, win_matches, draw_matches, lose_matches,
+            max_ball_game_score, max_keeper_game_score
+        ) VALUES (
+            %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s,
+            %s, %s, %s, %s, %s, %s
+        )
+        RETURNING id, first_name
+    """)
+    with conn.cursor() as cur:
+        cur.execute(insert_sql, user_data)
+        user_id, first_name = cur.fetchone()
+    conn.commit()
+    return user_id, first_name
+
+# ---------- Helpers ----------
+
+def render_register():
+    return render_template("register.html")
+
+def flash_and_render(message: str, category: str = 'error'):
+    flash(message, category)
+    return render_register()
+
+# ---------- ROUTE ----------
+
 @auth_bp.route('/register', methods=['GET', 'POST'])
 def register():
-    if request.method == 'POST':
-        first_name = request.form['first_name']
-        last_name = request.form['last_name']
-        email = request.form['email']
-        password = request.form['password']
-        confirm_password = request.form['confirm_password']
+    if request.method == 'GET':
+        return render_register()
 
-        # Валидация за името
-        if len(first_name) < 3 or not re.match("^[A-ZА-Я][a-zа-я]+$", first_name):
-            flash('First name must be at least 3 characters long, contain only letters, and start with a capital letter.')
-            return render_template("register.html")
+    # POST – взимаме raw входа
+    first_name_raw = request.form['first_name']
+    last_name_raw = request.form['last_name']
+    email_raw = request.form['email']
+    password = request.form['password']
+    confirm_password = request.form['confirm_password']
 
-        if len(first_name) > 16:
-            flash('First name must be no more than 16 characters long.')
-            return render_template("register.html")
-
-
-        if len(last_name) < 3 or not re.match("^[A-ZА-Я][a-zа-я]+$", last_name):
-            flash('Last name must be at least 3 characters long, contain only letters, and start with a capital letter.')
-            return render_template("register.html")
-        
-        
-        if len(last_name) > 16:
-            flash('Last name must be no more than 16 characters long.')
-            return render_template("register.html")
+    # 1) Валидация + нормализация (trim, проверка на азбука, single spaces и т.н.)
+    err, first_name, last_name, email = first_validation_error(
+        first_name_raw, last_name_raw, email_raw, password, confirm_password
+    )
+    if err:
+        return flash_and_render(err)
 
 
-        # Валидация за имейл
-        if not re.match(r"[^@]+@[^@]+\.[^@]+", email):
-            flash('Please enter a valid email address.')
-            return render_template("register.html")
-        
-        # Валидация на паролата
-        if len(password) < 6:
-            flash('Password must be at least 6 characters long.')
-            return render_template("register.html")
+    # 2) БД операции
+    conn = get_db_connection()
+    try:
+        with conn.cursor() as cur:
+            if email_exists(cur, email):
+                return flash_and_render('The email address is already registered.')
 
-        if password != confirm_password:
-            flash('Passwords do not match.')
-            return render_template("register.html")
-        
-
-        # Връзка с базата данни
-        conn = get_db_connection()
-
-        # Проверка дали имейлът вече съществува в базата данни
-        cur = conn.cursor()
-        cur.execute("SELECT COUNT(*) FROM users WHERE email = %s", (email,))
-        count = cur.fetchone()[0]
-
-        if count > 0:
-            flash('The email address is already registered.')
-            return render_template("register.html")
- 
-
+        # 3) Създаване на потребител
+        user_data = build_user_data(first_name, last_name, email, password)
         try:
-            # Подготвяне на данните за вмъкване
-            user_data = (
-                first_name,                                                         #1
-                last_name,                                                          #2      
-                "",  # title                                                        #3   
-                0,   # number                                                       #4
-                email,                                                              #5
-                generate_password_hash(password, method='pbkdf2:sha256'),           #6
-                "",  # image                                                        #7
-                0,   # type                                                         #8
-                0,   # max_goals                                                    #9
-                0,   # max_goals_in_one_match                                       #10
-                0,   # max_assists                                                  #11
-                0,   # max_assists_in_one_match                                     #12
-                0,   # max_shoots                                                   #13
-                0,   # max_shoots_in_one_match                                      #14
-                0,   # max_shoots_on_target                                         #15
-                0,   # max_shoots_on_target_in_one_match                            #16
-                0,   # max_blocked_shoots                                           #17
-                0,   # max_blocked_shoots_in_one_match                              #18
-                0,   # max_saved_goals                                              #19
-                0,   # max_saved_goals_in_one_match                                 #20
-                0,   # max_passes                                                   #21
-                0,   # max_passes_in_one_match                                      #22
-                0,   # max_falls                                                    #23
-                0,   # max_falls_in_one_match                                       #24
-                0,   # max_hat_tricks                                               #25
-                0,   # played_matches                                               #26
-                0,   # win_matches                                                  #27
-                0,   # draw_matches                                                 #28
-                0,   # lose_matches                                                 #29
-                0,   # max_ball_game_score                                          #30
-                0    # max_keeper_game_score                                        #31
-            )
+            user_id, first_name_db = create_user_and_return(conn, user_data)
+        except IntegrityError:
+            # Например unique constraint на email
+            return flash_and_render('The email already exists!')
 
-            # Добавяне на потребител в базата данни
-            cur.execute(
-                sql.SQL("""
-                    INSERT INTO users (
-                        first_name, last_name, title, number, email, password, image, type,
-                        max_goals, max_goals_in_one_match, max_assists, max_assists_in_one_match,
-                        max_shoots, max_shoots_in_one_match, max_shoots_on_target, max_shoots_on_target_in_one_match,
-                        max_blocked_shoots, max_blocked_shoots_in_one_match, max_saved_goals, max_saved_goals_in_one_match,
-                        max_passes, max_passes_in_one_match, max_falls, max_falls_in_one_match, max_hat_tricks,
-                        played_matches, win_matches, draw_matches, lose_matches,
-                        max_ball_game_score, max_keeper_game_score
-                    ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
-                """),
-                user_data
-            )
+        # 4) Сесия и redirect
+        session['user_id'] = user_id
+        session['first_name'] = first_name_db
+        flash('Registration successful! You are now logged in.', 'success')
+        return redirect(url_for('home_bp.home'))
 
-            conn.commit()
-            cur.execute("SELECT id, first_name FROM users WHERE email = %s", (email,))
-            user = cur.fetchone()
-            if user:
-                user_id, first_name = user
-                # Добави потребителя в сесията
-                session['user_id'] = user_id
-                session['first_name'] = first_name
-                flash('Registration successful! You are now logged in.', 'success')
-                return redirect(url_for('home_bp.home')) 
-        except psycopg2.IntegrityError:
-            flash('The email already exists!', 'error')
-        finally:
-            cur.close()
-            conn.close()
-
-        return render_template("register.html")
-
-    return render_template('register.html')
-
+    finally:
+        conn.close()
 
 
 @auth_bp.route('/login', methods=['GET', 'POST'])
