@@ -152,10 +152,26 @@
     </div>
 
 
+    <!-- Loader overlay -->
+    <div id="page-loader">
+    <lottie-player
+        src="{{ url_for('static', filename='lottie/football_stadium.json') }}"
+        background="transparent"
+        speed="1"
+        style="width: 200px; height: 200px;"
+        loop
+        autoplay>
+    </lottie-player>
+    </div>
+
+
     <!-- Включи външен JavaScript файл -->
     <script src="{{ url_for('static', filename='js/flash_messages.js') }}"></script>
     <script src="{{ url_for('static', filename='js/home.js') }}"></script>
     <script src="{{ url_for('static', filename='js/home_notificatioons.js') }}"></script>
+
+    <script src="https://unpkg.com/@lottiefiles/lottie-player@latest/dist/lottie-player.js"></script>
+    <script src="{{ url_for('static', filename='js/loader.js') }}"></script>
 </body>
 </html>
  
