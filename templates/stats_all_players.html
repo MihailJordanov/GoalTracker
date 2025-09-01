@@ -56,16 +56,15 @@
             <td>
               <div class="player">
                 <div class="avatar">
-                {% if p.image %}
+                  {% if p.image %}
                     {% if p.image.startswith('http') %}
-                    <img src="{{ p.image }}" alt="{{ p.first_name }} {{ p.last_name }}">
+                      <img src="{{ p.image }}" alt="{{ p.first_name }} {{ p.last_name }}">
                     {% else %}
-                    <img src="{{ url_for('static', filename=p.image) }}" alt="{{ p.first_name }} {{ p.last_name }}">
+                      <img src="{{ url_for('static', filename=p.image) }}" alt="{{ p.first_name }} {{ p.last_name }}">
                     {% endif %}
-                {% else %}
-                    <img src="{{ url_for('static', filename='images/buttons/default_player_img_4.png') }}"
-                        alt="Default player image">
-                {% endif %}
+                  {% else %}
+                    <div class="avatar-fallback">#{{ p.number if p.number is not none else '—' }}</div>
+                  {% endif %}
                 </div>
                 <div class="identity">
                     <div class="name">{{ p.first_name }} {{ p.last_name }}</div>

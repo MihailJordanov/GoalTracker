@@ -121,15 +121,15 @@ def map_player_row(row: Tuple) -> Dict:
         played_matches, player_type
     ) = row
 
-    default_image = "https://res.cloudinary.com/diael5zdg/image/upload/default_player_img_4_wrvufa.png"
-    image_url = image if image else default_image
+    # default_image = "https://res.cloudinary.com/diael5zdg/image/upload/default_player_img_4_wrvufa.png"
+    # image_url = image if image else default_image
 
     return {
         "id": _id,
         "first_name": first_name,
         "last_name": last_name,
         "number": number,
-        "image": image_url or "",
+        "image": image or "",
         "max_goals": max_goals or 0,
         "max_assists": max_assists or 0,
         "max_shoots": max_shoots or 0,

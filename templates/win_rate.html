@@ -1,0 +1,100 @@
+{% set neon = "#00ffb7" %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>{{ team_name }} — Win Rate</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/win_rate.css') }}">
+</head>
+<body>
+
+
+    <div class="navbar">
+        <nav>
+            <ul>
+                <li><a href="/home">Home</a></li>
+                <li><a href="/profile">Profile</a></li>
+            </ul>
+        </nav>
+    </div>
+
+  <div class="container">
+    <div class="header">
+      <div class="title">🏆 {{ team_name }} — Win Rate</div>
+    </div>
+
+    <!-- Team summary -->
+    <section class="card team-summary">
+      <div class="big-percent">
+        <div class="ring"></div>
+        {% if team_win_rate is not none %}
+          <div class="value">{{ '%.1f' % team_win_rate }}%</div>
+          <div class="caption">Overall win rate (weighted)</div>
+        {% else %}
+          <div class="value">—</div>
+          <div class="caption">No matches played</div>
+        {% endif %}
+      </div>
+
+      <div class="stats">
+        <div class="stat-row">
+          <div>Played matches</div>
+          <div class="bar"><div style="width: 100%;"></div></div>
+          <div>{{ total_played }}</div>
+        </div>
+        <div class="stat-row">
+          <div>Wins</div>
+          <div class="bar"><div style="width: {{ (total_wins / total_played * 100) if total_played > 0 else 0 }}%;"></div></div>
+          <div>{{ total_wins }}</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Players list -->
+    <section class="card players">
+      {% for p in players %}
+        {% set wr = (p.win_rate if p.win_rate is not none else 0) %}
+        <div class="player">
+          <div class="avatar">
+            {% if p.image %}
+              <img src="{{ p.image }}" alt="{{ p.first_name }} {{ p.last_name }}">
+            {% else %}
+              #{{ p.number or "—" }}
+            {% endif %}
+          </div>
+
+          <div class="p-name">
+            {{ p.first_name }} {{ p.last_name }}
+            <span class="muted">
+              #{{ p.number or "—" }} 
+            </span>
+          </div>
+
+          <div class="wld">
+            <span class="k">W:</span> {{ p.win_matches }}
+            <span class="k">D:</span> {{ p.draw_matches }}
+            <span class="k">L:</span> {{ p.lose_matches }}
+            <span>·</span>
+            <span>Matches: {{ p.played_matches }}</span>
+          </div>
+
+          <div class="p-bar">
+            <div class="label">
+              <span>Win rate</span>
+              <strong>{{ p.win_rate is not none and ('%.1f%%' % p.win_rate) or '—' }}</strong>
+            </div>
+            <div class="bar">
+              <div style="width: {{ wr }}%;"></div>
+            </div>
+          </div>
+        </div>
+      {% else %}
+        <div style="padding: 16px; color: var(--muted);">No players in this team.</div>
+      {% endfor %}
+    </section>
+  </div>
+</body>
+</html>
