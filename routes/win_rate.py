@@ -119,11 +119,11 @@ def win_rate_team_view(team_id: int):
             team_win_rate = None
 
         # Сортиране по индивидуален win rate (най-отгоре са най-високите)
-        players_sorted = sorted(
-            players,
-            key=lambda p: (p["win_rate"] if p["win_rate"] is not None else -1),
-            reverse=True
-        )
+        #players_sorted = sorted(
+        #    players,
+        #    key=lambda p: (p["win_rate"] if p["win_rate"] is not None else -1),
+        #    reverse=True
+        #)
 
         return render_template(
             "win_rate.html",
@@ -132,7 +132,7 @@ def win_rate_team_view(team_id: int):
             team_win_rate=team_win_rate,
             total_played=total_played,
             total_wins=total_wins,
-            players=players_sorted
+            players=players
         )
     finally:
         conn.close()

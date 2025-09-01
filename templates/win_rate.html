@@ -53,48 +53,64 @@
       </div>
     </section>
 
+    <!-- Sort toggle button -->
+    <div class="sort-toggle-wrap">
+        <button id="sortToggle" class="pill pill-action" data-mode="number">
+            Sort by win rate
+        </button>
+    </div>
+
+
     <!-- Players list -->
-    <section class="card players">
-      {% for p in players %}
+    <section class="card players" id="playersList">
+    {% for p in players %}
         {% set wr = (p.win_rate if p.win_rate is not none else 0) %}
-        <div class="player">
-          <div class="avatar">
+        <div
+        class="player"
+        data-number="{{ p.number if p.number is not none else 999999 }}"
+        data-last="{{ (p.last_name or '')|lower }}"
+        data-first="{{ (p.first_name or '')|lower }}"
+        data-winrate="{{ (p.win_rate if p.win_rate is not none else -1) }}"
+        >
+        <div class="avatar">
             {% if p.image %}
-              <img src="{{ p.image }}" alt="{{ p.first_name }} {{ p.last_name }}">
+            <img src="{{ p.image }}" alt="{{ p.first_name }} {{ p.last_name }}">
             {% else %}
-              #{{ p.number or "—" }}
+            #{{ p.number or "—" }}
             {% endif %}
-          </div>
+        </div>
 
-          <div class="p-name">
+        <div class="p-name">
             {{ p.first_name }} {{ p.last_name }}
-            <span class="muted">
-              #{{ p.number or "—" }} 
-            </span>
-          </div>
+            <span class="muted">#{{ p.number or "—" }}</span>
+        </div>
 
-          <div class="wld">
+        <div class="wld">
             <span class="k">W:</span> {{ p.win_matches }}
             <span class="k">D:</span> {{ p.draw_matches }}
             <span class="k">L:</span> {{ p.lose_matches }}
             <span>·</span>
             <span>Matches: {{ p.played_matches }}</span>
-          </div>
+        </div>
 
-          <div class="p-bar">
+        <div class="p-bar">
             <div class="label">
-              <span>Win rate</span>
-              <strong>{{ p.win_rate is not none and ('%.1f%%' % p.win_rate) or '—' }}</strong>
+            <span>Win rate</span>
+            <strong>{{ p.win_rate is not none and ('%.1f%%' % p.win_rate) or '—' }}</strong>
             </div>
             <div class="bar">
-              <div style="width: {{ wr }}%;"></div>
+            <div style="width: {{ wr }}%;"></div>
             </div>
-          </div>
         </div>
-      {% else %}
+        </div>
+    {% else %}
         <div style="padding: 16px; color: var(--muted);">No players in this team.</div>
-      {% endfor %}
+    {% endfor %}
     </section>
   </div>
+
+    <!-- Scripts -->
+    <script src="{{ url_for('static', filename='js/win_rate.js') }}"></script>
+
 </body>
 </html>

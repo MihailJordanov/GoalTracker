@@ -158,6 +158,42 @@ a { color: var(--neon); text-decoration: none; }
 }
 
 
+/* Container for the toggle button */
+.sort-toggle-wrap {
+  display: flex;
+  justify-content: center;
+  margin: 20px 0;
+}
+
+/* Neon pill action button */
+.pill-action {
+  cursor: pointer;
+  padding: 10px 22px;
+  font-size: 14px;
+  font-weight: 600;
+  border-radius: 999px;
+  border: 1px solid rgba(0, 255, 183, 0.35);
+  background: rgba(0, 255, 183, 0.08);
+  color: var(--neon);
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  transition: all 0.2s ease-in-out;
+  box-shadow: 0 0 6px rgba(0, 255, 183, 0.2);
+}
+
+.pill-action:hover {
+  background: rgba(0, 255, 183, 0.15);
+  box-shadow: 0 0 12px rgba(0, 255, 183, 0.4);
+  transform: translateY(-1px);
+}
+
+.pill-action:active {
+  transform: translateY(1px);
+  box-shadow: 0 0 6px rgba(0, 255, 183, 0.2);
+}
+
+
+
 .player {
   display: grid;
   grid-template-columns: 56px 1fr; /* само аватар + име */
