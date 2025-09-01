@@ -48,8 +48,7 @@ def create_app():
     def load_user(user_id):
         conn = get_db_connection()
         cursor = conn.cursor()
-        # ⚠️ Увери се, че колоната username съществува. Ако нямаш username, ползвай email или first_name.
-        cursor.execute("SELECT id, COALESCE(username, email) FROM users WHERE id = %s", (user_id,))
+        cursor.execute("SELECT id, COALESCE(first_name, email) FROM users WHERE id = %s", (user_id,))
         user_data = cursor.fetchone()
         cursor.close()
         conn.close()
