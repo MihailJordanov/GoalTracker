@@ -13,6 +13,30 @@ def _fetch_team_name(conn, team_id: int) -> str:
         row = cur.fetchone()
         return row[0] if row else "Unknown Team"
 
+def _fetch_team_totals(conn, team_id: int) -> Dict[str, Optional[int]]:
+    """
+    Чете агрегатите директно от teams:
+    max_games, max_wins, max_losses, max_draws
+    """
+    with conn.cursor() as cur:
+        cur.execute("""
+            SELECT
+              COALESCE(max_games, 0),
+              COALESCE(max_wins, 0),
+              COALESCE(max_losses, 0),
+              COALESCE(max_draws, 0)
+            FROM teams
+            WHERE id = %s
+        """, (team_id,))
+        row = cur.fetchone() or (0, 0, 0, 0)
+
+    max_games, max_wins, max_losses, max_draws = row
+    return {
+        "max_games": max_games,
+        "max_wins": max_wins,
+        "max_losses": max_losses,
+        "max_draws": max_draws,
+    }
 
 TEAM_PLAYERS_SQL = """
     SELECT
@@ -32,32 +56,14 @@ TEAM_PLAYERS_SQL = """
     ORDER BY u.number NULLS LAST, u.last_name ASC, u.first_name ASC;
 """
 
-
-# ---- Helpers ----
 def _compute_win_rate(played: int, wins: int) -> Optional[float]:
-    """Return win rate in percent or None if no matches played."""
-    if played and played > 0:
-        return (wins / played) * 100.0
-    return None
+    return (wins / played * 100.0) if played and played > 0 else None
 
 def _row_to_player_dict(row: Tuple[Any, ...]) -> Dict[str, Any]:
-    """
-    Map a DB row to the public player dictionary used by the templates.
-    Row order matches TEAM_PLAYERS_SQL select list.
-    """
     (
-        uid,
-        first_name,
-        last_name,
-        number,
-        image,
-        played,
-        wins,
-        draws,
-        losses,
-        player_type,
+        uid, first_name, last_name, number, image,
+        played, wins, draws, losses, player_type,
     ) = row
-
     return {
         "id": uid,
         "first_name": first_name,
@@ -73,30 +79,16 @@ def _row_to_player_dict(row: Tuple[Any, ...]) -> Dict[str, Any]:
     }
 
 def _fetch_team_player_rows(conn, team_id: int) -> List[Tuple[Any, ...]]:
-    """Execute the query and return raw rows for the given team."""
     with conn.cursor() as cur:
         cur.execute(TEAM_PLAYERS_SQL, (team_id,))
         return cur.fetchall()
 
-# ---- Public API ----
 def fetch_team_players(conn, team_id: int) -> List[Dict[str, Any]]:
-    """
-    Return all players of the team with their stats as a list of dicts.
-    Ordering is handled in SQL: by number (numeric, NULLS LAST), then last_name, then first_name.
-    """
     rows = _fetch_team_player_rows(conn, team_id)
     return [_row_to_player_dict(r) for r in rows]
 
-
 @win_rate_team.route("/win_rate_team/<int:team_id>")
 def win_rate_team_view(team_id: int):
-    """
-    Показва общия win rate на отбора + индивидуалния win rate на всеки играч.
-    Общият win rate се изчислява като претеглен среден:
-        total_wins / total_played * 100
-    (Използваме наличните полета в таблица users; ако желаеш истинска отборна метрика
-     по мачове, можем да преминем към агрегиране от matches/user_match.)
-    """
     user_id = get_logged_in_user_id()
     if not user_id:
         return require_login_redirect()
@@ -110,20 +102,11 @@ def win_rate_team_view(team_id: int):
         team_name = _fetch_team_name(conn, allowed_team_id)
         players = fetch_team_players(conn, allowed_team_id)
 
-        total_played = sum(p["played_matches"] for p in players)
-        total_wins   = sum(p["win_matches"]     for p in players)
-
-        if total_played > 0:
-            team_win_rate = total_wins / total_played * 100.0
-        else:
-            team_win_rate = None
-
-        # Сортиране по индивидуален win rate (най-отгоре са най-високите)
-        #players_sorted = sorted(
-        #    players,
-        #    key=lambda p: (p["win_rate"] if p["win_rate"] is not None else -1),
-        #    reverse=True
-        #)
+        # ✅ ВЗИМА СЕ ОТ teams
+        t = _fetch_team_totals(conn, allowed_team_id)
+        total_played = t["max_games"]
+        total_wins   = t["max_wins"]
+        team_win_rate = _compute_win_rate(total_played, total_wins)
 
         return render_template(
             "win_rate.html",
@@ -132,7 +115,7 @@ def win_rate_team_view(team_id: int):
             team_win_rate=team_win_rate,
             total_played=total_played,
             total_wins=total_wins,
-            players=players
+            players=players  # оставяме реда от SQL (по номер → last → first)
         )
     finally:
         conn.close()

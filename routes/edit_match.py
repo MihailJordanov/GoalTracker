@@ -84,16 +84,38 @@ def save_match_data(match_id, team_id, match_data):
     conn = get_db_connection()
     cur = conn.cursor()
     try:
+        # 0) стар снимка за user_match (твоя код)
         old_data = fetch_old_user_match_data(cur, match_id)
 
-        played_ids = [int(pid) for pid in match_data.getlist('played[]')]
+        # A) Изчисли стария изход за отборa
+        prev = _fetch_match_core(cur, match_id)  # (team_id, h, a, ph, pa)
+        old_outcome = None
+        if prev:
+            _, h_old, a_old, ph_old, pa_old = prev
+            old_outcome = _determine_outcome(h_old or 0, a_old or 0, ph_old, pa_old)
 
+        # 1) update на самия мач (твоя код)
+        played_ids = [int(pid) for pid in match_data.getlist('played[]')]
         update_match_record(cur, match_id, match_data)
 
+        # B) Изчисли новия изход
+        cur.execute("""
+            SELECT home_team_result, away_team_result, home_team_penalty, away_team_penalty
+            FROM matches WHERE id = %s
+        """, (match_id,))
+        h_new, a_new, ph_new, pa_new = cur.fetchone()
+        new_outcome = _determine_outcome(int(h_new), int(a_new), ph_new, pa_new)
+
+        # C) Приложи делтата върху teams (без да пипаме max_games)
+        _apply_team_outcome_delta(cur, team_id, old_outcome, new_outcome)
+
+        # 2) upsert за user_match (твоя код)
         insert_or_update_user_stats(cur, match_data, team_id, match_id)
 
+        # 3) delete на тези, които вече не са играли (твоя код)
         delete_unplayed_users(cur, match_id, team_id, played_ids)
 
+        # 4) recompute на user агрегатите (твоя код)
         recalculate_user_stats(conn, cur, match_id, old_data)
 
         conn.commit()
@@ -107,6 +129,7 @@ def save_match_data(match_id, team_id, match_data):
     finally:
         cur.close()
         conn.close()
+
 
 
 def fetch_old_user_match_data(cur, match_id):
@@ -383,6 +406,81 @@ def recompute_user_aggregates(cur, uid):
     """, (wins, draws, loses, uid))
 
 
+# --- Helpers for team totals -----------------------------------------------
+
+def _determine_outcome(home: int, away: int, pen_home: int | None, pen_away: int | None) -> str:
+    """Return 'win' / 'loss' / 'draw' from HOME team's perspective (your team)."""
+    if home > away:
+        return 'win'
+    if home < away:
+        return 'loss'
+    # draw in regular time -> check penalties if present and different
+    if pen_home is not None and pen_away is not None and pen_home != pen_away:
+        return 'win' if pen_home > pen_away else 'loss'
+    return 'draw'
+
+
+def _fetch_match_core(cur, match_id: int):
+    """Returns (team_id, home, away, pen_home, pen_away)."""
+    cur.execute("""
+        SELECT team_id, home_team_result, away_team_result, home_team_penalty, away_team_penalty
+        FROM matches WHERE id = %s
+    """, (match_id,))
+    return cur.fetchone()  # (team_id, h, a, ph, pa) or None
+
+
+def _apply_team_outcome_delta(cur, team_id: int, old_outcome: str | None, new_outcome: str | None):
+    """
+    Adjust teams counters by outcome delta.
+    - If only new_outcome is set (e.g., on insert): +new
+    - If only old_outcome is set (e.g., on delete): -old and max_games - 1
+    - If both set and differ (edit): -old +new, max_games unchanged
+    """
+    # Prepare deltas
+    d_games = 0
+    d_wins = d_losses = d_draws = 0
+
+    if old_outcome is None and new_outcome is not None:
+        # INSERT-like
+        d_games = +1
+        if new_outcome == 'win':   d_wins = +1
+        if new_outcome == 'loss':  d_losses = +1
+        if new_outcome == 'draw':  d_draws = +1
+
+    elif old_outcome is not None and new_outcome is None:
+        # DELETE-like
+        d_games = -1
+        if old_outcome == 'win':   d_wins = -1
+        if old_outcome == 'loss':  d_losses = -1
+        if old_outcome == 'draw':  d_draws = -1
+
+    elif old_outcome is not None and new_outcome is not None:
+        # EDIT-like
+        if old_outcome != new_outcome:
+            if old_outcome == 'win':   d_wins -= 1
+            if old_outcome == 'loss':  d_losses -= 1
+            if old_outcome == 'draw':  d_draws -= 1
+
+            if new_outcome == 'win':   d_wins += 1
+            if new_outcome == 'loss':  d_losses += 1
+            if new_outcome == 'draw':  d_draws += 1
+        # d_games = 0  (same match, just outcome changed)
+
+    if d_games == 0 and d_wins == 0 and d_losses == 0 and d_draws == 0:
+        return  # nothing to do
+
+    # Apply deltas, never go below zero
+    cur.execute("""
+        UPDATE teams
+        SET
+          max_games  = GREATEST(COALESCE(max_games, 0)  + %s, 0),
+          max_wins   = GREATEST(COALESCE(max_wins, 0)   + %s, 0),
+          max_losses = GREATEST(COALESCE(max_losses, 0) + %s, 0),
+          max_draws  = GREATEST(COALESCE(max_draws, 0)  + %s, 0)
+        WHERE id = %s
+    """, (d_games, d_wins, d_losses, d_draws, team_id))
+
+
 @edit_match_bp.route('/delete-match/<int:match_id>', methods=['POST'])
 def delete_match(match_id):
     user_id = session.get('user_id')
@@ -399,19 +497,27 @@ def delete_match(match_id):
     cur = conn.cursor()
 
     try:
-        # кои потребители са засегнати от този мач
+        # 0) вземи team_id и резултата на мача преди триене
+        core = _fetch_match_core(cur, match_id)  # (team_id, h, a, ph, pa)
+        if not core:
+            raise ValueError("Match not found.")
+        team_id_from_match, h, a, ph, pa = core
+        match_outcome = _determine_outcome(h or 0, a or 0, ph, pa)
+
+        # 1) кои потребители са засегнати
         rows = get_user_match_rows(match_id, cur)
         affected_user_ids = set(row[1] for row in rows)
 
-        # изтрий статистиките за този мач
+        # 2) изтрий статистиките и мача
         cur.execute("DELETE FROM user_match WHERE match_id = %s", (match_id,))
-
-        # изтрий самия мач
         cur.execute("DELETE FROM matches WHERE id = %s", (match_id,))
 
-        # преизчисли „от нулата“ за всеки засегнат потребител (по всички останали мачове)
+        # 3) намали team totals (games-1 и outcome-1)
+        _apply_team_outcome_delta(cur, team_id_from_match, match_outcome, None)
+
+        # 4) recompute за потребителите
         for uid in affected_user_ids:
-            recompute_user_aggregates(cur, uid)  # виж функцията по-долу
+            recompute_user_aggregates(cur, uid)
 
         conn.commit()
         flash("Match deleted successfully.", "success")

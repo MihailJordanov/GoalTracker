@@ -167,6 +167,43 @@ def safe_int(val, default=0):
         return default
     
 
+
+def determine_outcome(home_result: int, away_result: int, home_penalty: int | None, away_penalty: int | None) -> str:
+    """
+    Връща 'win' / 'loss' / 'draw' от гледна точка на нашия (home) отбор.
+    При равен резултат в редовното време използва penalty резултата, ако е наличен и различен.
+    """
+    if home_result > away_result:
+        return 'win'
+    if home_result < away_result:
+        return 'loss'
+
+    # равенство в редовното време
+    if home_penalty is not None and away_penalty is not None and home_penalty != away_penalty:
+        return 'win' if home_penalty > away_penalty else 'loss'
+
+    return 'draw'
+
+
+def update_team_totals(cur, team_id: int, outcome: str) -> None:
+    """
+    Инкрементира max_games и съответно max_wins/max_losses/max_draws според изхода.
+    Използва COALESCE, ако полетата в teams са NULL.
+    """
+    cur.execute(
+        """
+        UPDATE teams
+        SET
+          max_games  = COALESCE(max_games, 0) + 1,
+          max_wins   = COALESCE(max_wins,  0) + CASE WHEN %s = 'win'  THEN 1 ELSE 0 END,
+          max_losses = COALESCE(max_losses,0) + CASE WHEN %s = 'loss' THEN 1 ELSE 0 END,
+          max_draws  = COALESCE(max_draws, 0) + CASE WHEN %s = 'draw' THEN 1 ELSE 0 END
+        WHERE id = %s
+        """,
+        (outcome, outcome, outcome, team_id)
+    )
+    
+
 def recompute_user_aggregates_fast(cur, uid: int):
     cur.execute("""
     WITH
@@ -303,6 +340,10 @@ def add_matches():
             home_result, away_result, match_date, location, match_format,
             home_penalty, away_penalty, enemy_team_id
         )
+
+        # 👉 Определи изход от мача и обнови totals за отбора
+        outcome = determine_outcome(home_result, away_result, home_penalty, away_penalty)
+        update_team_totals(cur, team_id, outcome)
 
         # Играчите от отбора и запис на статистики
         players = get_team_players(cur, team_id)
