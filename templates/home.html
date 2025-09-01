@@ -44,6 +44,7 @@
                         <ul class="dropdown-menu">
                             <li><a href="/match-history">Match History</a></li>
                             <li><a href="{{ url_for('stats_all_players.stats_all_players', team_id=user_team[0]) }}">Squad Statistics</a></li>
+                            <li><a href="{{ url_for('win_rate_team.win_rate_team_view', team_id=user_team[0]) }}">Win Rate</a></li>
                             <li><a href="{{ url_for('team_bp.edit', team_id=user_team[0]) }}">Manage Team</a></li>
                             <li><a href="{{ url_for('enemy_team_bp.enemy_team_list', team_id=user_team[0]) }}">Manage Enemy Teams</a></li>
                             <li><a href="{{ url_for('location.location_list', team_id=user_team[0]) }}">Manage Locations</a></li>
