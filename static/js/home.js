@@ -154,4 +154,4 @@ function closeModal() {
 
 document.getElementById('description').value = 'Hello champ! Would you like to join our team?';
 
-
+    
