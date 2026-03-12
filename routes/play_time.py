@@ -1,8 +1,7 @@
 from flask import Blueprint, render_template
 from database.db import get_db_connection
 
-# ⚠️ Смени import-а според това откъде ги ползваш в проекта.
-# Идеята е да са същите helper-и, които вече ползваш в win_rate.
+# Смени import-а ако helper функциите са в друг файл
 from routes.win_rate import (
     get_logged_in_user_id,
     require_login_redirect,
@@ -27,7 +26,6 @@ def play_time_view(team_id: int):
     cursor = conn.cursor()
 
     try:
-        # Взимаме името на отбора
         cursor.execute("""
             SELECT id, name
             FROM teams
@@ -36,20 +34,13 @@ def play_time_view(team_id: int):
         team_row = cursor.fetchone()
 
         if not team_row:
-            return "Отборът не беше намерен.", 404
+            return "Team not found.", 404
 
         team_name = team_row[1]
 
-        # Взимаме всички ИЗИГРАНИ мачове за отбора.
-        #
-        # Приемаме, че изигран мач = има дата И има въведен резултат
-        # (home_team_result и away_team_result не са NULL).
-        #
-        # Ако при теб логиката е различна, кажи и ще я напасна.
         cursor.execute("""
             SELECT
-                EXTRACT(YEAR FROM date)::int AS year,
-                EXTRACT(MONTH FROM date)::int AS month
+                date
             FROM matches
             WHERE team_id = %s
               AND date IS NOT NULL
@@ -60,34 +51,59 @@ def play_time_view(team_id: int):
 
         rows = cursor.fetchall()
 
-        # Месеци за chart labels
         month_labels = [
-            "Януари", "Февруари", "Март", "Април", "Май", "Юни",
-            "Юли", "Август", "Септември", "Октомври", "Ноември", "Декември"
+            "January", "February", "March", "April", "May", "June",
+            "July", "August", "September", "October", "November", "December"
         ]
 
-        # Общо за всички години
-        all_time_counts = [0] * 12
-
-        # По години
         yearly_data = {}
         years_set = set()
 
-        for year, month in rows:
-            if not year or not month:
+        timeline_map = {}
+
+        for row in rows:
+            match_date = row[0]
+            if not match_date:
                 continue
+
+            year = match_date.year
+            month = match_date.month
+            month_index = month - 1
 
             years_set.add(year)
 
-            month_index = month - 1
-            all_time_counts[month_index] += 1
-
             if year not in yearly_data:
                 yearly_data[year] = [0] * 12
-
             yearly_data[year][month_index] += 1
 
+            key = f"{year}-{month:02d}"
+            timeline_map[key] = timeline_map.get(key, 0) + 1
+
         years = sorted(list(years_set))
+
+        # Пълна месечна линия от първата до последната дата
+        all_time_labels = []
+        all_time_counts = []
+
+        if rows:
+            first_date = rows[0][0]
+            last_date = rows[-1][0]
+
+            current_year = first_date.year
+            current_month = first_date.month
+
+            end_year = last_date.year
+            end_month = last_date.month
+
+            while (current_year < end_year) or (current_year == end_year and current_month <= end_month):
+                key = f"{current_year}-{current_month:02d}"
+                all_time_labels.append(key)
+                all_time_counts.append(timeline_map.get(key, 0))
+
+                current_month += 1
+                if current_month > 12:
+                    current_month = 1
+                    current_year += 1
 
         return render_template(
             "play_time.html",
@@ -95,8 +111,9 @@ def play_time_view(team_id: int):
             team_name=team_name,
             month_labels=month_labels,
             years=years,
-            all_time_counts=all_time_counts,
-            yearly_data=yearly_data
+            yearly_data=yearly_data,
+            all_time_labels=all_time_labels,
+            all_time_counts=all_time_counts
         )
 
     finally:

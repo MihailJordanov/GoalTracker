@@ -1,12 +1,11 @@
 <!DOCTYPE html>
-<html lang="bg">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Play Time - {{ team_name }}</title>
 
     <link rel="stylesheet" href="{{ url_for('static', filename='css/play_time.css') }}">
-
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
@@ -20,38 +19,47 @@
                     <p class="eyebrow">TEAM ANALYTICS</p>
                     <h1>Play Time</h1>
                     <p class="subtitle">
-                        Разпределение на изиграните мачове по месеци за
-                        <span>{{ team_name }}</span>
+                        Match activity timeline for <span>{{ team_name }}</span>
                     </p>
                 </div>
 
                 <div class="header-actions">
-                    <a href="javascript:history.back()" class="back-btn">← Назад</a>
+                    <a href="javascript:history.back()" class="back-btn">← Back</a>
                 </div>
             </header>
 
             <section class="playtime-controls-card">
-                <div class="control-group">
-                    <label for="yearFilter">Период</label>
-                    <select id="yearFilter">
-                        <option value="all">Цяло време</option>
-                        {% for year in years %}
-                            <option value="{{ year }}">{{ year }}</option>
-                        {% endfor %}
-                    </select>
+                <div class="control-row">
+                    <div class="control-group">
+                        <label for="yearFilter">Period</label>
+                        <select id="yearFilter">
+                            <option value="all">All Time</option>
+                            {% for year in years %}
+                                <option value="{{ year }}">{{ year }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div class="control-group">
+                        <label>Chart Mode</label>
+                        <div class="chart-type-toggle">
+                            <button type="button" class="chart-toggle-btn active" data-chart-type="bar">Bars</button>
+                            <button type="button" class="chart-toggle-btn" data-chart-type="line">Line</button>
+                        </div>
+                    </div>
                 </div>
 
                 <div class="stats-inline">
                     <div class="mini-stat">
-                        <span class="mini-stat-label">Общо изиграни</span>
+                        <span class="mini-stat-label">Total Matches</span>
                         <span class="mini-stat-value" id="totalMatchesValue">0</span>
                     </div>
                     <div class="mini-stat">
-                        <span class="mini-stat-label">Активни месеци</span>
+                        <span class="mini-stat-label">Active Months</span>
                         <span class="mini-stat-value" id="activeMonthsValue">0</span>
                     </div>
                     <div class="mini-stat">
-                        <span class="mini-stat-label">Най-силен месец</span>
+                        <span class="mini-stat-label">Peak Period</span>
                         <span class="mini-stat-value" id="bestMonthValue">-</span>
                     </div>
                 </div>
@@ -60,8 +68,8 @@
             <section class="chart-card">
                 <div class="chart-card-header">
                     <div>
-                        <h2 id="chartTitle">Изиграни мачове по месеци</h2>
-                        <p id="chartSubtitle">Показани данни: цяло време</p>
+                        <h2 id="chartTitle">Matches Played Over Time</h2>
+                        <p id="chartSubtitle">Showing data for: All Time</p>
                     </div>
                 </div>
 
@@ -71,7 +79,7 @@
             </section>
 
             <section class="months-grid-card">
-                <h3>Месечен преглед</h3>
+                <h3 id="gridTitle">Monthly Breakdown</h3>
                 <div class="months-grid" id="monthsGrid"></div>
             </section>
         </div>
@@ -81,10 +89,12 @@
         id="play-time-data"
         data-month-labels='{{ month_labels|tojson|safe }}'
         data-years='{{ years|tojson|safe }}'
-        data-all-time-counts='{{ all_time_counts|tojson|safe }}'
         data-yearly-data='{{ yearly_data|tojson|safe }}'
+        data-all-time-labels='{{ all_time_labels|tojson|safe }}'
+        data-all-time-counts='{{ all_time_counts|tojson|safe }}'
         data-team-name='{{ team_name|tojson|safe }}'>
     </div>
+
     <script src="{{ url_for('static', filename='js/play_time.js') }}"></script>
 </body>
 </html>
