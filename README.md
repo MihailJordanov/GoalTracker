@@ -30,3 +30,43 @@ To run the project locally:
    ```bash
    git clone https://github.com/MihailJordanov/GoalTracker.git
    cd GoalTracker
+
+
+
+## 🖼️ Preview
+
+### 🏠 Welcome Page
+![Welcome Page](https://github.com/MihailJordanov/GoalTracker/blob/main/static/images/ScreenShots/Screenshot%202025-10-15%20161203.png)
+
+### 🏠 Dashboard
+![Dashboard](https://github.com/MihailJordanov/GoalTracker/blob/main/static/images/ScreenShots/Screenshot%202025-10-15%20161341.png)
+
+### ⚔️ Match History
+![Match History](https://github.com/MihailJordanov/GoalTracker/blob/main/static/images/ScreenShots/Screenshot%202025-10-15%20161414.png)
+
+### 👤 Player Profile
+![Player Profile](https://github.com/MihailJordanov/GoalTracker/blob/main/static/images/ScreenShots/Screenshot%202025-10-15%20161523.png)
+
+### 📂 Drop Menu
+![Drop Menu](https://github.com/MihailJordanov/GoalTracker/blob/main/static/images/ScreenShots/Screenshot%202025-10-15%20161549.png)
+
+### 📈 Win Rate
+![Win Rate](https://github.com/MihailJordanov/GoalTracker/blob/main/static/images/ScreenShots/Screenshot%202025-10-15%20161630.png)
+
+### ⚙️ Manage Team
+![Manage Team](https://github.com/MihailJordanov/GoalTracker/blob/main/static/images/ScreenShots/Screenshot%202025-10-15%20161652.png)
+
+### 🧑‍🤝‍🧑 Manage Players
+![Manage Players](https://github.com/MihailJordanov/GoalTracker/blob/main/static/images/ScreenShots/Screenshot%202025-10-15%20161705.png)
+
+### ✉️ Invite Player
+![Invite Player](https://github.com/MihailJordanov/GoalTracker/blob/main/static/images/ScreenShots/Screenshot%202025-10-15%20161720.png)
+
+### ➕ Add Martch 1
+![Add Martch 1](https://github.com/MihailJordanov/GoalTracker/blob/main/static/images/ScreenShots/Screenshot%202025-10-15%20161744.png)
+
+### ⚽ Add Martch 2
+![Add Martch 2](https://github.com/MihailJordanov/GoalTracker/blob/main/static/images/ScreenShots/Screenshot%202025-10-15%20161757.png)
+
+### 🏁 Add Martch 3
+![Add Martch 3](https://github.com/MihailJordanov/GoalTracker/blob/main/static/images/ScreenShots/Screenshot%202025-10-15%20161809.png)
