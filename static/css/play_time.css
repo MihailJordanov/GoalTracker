@@ -1,0 +1,415 @@
+:root {
+    --bg-main: #050505;
+    --bg-secondary: #0d0d0d;
+    --bg-card: rgba(15, 15, 15, 0.92);
+    --border: rgba(57, 255, 20, 0.18);
+    --border-strong: rgba(57, 255, 20, 0.45);
+    --text-main: #f5fff5;
+    --text-soft: #b9d9b9;
+    --text-muted: #7fa07f;
+    --neon: #39ff14;
+    --neon-soft: rgba(57, 255, 20, 0.18);
+    --shadow-neon: 0 0 20px rgba(57, 255, 20, 0.15);
+    --radius-xl: 22px;
+    --radius-lg: 16px;
+    --radius-md: 12px;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+html,
+body {
+    margin: 0;
+    padding: 0;
+    min-height: 100%;
+    background:
+        radial-gradient(circle at top left, rgba(57, 255, 20, 0.07), transparent 28%),
+        radial-gradient(circle at bottom right, rgba(57, 255, 20, 0.05), transparent 24%),
+        linear-gradient(180deg, #030303 0%, #0a0a0a 100%);
+    color: var(--text-main);
+    font-family: Inter, Arial, Helvetica, sans-serif;
+}
+
+.playtime-page {
+    position: relative;
+    min-height: 100vh;
+    overflow-x: hidden;
+    padding: 32px 18px 48px;
+}
+
+.playtime-bg-glow {
+    position: fixed;
+    border-radius: 50%;
+    filter: blur(100px);
+    z-index: 0;
+    pointer-events: none;
+}
+
+.glow-1 {
+    width: 220px;
+    height: 220px;
+    top: 40px;
+    left: -40px;
+    background: rgba(57, 255, 20, 0.12);
+}
+
+.glow-2 {
+    width: 260px;
+    height: 260px;
+    right: -70px;
+    bottom: 80px;
+    background: rgba(57, 255, 20, 0.10);
+}
+
+.playtime-container {
+    position: relative;
+    z-index: 1;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.playtime-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 16px;
+    margin-bottom: 24px;
+}
+
+.eyebrow {
+    margin: 0 0 8px;
+    color: var(--neon);
+    letter-spacing: 0.18em;
+    font-size: 0.78rem;
+    font-weight: 700;
+}
+
+.playtime-header h1 {
+    margin: 0;
+    font-size: 2.2rem;
+    line-height: 1.05;
+    font-weight: 800;
+    color: #ffffff;
+    text-shadow: 0 0 12px rgba(57, 255, 20, 0.08);
+}
+
+.subtitle {
+    margin: 10px 0 0;
+    color: var(--text-soft);
+    font-size: 1rem;
+}
+
+.subtitle span {
+    color: var(--neon);
+    font-weight: 700;
+}
+
+.header-actions {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.back-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 12px 16px;
+    border: 1px solid var(--border-strong);
+    border-radius: 999px;
+    color: var(--text-main);
+    text-decoration: none;
+    background: rgba(57, 255, 20, 0.06);
+    box-shadow: var(--shadow-neon);
+    transition: 0.25s ease;
+    font-weight: 600;
+}
+
+.back-btn:hover {
+    transform: translateY(-1px);
+    border-color: rgba(57, 255, 20, 0.75);
+    background: rgba(57, 255, 20, 0.12);
+}
+
+.playtime-controls-card,
+.chart-card,
+.months-grid-card {
+    background: linear-gradient(180deg, rgba(20, 20, 20, 0.96), rgba(11, 11, 11, 0.98));
+    border: 1px solid var(--border);
+    border-radius: var(--radius-xl);
+    box-shadow:
+        0 10px 40px rgba(0, 0, 0, 0.45),
+        inset 0 1px 0 rgba(255, 255, 255, 0.02),
+        0 0 0 1px rgba(57, 255, 20, 0.03);
+    backdrop-filter: blur(8px);
+}
+
+.playtime-controls-card {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 18px;
+    padding: 18px 22px;
+    margin-bottom: 22px;
+}
+
+.control-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    min-width: 220px;
+}
+
+.control-group label {
+    color: var(--text-soft);
+    font-weight: 600;
+    font-size: 0.95rem;
+}
+
+.control-group select {
+    appearance: none;
+    border: 1px solid var(--border-strong);
+    background: #0f0f0f;
+    color: var(--text-main);
+    border-radius: 12px;
+    padding: 12px 14px;
+    font-size: 0.98rem;
+    outline: none;
+    transition: 0.2s ease;
+    box-shadow: inset 0 0 0 1px rgba(57, 255, 20, 0.04);
+}
+
+.control-group select:focus {
+    border-color: var(--neon);
+    box-shadow: 0 0 0 4px rgba(57, 255, 20, 0.12);
+}
+
+.stats-inline {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(130px, 1fr));
+    gap: 12px;
+    width: 100%;
+    max-width: 650px;
+}
+
+.mini-stat {
+    background: rgba(57, 255, 20, 0.045);
+    border: 1px solid rgba(57, 255, 20, 0.10);
+    border-radius: var(--radius-lg);
+    padding: 14px 16px;
+}
+
+.mini-stat-label {
+    display: block;
+    font-size: 0.84rem;
+    color: var(--text-muted);
+    margin-bottom: 8px;
+}
+
+.mini-stat-value {
+    display: block;
+    font-size: 1.25rem;
+    color: var(--neon);
+    font-weight: 800;
+    text-shadow: 0 0 14px rgba(57, 255, 20, 0.12);
+}
+
+.chart-card {
+    padding: 18px 20px 20px;
+    margin-bottom: 22px;
+}
+
+.chart-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.chart-card h2 {
+    margin: 0;
+    font-size: 1.3rem;
+    color: #ffffff;
+}
+
+.chart-card p {
+    margin: 6px 0 0;
+    color: var(--text-soft);
+    font-size: 0.95rem;
+}
+
+.chart-wrap {
+    position: relative;
+    width: 100%;
+    height: 420px;
+    margin-top: 14px;
+    padding: 10px 4px 0;
+}
+
+.months-grid-card {
+    padding: 20px;
+}
+
+.months-grid-card h3 {
+    margin: 0 0 16px;
+    color: #ffffff;
+    font-size: 1.15rem;
+}
+
+.months-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 14px;
+}
+
+.month-box {
+    background: rgba(57, 255, 20, 0.04);
+    border: 1px solid rgba(57, 255, 20, 0.10);
+    border-radius: var(--radius-lg);
+    padding: 14px;
+    transition: 0.2s ease;
+}
+
+.month-box:hover {
+    transform: translateY(-2px);
+    border-color: rgba(57, 255, 20, 0.28);
+    box-shadow: 0 0 18px rgba(57, 255, 20, 0.08);
+}
+
+.month-box-name {
+    font-size: 0.95rem;
+    color: var(--text-soft);
+    margin-bottom: 10px;
+    font-weight: 600;
+}
+
+.month-box-value {
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: var(--neon);
+    margin-bottom: 10px;
+}
+
+.month-box-bar {
+    width: 100%;
+    height: 8px;
+    background: rgba(255, 255, 255, 0.04);
+    border-radius: 999px;
+    overflow: hidden;
+}
+
+.month-box-bar span {
+    display: block;
+    height: 100%;
+    border-radius: 999px;
+    background: linear-gradient(90deg, rgba(57,255,20,0.55), rgba(57,255,20,1));
+    box-shadow: 0 0 10px rgba(57, 255, 20, 0.28);
+}
+
+@media (max-width: 900px) {
+    .playtime-controls-card {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .stats-inline {
+        max-width: none;
+    }
+
+    .months-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 600px) {
+    .playtime-page {
+        padding: 18px 12px 30px;
+    }
+
+    .playtime-header {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 14px;
+        margin-bottom: 18px;
+    }
+
+    .playtime-header h1 {
+        font-size: 1.8rem;
+    }
+
+    .subtitle {
+        font-size: 0.95rem;
+        line-height: 1.5;
+    }
+
+    .back-btn {
+        width: 100%;
+        justify-content: center;
+    }
+
+    .playtime-controls-card,
+    .chart-card,
+    .months-grid-card {
+        border-radius: 18px;
+    }
+
+    .playtime-controls-card {
+        padding: 16px;
+        gap: 14px;
+    }
+
+    .control-group {
+        min-width: auto;
+    }
+
+    .control-group select {
+        width: 100%;
+        font-size: 0.96rem;
+    }
+
+    .stats-inline {
+        grid-template-columns: 1fr;
+    }
+
+    .mini-stat {
+        padding: 12px 14px;
+    }
+
+    .chart-card {
+        padding: 16px 14px 14px;
+    }
+
+    .chart-card h2 {
+        font-size: 1.08rem;
+        line-height: 1.35;
+    }
+
+    .chart-card p {
+        font-size: 0.9rem;
+    }
+
+    .chart-wrap {
+        height: 320px;
+        margin-top: 10px;
+        padding: 4px 0 0;
+    }
+
+    .months-grid-card {
+        padding: 16px 14px;
+    }
+
+    .months-grid {
+        grid-template-columns: 1fr;
+        gap: 10px;
+    }
+
+    .month-box {
+        padding: 12px;
+    }
+
+    .month-box-value {
+        font-size: 1.3rem;
+    }
+}

@@ -15,6 +15,7 @@ from routes.location_list import location_bp
 from routes.manage_players import manage_players_bp
 from routes.stats_all_players import stats_all_players_bp
 from routes.win_rate import win_rate_team
+from routes.play_time import play_time_bp
 from werkzeug.middleware.proxy_fix import ProxyFix 
 from database.db import get_db_connection
 from config import DevelopmentConfig, ProductionConfig
@@ -72,6 +73,7 @@ def create_app():
     app.register_blueprint(manage_players_bp)
     app.register_blueprint(stats_all_players_bp)
     app.register_blueprint(win_rate_team)
+    app.register_blueprint(play_time_bp)
 
     return app
 
